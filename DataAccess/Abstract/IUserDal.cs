@@ -11,5 +11,6 @@ namespace DataAccess.Abstract
     {
         List<OperationClaim> GetClaims(User user);
         List<Channel> GetSubscriptionList(User user);
+        List<Photo> GetLikedPhotos(User user);
     }
 }

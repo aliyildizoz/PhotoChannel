@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Business.Abstract;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -34,19 +36,19 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<Photo>>(_photoDal.GetList(photo => photo.ChannelId == channel.Id).ToList());
         }
-
+        [ValidationAspect(typeof(PhotoValidator), Priority = 1)]
         public IDataResult<Photo> Delete(Photo photo)
         {
             _photoDal.Delete(photo);
             return new SuccessDataResult<Photo>(photo);
         }
-
+        [ValidationAspect(typeof(PhotoValidator), Priority = 1)]
         public IDataResult<Photo> Add(Photo photo)
         {
             _photoDal.Add(photo);
             return new SuccessDataResult<Photo>(photo);
         }
-
+        [ValidationAspect(typeof(PhotoValidator), Priority = 1)]
         public IDataResult<Photo> GetById(int id)
         {
             return new SuccessDataResult<Photo>(_photoDal.Get(photo => photo.Id == id));

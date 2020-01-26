@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using System.Text;
 using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -42,7 +44,6 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<User>(_userDal.Get(user => user.Email == email));
         }
-
         public IDataResult<List<Photo>> GetPhotos(User user)
         {
             return _photoService.GetPhotosByUser(user);
@@ -58,19 +59,24 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Channel>>(_userDal.GetSubscriptionList(user));
         }
 
+        public IDataResult<List<Photo>> GetLikedPhotos(User user)
+        {
+            return new SuccessDataResult<List<Photo>>(_userDal.GetLikedPhotos(user));
+        }
+        [ValidationAspect(typeof(UserValidator), Priority = 1)]
         public IDataResult<User> Delete(User user)
         {
             user.IsActive = false;
             _userDal.Delete(user);
             return new SuccessDataResult<User>(user);
         }
-
+        [ValidationAspect(typeof(UserValidator), Priority = 1)]
         public IDataResult<User> Add(User user)
         {
             _userDal.Add(user);
             return new SuccessDataResult<User>(Messages.UserRegistered, user);
         }
-
+        [ValidationAspect(typeof(UserValidator), Priority = 1)]
         public IDataResult<User> Update(User user)
         {
             _userDal.Update(user);

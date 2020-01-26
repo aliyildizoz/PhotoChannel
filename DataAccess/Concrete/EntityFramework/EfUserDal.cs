@@ -35,5 +35,16 @@ namespace DataAccess.Concrete.EntityFramework
                 return result.ToList();
             }
         }
+
+        public List<Photo> GetLikedPhotos(User user)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                var result = context.Likes.Where(like => like.UserId == user.Id).Join(
+                    context.Photos, like => like.PhotoId, photo => photo.Id,
+                    (like, photo) => photo);
+                return result.ToList();
+            }
+        }
     }
 }

@@ -46,27 +46,27 @@ namespace Business.Concrete
 
         public IDataResult<List<User>> GetAdminList(Channel channel)
         {
-            return new DataResultBase<List<User>>(true, _channelDal.GetAdminList(channel));
+            return new SuccessDataResult<List<User>>(_channelDal.GetAdminList(channel));
         }
 
         public IDataResult<List<User>> GetSubscribers(Channel channel)
         {
             return new SuccessDataResult<List<User>>(_channelDal.GetSubscriberList(channel));
         }
-
+        [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
         public IDataResult<Channel> Delete(Channel channel)
         {
             _channelDal.Delete(channel);
-            return new SuccessDataResult<Channel>(Messages.ChannelDeleted,channel);
+            return new SuccessDataResult<Channel>(Messages.ChannelDeleted, channel);
         }
         [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
         public IDataResult<Channel> Add(Channel channel)
         {
             channel.CreatedDate = DateTime.Now;
             _channelDal.Add(channel);
-            return new SuccessDataResult<Channel>(Messages.ChannelAdded,channel);
+            return new SuccessDataResult<Channel>(Messages.ChannelAdded, channel);
         }
-
+        [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
         public IDataResult<Channel> Update(Channel channel)
         {
             _channelDal.Update(channel);
