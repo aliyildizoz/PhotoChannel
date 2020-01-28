@@ -22,5 +22,33 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
+        public void RelatedDelete(Photo photo)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                List<Like> likes = context.Likes.Where(like => like.PhotoId == photo.Id).ToList();
+                context.Likes.RemoveRange(likes);
+                context.Photos.Remove(photo);
+                context.SaveChanges();
+            }
+        }
+
+        public void DeleteLike(Like like)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                context.Likes.Remove(like);
+                context.SaveChanges();
+            }
+        }
+
+        public void AddLike(Like like)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                context.Likes.Add(like);
+                context.SaveChanges();
+            }
+        }
     }
 }

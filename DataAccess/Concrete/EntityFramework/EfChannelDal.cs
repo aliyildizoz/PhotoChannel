@@ -82,12 +82,18 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
-        public void RelatedDeleteChannel(Channel channel)
+        public void RelatedDelete(Channel channel)
         {
             using (var context = new PhotoChannelContext())
             {
-                
-                DeleteChannelAdmin(new ChannelAdmin());
+                List<Subscriber> subscribers =
+                    context.Subscribers.Where(subscriber => subscriber.ChannelId == channel.Id).ToList();
+                List<ChannelAdmin> channelAdmins =
+                    context.ChannelAdmins.Where(admin => admin.ChannelId == channel.Id).ToList();
+                context.Subscribers.RemoveRange(subscribers);
+                context.ChannelAdmins.RemoveRange(channelAdmins);
+                context.Channels.Remove(channel);
+                context.SaveChanges();
             }
         }
     }

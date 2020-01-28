@@ -34,7 +34,7 @@ namespace Business.Concrete
                     PasswordSalt = result.Data.PasswordSalt
                 };
 
-                if (HashingHelper.VerifyPasswordHash(userForPasswordDto))
+                if (!HashingHelper.VerifyPasswordHash(userForPasswordDto))
                 {
                     return new ErrorDataResult<User>(Messages.PasswordError, result.Data);
                 }
@@ -46,7 +46,7 @@ namespace Business.Concrete
         public IDataResult<User> Register(UserForRegisterDto userForRegisterDto)
         {
 
-            if (UserExists(userForRegisterDto.Email).IsSuccessful)
+            if (!UserExists(userForRegisterDto.Email).IsSuccessful)
             {
                 UserForPasswordDto userForPasswordDto = new UserForPasswordDto
                 {

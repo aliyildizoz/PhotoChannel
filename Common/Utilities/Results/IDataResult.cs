@@ -4,10 +4,8 @@ using System.Text;
 
 namespace Core.Utilities.Results
 {
-    public interface IDataResult<T>
+    public interface IDataResult<T> : IResult
     {
         T Data { get; }
-        string Message { get; }
-        bool IsSuccessful { get; }
     }
 }

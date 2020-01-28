@@ -17,7 +17,11 @@ namespace Business.Abstract
         IDataResult<List<User>> GetAdminList(Channel channel);
         IDataResult<List<User>> GetSubscribers(Channel channel);
 
-        IDataResult<Channel> Delete(Channel channel);
+        IResult Delete(Channel channel);
+        IResult DeleteSubscribe(Subscriber subscriber);
+        IResult AddSubscribe(Subscriber subscriber);
+        IResult DeleteChannelAdmin(ChannelAdmin channelAdmin);
+        IResult AddChannelAdmin(ChannelAdmin channelAdmin);
         IDataResult<Channel> Add(Channel channel);
         IDataResult<Channel> Update(Channel channel);
     }

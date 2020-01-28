@@ -48,7 +48,7 @@ namespace PhotoChannelWebAPI.Controllers
         public ActionResult Register(UserForRegisterDto userForRegisterDto)
         {
             var userExists = _authService.UserExists(userForRegisterDto.Email);
-            if (!userExists.IsSuccessful)
+            if (userExists.IsSuccessful)
             {
                 return BadRequest(userExists.Message);
             }

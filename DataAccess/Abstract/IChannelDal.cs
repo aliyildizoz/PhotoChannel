@@ -15,6 +15,7 @@ namespace DataAccess.Abstract
         void AddChannelAdmin(ChannelAdmin channelAdmin);
         void DeleteSubscribe(Subscriber subscriber);
         void DeleteChannelAdmin(ChannelAdmin channelAdmin);
+        void RelatedDelete(Channel channel);
         List<Channel> GetListByCategory(Category category);
     }
 }

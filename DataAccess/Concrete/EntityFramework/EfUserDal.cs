@@ -16,7 +16,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new PhotoChannelContext())
             {
-                var result = context.UserOperationClaim
+                var result = context.UserOperationClaims
                     .Where(userOperationClaim => userOperationClaim.UserId == user.Id).Join(context.OperationClaims,
                         userOperationClaim => userOperationClaim.OperationClaimId,
                         operationClaimId => operationClaimId.Id,
