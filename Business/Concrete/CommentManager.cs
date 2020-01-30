@@ -35,7 +35,7 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(CommentValidator), Priority = 1)]
         [CacheRemoveAspect("ICommentService.Get")]
-        public IDataResult<Comment> Delete(Comment comment)
+        public IResult Delete(Comment comment)
         {
             _commentDal.Delete(comment);
             return new SuccessDataResult<Comment>(comment);
@@ -43,7 +43,7 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(CommentValidator), Priority = 1)]
         [CacheRemoveAspect("ICommentService.Get")]
-        public IDataResult<Comment> Add(Comment comment)
+        public IResult Add(Comment comment)
         {
             _commentDal.Add(comment);
             return new SuccessDataResult<Comment>(comment);
@@ -51,10 +51,10 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(CommentValidator), Priority = 1)]
         [CacheRemoveAspect("ICommentService.Get")]
-        public IDataResult<Comment> Update(Comment comment)
+        public IResult Update(Comment comment)
         {
             _commentDal.Update(comment);
-            return new SuccessDataResult<Comment>(comment);
+            return new SuccessResult();
         }
     }
 }

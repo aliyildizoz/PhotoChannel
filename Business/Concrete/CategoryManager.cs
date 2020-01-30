@@ -25,10 +25,10 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Category>>(_categoryDal.GetList().ToList());
         }
         [CacheRemoveAspect("ICategoryService.Get")]
-        public IDataResult<Category> Add(Category category)
+        public IResult Add(Category category)
         {
             _categoryDal.Add(category);
-            return new SuccessDataResult<Category>(category);
+            return new SuccessResult();
         }
     }
 }

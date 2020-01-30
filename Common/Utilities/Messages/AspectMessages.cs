@@ -8,5 +8,6 @@ namespace Core.Utilities.Messages
     {
         public static string WrongValidationType = "Wrong validation type.";
         public static string WrongReturnType = "Wrong return type.";
+        public static string ValidationFailed = "Validation Failed.";
     }
 }

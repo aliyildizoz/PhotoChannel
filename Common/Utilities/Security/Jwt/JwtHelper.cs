@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Core.Utilities.Security.Jwt
 {
-    public class JwtHelper:ITokenHelper
+    public class JwtHelper : ITokenHelper
     {
         public IConfiguration Configuration { get; }
         private TokenOptions _tokenOptions;
@@ -22,17 +22,17 @@ namespace Core.Utilities.Security.Jwt
         {
             Configuration = configuration;
             _tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
-            _accessTokenExpration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
         }
 
         public AccessToken CreateToken(User user, List<Entities.Concrete.OperationClaim> operationClaims)
         {
+            _accessTokenExpration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
             var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
             var signingCredentials = SigningCredentialsHelper.CreateSigningCredentials(securityKey);
             var jwt = CreateJwtSecurityToken(_tokenOptions, user, signingCredentials, operationClaims);
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityTokenHandler.WriteToken(jwt);
-           
+
             return new AccessToken
             {
                 Token = token,

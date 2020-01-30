@@ -68,10 +68,10 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(PhotoValidator), Priority = 1)]
         [CacheRemoveAspect("IPhotoService.Get")]
-        public IDataResult<Photo> Add(Photo photo)
+        public IResult Add(Photo photo)
         {
             _photoDal.Add(photo);
-            return new SuccessDataResult<Photo>(photo);
+            return new SuccessResult();
         }
 
     }

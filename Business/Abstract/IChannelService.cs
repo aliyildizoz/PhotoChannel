@@ -22,7 +22,7 @@ namespace Business.Abstract
         IResult AddSubscribe(Subscriber subscriber);
         IResult DeleteChannelAdmin(ChannelAdmin channelAdmin);
         IResult AddChannelAdmin(ChannelAdmin channelAdmin);
-        IDataResult<Channel> Add(Channel channel);
-        IDataResult<Channel> Update(Channel channel);
+        IResult Add(Channel channel);
+        IResult Update(Channel channel);
     }
 }

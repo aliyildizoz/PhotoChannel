@@ -18,9 +18,9 @@ namespace Business.Abstract
         IDataResult<List<OperationClaim>> GetClaims(User user);
         IDataResult<List<Channel>> GetSubscriptions(User user);
         IDataResult<List<Photo>> GetLikedPhotos(User user);
-        IDataResult<User> Delete(User user);
-        IDataResult<User> Add(User user);
-        IDataResult<User> Update(User user);
+        IResult Delete(User user);
+        IResult Add(User user);
+        IResult Update(User user);
 
     }
 }

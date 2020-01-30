@@ -76,27 +76,27 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
         [CacheRemoveAspect("IUserService.Get")]
-        public IDataResult<User> Delete(User user)
+        public IResult Delete(User user)
         {
             user.IsActive = false;
             _userDal.Delete(user);
-            return new SuccessDataResult<User>(user);
+            return new SuccessResult();
         }
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
         [CacheRemoveAspect("IUserService.Get")]
-        public IDataResult<User> Add(User user)
+        public IResult Add(User user)
         {
             _userDal.Add(user);
-            return new SuccessDataResult<User>(Messages.UserRegistered, user);
+            return new SuccessResult(Messages.UserRegistered);
         }
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
         [CacheRemoveAspect("IUserService.Get")]
-        public IDataResult<User> Update(User user)
+        public IResult Update(User user)
         {
             _userDal.Update(user);
-            return new SuccessDataResult<User>(user);
+            return new SuccessResult();
         }
 
 

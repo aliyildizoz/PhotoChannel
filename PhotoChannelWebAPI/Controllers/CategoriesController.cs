@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PhotoChannelWebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/categories")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {
@@ -24,12 +24,13 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpPost("add")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Add(Category category)
         {
-            IDataResult<Category> result = _categoryService.Add(category);
+            IResult result = _categoryService.Add(category);
             if (result.IsSuccessful)
             {
-                return Ok(result.Data);
+                return Ok(result.Message);
             }
 
             return BadRequest(result.IsSuccessful);
@@ -37,7 +38,6 @@ namespace PhotoChannelWebAPI.Controllers
 
 
         [HttpGet("getall")]
-        [Authorize(Roles = "Admin")]
         public IActionResult GetAll()
         {
             IDataResult<List<Category>> result = _categoryService.GetList();

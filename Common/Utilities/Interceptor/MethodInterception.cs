@@ -24,6 +24,7 @@ namespace Core.Utilities.Interceptor
             {
                 isSuccess = false;
                 OnException(invocation, e);
+                throw;
             }
             finally
             {

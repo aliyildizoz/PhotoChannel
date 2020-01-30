@@ -13,7 +13,7 @@ namespace Business.Abstract
         IDataResult<List<Photo>> GetPhotosByUser(User user);
         IDataResult<List<Photo>> GetPhotosByChannel(Channel channel);
         IDataResult<Photo> GetById(int id);
-        IDataResult<Photo> Add(Photo photo);
+        IResult Add(Photo photo);
         IResult Delete(Photo photo);
         IResult DeleteLike(Like like);
         IResult AddLike(Like like);

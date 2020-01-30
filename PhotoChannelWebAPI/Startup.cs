@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Core.DependencyResolvers;
 using Core.Extensions;
 using Core.Utilities.IoC;
@@ -40,7 +41,7 @@ namespace PhotoChannelWebAPI
                     builder => builder.WithOrigins("http://localhost:3000")
                 );
             });
-
+            services.AddAutoMapper(typeof(Startup));
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -70,6 +71,9 @@ namespace PhotoChannelWebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.Use(async (context, next) => { await next.Invoke(); });
+            app.ConfigureCustomExceptionMiddleware();
             app.UseCors(builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader());
             app.UseHttpsRedirection();
 

@@ -6,7 +6,9 @@ using Castle.DynamicProxy;
 using Core.CrossCuttingConcerns.Validation.FluentValidation;
 using Core.Utilities.Interceptor;
 using Core.Utilities.Messages;
+using Core.Utilities.Results;
 using FluentValidation;
+using FluentValidation.Results;
 
 namespace Core.Aspects.Autofac.Validation
 {
@@ -27,6 +29,7 @@ namespace Core.Aspects.Autofac.Validation
             var validator = (IValidator)Activator.CreateInstance(_validatorType);
             var entityType = _validatorType.BaseType.GetGenericArguments()[0];
             var entities = invocation.Arguments.Where(o => o.GetType() == entityType);
+
             foreach (var entity in entities)
             {
                 ValidationTool.Validate(validator, entity);

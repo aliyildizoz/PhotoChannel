@@ -10,8 +10,8 @@ namespace Business.Abstract
     {
         IDataResult<List<Comment>> GetListByUserId(int userId);
         IDataResult<List<Comment>> GetListByPhotoId(int photoId);
-        IDataResult<Comment> Delete(Comment comment);
-        IDataResult<Comment> Add(Comment comment);
-        IDataResult<Comment> Update(Comment comment);
+        IResult Delete(Comment comment);
+        IResult Add(Comment comment);
+        IResult Update(Comment comment);
     }
 }

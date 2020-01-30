@@ -54,7 +54,7 @@ namespace Business.Concrete
                 };
                 HashingHelper.CreatePasswordHash(userForPasswordDto);
 
-                return _userService.Add(new User
+                IResult result = _userService.Add(new User
                 {
                     Email = userForRegisterDto.Email,
                     FirstName = userForRegisterDto.FirstName,
@@ -63,6 +63,11 @@ namespace Business.Concrete
                     PasswordHash = userForPasswordDto.PasswordHash,
                     PasswordSalt = userForPasswordDto.PasswordSalt
                 });
+                if (!result.IsSuccessful)
+                {
+                    return new ErrorDataResult<User>(result.Message, null);
+                }
+                return new SuccessDataResult<User>(result.Message, null);
             }
             return new ErrorDataResult<User>(Messages.UserAlreadyExists, null);
         }

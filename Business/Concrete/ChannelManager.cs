@@ -6,10 +6,10 @@ using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
-using Core.Aspects.Autofac.Exception;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation.FluentValidation;
 using Core.Entities.Concrete;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -27,12 +27,8 @@ namespace Business.Concrete
             _photoService = photoService;
         }
         [CacheAspect]
-        [ExceptionAspect(typeof(IDataResult<List<Channel>>))]
         public IDataResult<List<Channel>> GetList()
         {
-            //int a = 0;
-            //int b = 5;
-            //int c = b / a;
             return new SuccessDataResult<List<Channel>>(_channelDal.GetList().ToList());
         }
         [CacheAspect]
@@ -101,19 +97,34 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
         [CacheRemoveAspect("IChannelService.Get")]
-        public IDataResult<Channel> Add(Channel channel)
+        public IResult Add(Channel channel)
         {
+            IResult result = BusinessRules.Run(CheckIfChannelNameExists(channel.Name));
+            if (!result.IsSuccessful)
+            {
+                return result;
+            }
             channel.CreatedDate = DateTime.Now;
             _channelDal.Add(channel);
-            return new SuccessDataResult<Channel>(Messages.ChannelAdded, channel);
+            return new SuccessResult(Messages.ChannelAdded);
+        }
+
+        private IResult CheckIfChannelNameExists(string channelName)
+        {
+            var result = _channelDal.GetList(channel => channel.Name == channelName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.ChannelNameAlreadyExists);
+            }
+            return new SuccessResult();
         }
 
         [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
         [CacheRemoveAspect("IChannelService.Get")]
-        public IDataResult<Channel> Update(Channel channel)
+        public IResult Update(Channel channel)
         {
             _channelDal.Update(channel);
-            return new SuccessDataResult<Channel>(Messages.ChannelUpdated, channel);
+            return new SuccessResult(Messages.ChannelUpdated);
         }
     }
 }

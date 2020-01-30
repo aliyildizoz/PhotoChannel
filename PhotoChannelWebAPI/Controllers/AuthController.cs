@@ -3,27 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Business.Abstract;
-using DataAccess.Dal.EntityFramework.Contexts;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PhotoChannelWebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private IAuthService _authService;
-        private IUserService _userService;
-        public AuthController(IAuthService authService, IUserService userService)
+        public AuthController(IAuthService authService)
         {
-
-            PhotoChannelContext context = new PhotoChannelContext();
-
-            var list = context.Users.ToList();
             _authService = authService;
-            _userService = userService;
         }
 
         [HttpPost("login")]
@@ -61,12 +54,6 @@ namespace PhotoChannelWebAPI.Controllers
             }
 
             return BadRequest(result.Message);
-        }
-        [HttpGet("test")]
-        public ActionResult TestAction()
-        {
-
-            return Login(null);
         }
     }
 }
