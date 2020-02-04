@@ -7,6 +7,7 @@ using Core.Entities.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Dal.EntityFramework.Contexts;
 using Entities.Concrete;
+using Microsoft.Extensions.Logging;
 
 namespace DataAccess.Concrete.EntityFramework
 {
@@ -37,7 +38,10 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new PhotoChannelContext())
             {
-                context.Likes.Remove(like);
+                var result = context.Likes.FirstOrDefault(l => l.PhotoId == like.PhotoId && l.UserId == like.UserId);
+                context.Likes.Remove(result ?? throw new InvalidOperationException());
+                Photo photo = Get(p => p.Id == like.PhotoId);
+                photo.LikesCount -= 1;
                 context.SaveChanges();
             }
         }
@@ -47,6 +51,8 @@ namespace DataAccess.Concrete.EntityFramework
             using (var context = new PhotoChannelContext())
             {
                 context.Likes.Add(like);
+                Photo photo = Get(p => p.Id == like.PhotoId);
+                photo.LikesCount += 1;
                 context.SaveChanges();
             }
         }

@@ -20,6 +20,7 @@ namespace Business.Concrete
     {
         private IChannelDal _channelDal;
         private IPhotoService _photoService;
+        private IUserService _userService;
 
         public ChannelManager(IChannelDal channelDal, IPhotoService photoService)
         {
@@ -36,6 +37,12 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<Channel>(_channelDal.Get(channel => channel.Id == id));
         }
+
+        public IDataResult<User> GetOwner(int id)
+        {
+            return _userService.GetById(_channelDal.Get(channel => channel.Id == id).OwnerId);
+        }
+
         [CacheAspect]
         public IDataResult<List<Channel>> GetByName(string name)
         {
@@ -104,7 +111,6 @@ namespace Business.Concrete
             {
                 return result;
             }
-            channel.CreatedDate = DateTime.Now;
             _channelDal.Add(channel);
             return new SuccessResult(Messages.ChannelAdded);
         }

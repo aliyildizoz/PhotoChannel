@@ -40,6 +40,8 @@ namespace DataAccess.Concrete.EntityFramework
             using (var context = new PhotoChannelContext())
             {
                 context.Subscribers.Add(subscriber);
+                Channel channel = Get(c => c.Id == subscriber.ChannelId);
+                channel.SubscribersCount += 1;
                 context.SaveChanges();
             }
         }
@@ -57,7 +59,11 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new PhotoChannelContext())
             {
-                context.Subscribers.Remove(subscriber);
+                var subs = context.Subscribers.FirstOrDefault(s =>
+                    s.ChannelId == subscriber.ChannelId && s.UserId == subscriber.UserId);
+                context.Subscribers.Remove(subs ?? throw new InvalidOperationException());
+                Channel channel = Get(c => c.Id == subscriber.ChannelId);
+                channel.SubscribersCount -= 1;
                 context.SaveChanges();
             }
         }
@@ -66,7 +72,9 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new PhotoChannelContext())
             {
-                context.ChannelAdmins.Remove(channelAdmin);
+                var admin = context.ChannelAdmins.FirstOrDefault(c =>
+                    c.ChannelId == channelAdmin.ChannelId && c.UserId == channelAdmin.UserId);
+                context.ChannelAdmins.Remove(admin ?? throw new InvalidOperationException());
                 context.SaveChanges();
             }
         }

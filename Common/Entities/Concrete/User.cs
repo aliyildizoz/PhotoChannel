@@ -17,9 +17,5 @@ namespace Core.Entities.Concrete
         public byte[] PasswordHash { get; set; }
         public bool IsActive { get; set; }
 
-
-
-        //public UserDetail UserDetail { get; set; }
-        //public IList<UserOperationClaim> UserOperationClaims { get; set; }
     }
 }

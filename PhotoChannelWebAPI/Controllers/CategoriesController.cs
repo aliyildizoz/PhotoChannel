@@ -36,8 +36,7 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.IsSuccessful);
         }
 
-
-        [HttpGet("getall")]
+        [HttpGet("")]
         public IActionResult GetAll()
         {
             IDataResult<List<Category>> result = _categoryService.GetList();

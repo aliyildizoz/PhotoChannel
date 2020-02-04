@@ -12,7 +12,7 @@ namespace PhotoChannelWebAPI.Dtos
             CreatedDate = DateTime.Now;
         }
 
-        public int UserId { get; set; }
+        public int OwnerId { get; set; }
         public string Name { get; set; }
         public string ChannelPhotoUrl { get; set; }
         public DateTime CreatedDate { get; set; }

@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace PhotoChannelWebAPI.Dtos
 {
-    public class ChannelForUpdateDto
+    public class SubscriberForListDto
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string ChannelPhotoUrl { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

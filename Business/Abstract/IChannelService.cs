@@ -11,6 +11,7 @@ namespace Business.Abstract
     {
         IDataResult<List<Channel>> GetList();
         IDataResult<Channel> GetById(int id);
+        IDataResult<User> GetOwner(int id);
         IDataResult<List<Channel>> GetByName(string name);
         IDataResult<List<Photo>> GetPhotos(Channel channel);
 

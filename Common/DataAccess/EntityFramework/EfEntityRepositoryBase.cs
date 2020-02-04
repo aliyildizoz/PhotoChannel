@@ -12,6 +12,9 @@ namespace Core.DataAccess.EntityFramework
         where TEntity : class, IEntity, new()
         where TContext : DbContext, new()
     {
+
+
+
         public TEntity Get(Expression<Func<TEntity, bool>> filter)
         {
             using (var context = new TContext())
@@ -25,6 +28,14 @@ namespace Core.DataAccess.EntityFramework
             using (var context = new TContext())
             {
                 return filter == null ? context.Set<TEntity>().ToList() : context.Set<TEntity>().Where(filter).ToList();
+            }
+        }
+
+        public IQueryable<TEntity> AsQuery()
+        {
+            using (var context = new TContext())
+            {
+                return context.Set<TEntity>().AsQueryable();
             }
         }
 
