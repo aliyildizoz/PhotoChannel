@@ -66,6 +66,20 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
+        public void CommentCountUpdate(bool isIncreasing, int photoId)
+        {
+            Photo photo = _photoDal.Get(p => p.Id == photoId);
+            if (isIncreasing)
+            {
+                photo.CommentCount += 1;
+            }
+            else
+            {
+                photo.CommentCount -= 1;
+            }
+            _photoDal.Update(photo);
+        }
+
         [ValidationAspect(typeof(PhotoValidator), Priority = 1)]
         [CacheRemoveAspect("IPhotoService.Get")]
         public IResult Add(Photo photo)

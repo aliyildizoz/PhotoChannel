@@ -4,6 +4,7 @@ using System.Text;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using Entities.Concrete;
+using Entities.Dtos;
 
 namespace Business.Abstract
 {
@@ -20,7 +21,7 @@ namespace Business.Abstract
         IDataResult<List<Photo>> GetLikedPhotos(User user);
         IResult Delete(User user);
         IResult Add(User user);
-        IResult Update(User user);
+        IResult Update(UserForUpdateDto userForUpdateDto);
 
     }
 }

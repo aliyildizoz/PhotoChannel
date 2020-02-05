@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Entities.Concrete;
 using Entities.Concrete;
+using Entities.Dtos;
 using PhotoChannelWebAPI.Dtos;
 
 namespace PhotoChannelWebAPI.Helpers
@@ -23,6 +24,14 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<PhotoForAddDto, Photo>();
             CreateMap<PhotoForUpdateDto, Photo>();
             CreateMap<User, LikeForUserListDto>();
+
+            CreateMap<CommentForAddDto, Comment>();
+            CreateMap<CommentForUpdateDto, Comment>();
+            CreateMap<Comment, CommentForListDto>();
+
+            CreateMap<User, UserForListDto>();
+            CreateMap<User, UserForDetailDto>();
+            CreateMap<UserForUpdateDto, User>();
         }
     }
 }

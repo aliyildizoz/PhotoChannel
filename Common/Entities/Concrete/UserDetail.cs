@@ -9,9 +9,7 @@ namespace Core.Entities.Concrete
     public class UserDetail : IEntity
     {
         public int Id { get; set; }
-        public int SubscriptionCount { get; set; }
-
         public int UserId { get; set; }
-        public virtual User User { get; set; }
+        public int SubscriptionCount { get; set; }
     }
 }

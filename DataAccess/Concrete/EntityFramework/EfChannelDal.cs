@@ -42,6 +42,8 @@ namespace DataAccess.Concrete.EntityFramework
                 context.Subscribers.Add(subscriber);
                 Channel channel = Get(c => c.Id == subscriber.ChannelId);
                 channel.SubscribersCount += 1;
+                UserDetail userDetail = context.UserDetails.FirstOrDefault(u => u.UserId == subscriber.UserId);
+                if (userDetail != null) userDetail.SubscriptionCount += 1;
                 context.SaveChanges();
             }
         }
@@ -64,6 +66,8 @@ namespace DataAccess.Concrete.EntityFramework
                 context.Subscribers.Remove(subs ?? throw new InvalidOperationException());
                 Channel channel = Get(c => c.Id == subscriber.ChannelId);
                 channel.SubscribersCount -= 1;
+                UserDetail userDetail = context.UserDetails.FirstOrDefault(u => u.UserId == subscriber.UserId);
+                if (userDetail != null) userDetail.SubscriptionCount -= 1;
                 context.SaveChanges();
             }
         }

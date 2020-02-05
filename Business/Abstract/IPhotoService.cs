@@ -17,5 +17,6 @@ namespace Business.Abstract
         IResult Delete(Photo photo);
         IResult DeleteLike(Like like);
         IResult AddLike(Like like);
+        void CommentCountUpdate(bool isIncreasing, int photoId);
     }
 }

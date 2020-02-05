@@ -15,10 +15,11 @@ namespace Business.Concrete
     public class CommentManager : ICommentService
     {
         private ICommentDal _commentDal;
-
-        public CommentManager(ICommentDal commentDal)
+        private IPhotoService _photoService;
+        public CommentManager(ICommentDal commentDal, IPhotoService photoService)
         {
             _commentDal = commentDal;
+            _photoService = photoService;
         }
 
         [CacheAspect]
@@ -38,6 +39,7 @@ namespace Business.Concrete
         public IResult Delete(Comment comment)
         {
             _commentDal.Delete(comment);
+            _photoService.CommentCountUpdate(false, comment.PhotoId);
             return new SuccessDataResult<Comment>(comment);
         }
 
@@ -46,6 +48,7 @@ namespace Business.Concrete
         public IResult Add(Comment comment)
         {
             _commentDal.Add(comment);
+            _photoService.CommentCountUpdate(true, comment.PhotoId);
             return new SuccessDataResult<Comment>(comment);
         }
 

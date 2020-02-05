@@ -9,9 +9,11 @@ using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
+using Core.Utilities.Hashing;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 
 namespace Business.Concrete
 {
@@ -93,8 +95,22 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
         [CacheRemoveAspect("IUserService.Get")]
-        public IResult Update(User user)
+        public IResult Update(UserForUpdateDto userForUpdateDto)
         {
+            UserForPasswordDto userForPasswordDto = new UserForPasswordDto
+            {
+                Password = userForUpdateDto.Password
+            };
+            HashingHelper.CreatePasswordHash(userForPasswordDto);
+            User user = new User
+            {
+                Id = userForUpdateDto.Id,
+                Email = userForUpdateDto.Email,
+                FirstName = userForUpdateDto.FirstName,
+                LastName = userForUpdateDto.LastName,
+                PasswordHash = userForPasswordDto.PasswordHash,
+                PasswordSalt = userForPasswordDto.PasswordSalt
+            };
             _userDal.Update(user);
             return new SuccessResult();
         }
