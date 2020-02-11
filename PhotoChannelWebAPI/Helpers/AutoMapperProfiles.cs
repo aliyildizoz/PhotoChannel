@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Entities.Concrete;
+using Core.Utilities.Security.Jwt;
 using Entities.Concrete;
 using Entities.Dtos;
 using PhotoChannelWebAPI.Dtos;
@@ -32,6 +33,8 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<User, UserForListDto>();
             CreateMap<User, UserForDetailDto>();
             CreateMap<UserForUpdateDto, User>();
+
+            CreateMap<AccessToken, LoginOrRegisterForReturnDto>();
         }
     }
 }

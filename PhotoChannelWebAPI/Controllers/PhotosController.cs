@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Abstract;
+using CloudinaryDotNet.Actions;
 using Core.Entities.Concrete;
+using Core.Utilities.PhotoUpload;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
@@ -19,10 +21,12 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private IPhotoService _photoService;
         private IMapper _mapper;
-        public PhotosController(IPhotoService photoService, IMapper mapper)
+        private IPhotoUpload _photoUpload;
+        public PhotosController(IPhotoService photoService, IMapper mapper, IPhotoUpload photoUpload)
         {
             _photoService = photoService;
             _mapper = mapper;
+            _photoUpload = photoUpload;
         }
         [HttpGet("{photoId}")]
         public IActionResult Get(int photoId)
@@ -52,15 +56,23 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpPost]
         public IActionResult Post(PhotoForAddDto photoForAddDto)
         {
-            var mapResult = _mapper.Map<Photo>(photoForAddDto);
-            IResult result = _photoService.Add(mapResult);
-
-            if (result.IsSuccessful)
+            if (photoForAddDto.File.Length > 0)
             {
-                return Ok(result.Message);
+                ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(photoForAddDto.File);
+                var mapResult = _mapper.Map<Photo>(photoForAddDto);
+                mapResult.PhotoUrl = imageUploadResult.Uri.ToString();
+                mapResult.PublicId = imageUploadResult.PublicId;
+                IResult result = _photoService.Add(mapResult);
+
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+                return BadRequest(result.Message);
             }
 
-            return BadRequest(result.Message);
+
+            return BadRequest();
         }
         [HttpDelete("{photoId}")]
         public IActionResult Delete(int photoId)

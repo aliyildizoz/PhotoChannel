@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Business.Abstract;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PhotoChannelWebAPI.Dtos;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -14,9 +16,11 @@ namespace PhotoChannelWebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private IMapper _mapper;
+        public AuthController(IAuthService authService, IMapper mapper)
         {
             _authService = authService;
+            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -31,11 +35,15 @@ namespace PhotoChannelWebAPI.Controllers
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.IsSuccessful)
             {
-                return Ok(result.Data);
+                var mapResult = _mapper.Map<LoginOrRegisterForReturnDto>(result.Data);
+                mapResult.UserId = userToLogin.Data.Id;
+                return Ok(mapResult);
             }
 
             return BadRequest(result.Message);
         }
+
+        //GetCurrentUser
 
         [HttpPost("register")]
         public ActionResult Register(UserForRegisterDto userForRegisterDto)
@@ -45,12 +53,17 @@ namespace PhotoChannelWebAPI.Controllers
             {
                 return BadRequest(userExists.Message);
             }
-
             var registerResult = _authService.Register(userForRegisterDto);
+            if (!registerResult.IsSuccessful)
+            {
+                return BadRequest(registerResult.Message);
+            }
             var result = _authService.CreateAccessToken(registerResult.Data);
             if (result.IsSuccessful)
             {
-                return Ok(result.Data);
+                var mapResult = _mapper.Map<LoginOrRegisterForReturnDto>(result.Data);
+                mapResult.UserId = registerResult.Data.Id;
+                return Ok(mapResult);
             }
 
             return BadRequest(result.Message);

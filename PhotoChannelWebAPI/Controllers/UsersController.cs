@@ -86,15 +86,19 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        [HttpPut]
-        public IActionResult Put(UserForUpdateDto userForUpdateDto)
+        [HttpPut("{channelId}")]
+        public IActionResult Put(int channelId, UserForUpdateDto userForUpdateDto)
         {
-            IResult result = _userService.Update(userForUpdateDto);
-            if (result.IsSuccessful)
+            if (channelId > 0)
             {
-                return Ok(result.Message);
+                IResult result = _userService.Update(userForUpdateDto);
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+                return BadRequest(result.Message);
             }
-            return BadRequest(result.Message);
+            return BadRequest();
         }
         [HttpDelete]
         public IActionResult Delete(int userId)

@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Abstract;
+using CloudinaryDotNet.Actions;
 using Core.Entities.Concrete;
+using Core.Utilities.PhotoUpload;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using FluentValidation;
@@ -23,23 +25,33 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private IChannelService _channelService;
         private IMapper _mapper;
-        public ChannelsController(IChannelService channelService, IMapper mapper)
+        private IPhotoUpload _photoUpload;
+        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload)
         {
             _channelService = channelService;
             _mapper = mapper;
+            _photoUpload = photoUpload;
         }
 
         [HttpPost("")]
         public IActionResult Post(ChannelForAddDto channelForAddDto)
         {
-            var mapResult = _mapper.Map<Channel>(channelForAddDto);
-            IResult result = _channelService.Add(mapResult);
-            if (result.IsSuccessful)
+            if (channelForAddDto.File.Length > 0)
             {
-                return Ok(result.Message);
+                ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForAddDto.File);
+                var mapResult = _mapper.Map<Channel>(channelForAddDto);
+                mapResult.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
+                mapResult.PublicId = imageUploadResult.PublicId;
+                IResult result = _channelService.Add(mapResult);
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+
+                return BadRequest(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest();
         }
         [HttpPost]
         public IActionResult Post(Subscriber subscriber)
@@ -103,14 +115,22 @@ namespace PhotoChannelWebAPI.Controllers
         {
             if (channelForUpdate.Id > 0)
             {
-                var mapResult = _mapper.Map<Channel>(channelForUpdate);
-                IResult result = _channelService.Update(mapResult);
-                if (result.IsSuccessful)
+                if (channelForUpdate.File.Length > 0)
                 {
-                    return Ok(result.Message);
+                    ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForUpdate.File);
+                    var mapResult = _mapper.Map<Channel>(channelForUpdate);
+                    mapResult.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
+                    mapResult.PublicId = imageUploadResult.PublicId;
+                    IResult result = _channelService.Update(mapResult);
+                    if (result.IsSuccessful)
+                    {
+                        return Ok(result.Message);
+                    }
+
+                    return BadRequest(result.Message);
                 }
 
-                return BadRequest(result.Message);
+                return BadRequest();
             }
 
             return BadRequest();

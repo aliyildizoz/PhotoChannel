@@ -13,5 +13,6 @@ namespace Entities.Concrete
         public int SubscribersCount { get; set; }
         public DateTime CreatedDate { get; set; }
         public string ChannelPhotoUrl { get; set; }
+        public string PublicId { get; set; }
     }
 }

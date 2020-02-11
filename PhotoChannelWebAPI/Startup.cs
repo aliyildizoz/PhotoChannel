@@ -38,7 +38,7 @@ namespace PhotoChannelWebAPI
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowOrigin",
-                    builder => builder.WithOrigins("http://localhost:3000")
+                    builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
                 );
             });
             services.AddAutoMapper(typeof(Startup));
@@ -74,7 +74,7 @@ namespace PhotoChannelWebAPI
 
             app.Use(async (context, next) => { await next.Invoke(); });
             app.ConfigureCustomExceptionMiddleware();
-            app.UseCors(builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader());
+            app.UseCors(builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3001").AllowAnyHeader());
             app.UseHttpsRedirection();
 
             app.UseRouting();

@@ -14,5 +14,6 @@ namespace Entities.Concrete
         public int LikesCount { get; set; }
         public int CommentCount { get; set; }
         public string PhotoUrl { get; set; }
+        public string PublicId { get; set; }
     }
 }
