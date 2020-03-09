@@ -14,7 +14,7 @@ using PhotoChannelWebAPI.Dtos;
 
 namespace PhotoChannelWebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace PhotoChannelWebAPI.Controllers
             _mapper = mapper;
             _userService = userService;
         }
-        [HttpGet("")]
+        [HttpGet]
         public IActionResult Get()
         {
             IDataResult<List<User>> result = _userService.GetList();
@@ -42,18 +42,25 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpGet("{userId}")]
         public IActionResult Get(int userId)
         {
-            IDataResult<User> result1 = _userService.GetById(userId);
-            IDataResult<UserDetail> result2 = _userService.GetUserDetailById(userId);
-
-            if (result1.IsSuccessful && result2.IsSuccessful)
+            if (userId > 0)
             {
-                var mapResult = _mapper.Map<UserForDetailDto>(result1.Data);
-                mapResult.SubscriptionCount = result2.Data.SubscriptionCount;
-                return Ok(mapResult);
+                IDataResult<User> userResult = _userService.GetById(userId);
+                IDataResult<UserDetail> userDetailResult = _userService.GetUserDetailById(userId);
+
+                if (userResult.IsSuccessful && userDetailResult.IsSuccessful)
+                {
+                    var mapResult = _mapper.Map<UserForDetailDto>(userResult.Data);
+                    mapResult.SubscriptionCount = userDetailResult.Data.SubscriptionCount;
+                    return Ok(mapResult);
+                }
+                return NotFound(userResult.Message + " " + userDetailResult.Message);
             }
-            return BadRequest(result1.Message + " " + result1.Message);
+
+            return BadRequest();
+
         }
-        [HttpGet("{userId}/photos")]
+        [HttpGet]
+        [Route("{userId}/photos")]
         public IActionResult GetPhotos(int userId)
         {
             IDataResult<List<Photo>> result = _userService.GetPhotos(new User { Id = userId });
@@ -64,7 +71,8 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        [HttpGet("{userId}/subscriptions")]
+        [HttpGet]
+        [Route("{userId}/subscriptions")]
         public IActionResult GetSubscriptions(int userId)
         {
             IDataResult<List<Channel>> result = _userService.GetSubscriptions(new User { Id = userId });
@@ -75,7 +83,8 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        [HttpGet("{userId}/liked-photos")]
+        [HttpGet]
+        [Route("{userId}/liked-photos")]
         public IActionResult GetLikedPhotos(int userId)
         {
             IDataResult<List<Photo>> result = _userService.GetLikedPhotos(new User { Id = userId });
@@ -86,19 +95,20 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-        [HttpPut("{channelId}")]
-        public IActionResult Put(int channelId, UserForUpdateDto userForUpdateDto)
+        [HttpPut]
+        public IActionResult Put(UserForUpdateDto userForUpdateDto)
         {
-            if (channelId > 0)
+            var userExists = _userService.UserExistsWithUpdate(userForUpdateDto.Email, userForUpdateDto.Id);
+            if (userExists.IsSuccessful)
             {
-                IResult result = _userService.Update(userForUpdateDto);
-                if (result.IsSuccessful)
-                {
-                    return Ok(result.Message);
-                }
-                return BadRequest(result.Message);
+                return BadRequest(userExists.Message);
             }
-            return BadRequest();
+            IResult result = _userService.Update(userForUpdateDto);
+            if (result.IsSuccessful)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
         }
         [HttpDelete]
         public IActionResult Delete(int userId)

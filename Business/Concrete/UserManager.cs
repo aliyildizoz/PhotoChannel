@@ -45,11 +45,15 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<User>>(_userDal.GetList().ToList());
         }
-
         [CacheAspect]
         public IDataResult<User> GetByEmail(string email)
         {
-            return new SuccessDataResult<User>(_userDal.Get(user => user.Email == email));
+            User user = _userDal.Get(u => u.Email == email);
+            if (user == null)
+            {
+                return new ErrorDataResult<User>(user);
+            }
+            return new SuccessDataResult<User>(user);
         }
 
         [CacheAspect]
@@ -80,7 +84,6 @@ namespace Business.Concrete
         [CacheRemoveAspect("IUserService.Get")]
         public IResult Delete(User user)
         {
-            user.IsActive = false;
             _userDal.Delete(user);
             return new SuccessResult();
         }
@@ -90,6 +93,8 @@ namespace Business.Concrete
         public IResult Add(User user)
         {
             _userDal.Add(user);
+            _userDal.AddOperationClaim(user);
+            _userDetailService.Add(new UserDetail { UserId = user.Id, SubscriptionCount = 0 });
             return new SuccessResult(Messages.UserRegistered);
         }
 
@@ -97,25 +102,51 @@ namespace Business.Concrete
         [CacheRemoveAspect("IUserService.Get")]
         public IResult Update(UserForUpdateDto userForUpdateDto)
         {
-            UserForPasswordDto userForPasswordDto = new UserForPasswordDto
+            User user = _userDal.Get(u => u.Id == userForUpdateDto.Id);
+            if (user != null)
             {
-                Password = userForUpdateDto.Password
-            };
-            HashingHelper.CreatePasswordHash(userForPasswordDto);
-            User user = new User
-            {
-                Id = userForUpdateDto.Id,
-                Email = userForUpdateDto.Email,
-                FirstName = userForUpdateDto.FirstName,
-                LastName = userForUpdateDto.LastName,
-                PasswordHash = userForPasswordDto.PasswordHash,
-                PasswordSalt = userForPasswordDto.PasswordSalt
-            };
-            _userDal.Update(user);
-            return new SuccessResult();
+                user.FirstName = string.IsNullOrEmpty(userForUpdateDto.FirstName)
+                    ? user.FirstName
+                    : userForUpdateDto.FirstName;
+                user.LastName = string.IsNullOrEmpty(userForUpdateDto.LastName)
+                    ? user.LastName
+                    : userForUpdateDto.LastName;
+                user.Email = string.IsNullOrEmpty(userForUpdateDto.Email)
+                    ? user.Email
+                    : userForUpdateDto.Email;
+                if (!string.IsNullOrEmpty(userForUpdateDto.Password))
+                {
+                    UserForPasswordDto userForPasswordDto = new UserForPasswordDto
+                    {
+                        Password = userForUpdateDto.Password
+                    };
+                    HashingHelper.CreatePasswordHash(userForPasswordDto);
+                    user.PasswordHash = userForPasswordDto.PasswordHash;
+                    user.PasswordSalt = userForPasswordDto.PasswordSalt;
+                }
+                _userDal.Update(user);
+                return new SuccessResult();
+            }
+
+            return new ErrorResult(Messages.UserNotFound);
         }
-
-
-
+        public IResult UserExists(string email)
+        {
+            IDataResult<User> result = GetByEmail(email);
+            if (result.IsSuccessful)
+            {
+                return new SuccessResult(Messages.UserAlreadyExists);
+            }
+            return new ErrorResult();
+        }
+        public IResult UserExistsWithUpdate(string email, int userId)
+        {
+            IDataResult<User> result = GetByEmail(email);
+            if (result.IsSuccessful)
+            {
+                return result.Data.Id == userId ? (IResult)new SuccessResult(Messages.UserAlreadyExists) : new ErrorResult();
+            }
+            return new ErrorResult();
+        }
     }
 }

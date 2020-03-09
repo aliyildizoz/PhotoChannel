@@ -12,8 +12,6 @@ namespace PhotoChannelWebAPI.Dtos
         {
             CreatedDate = DateTime.Now;
         }
-
-        public int OwnerId { get; set; }
         public string Name { get; set; }
         public IFormFile File { get; set; }
         public DateTime CreatedDate { get; set; }

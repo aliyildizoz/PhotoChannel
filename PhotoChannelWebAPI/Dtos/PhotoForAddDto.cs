@@ -12,7 +12,6 @@ namespace PhotoChannelWebAPI.Dtos
         {
             ShareDate = DateTime.Now;
         }
-        public int UserId { get; set; }
         public int ChannelId { get; set; }
         public IFormFile File { get; set; }
         public DateTime ShareDate { get; set; }

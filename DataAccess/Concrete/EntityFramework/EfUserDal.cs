@@ -46,5 +46,18 @@ namespace DataAccess.Concrete.EntityFramework
                 return result.ToList();
             }
         }
+
+        public void AddOperationClaim(User user)
+        {
+            using (var context=new PhotoChannelContext())
+            {
+                context.UserOperationClaims.Add(new UserOperationClaim
+                {
+                    UserId = user.Id,
+                    OperationClaimId = 2
+                });
+                context.SaveChanges();
+            }
+        }
     }
 }

@@ -20,7 +20,14 @@ namespace Business.Concrete
         [CacheAspect]
         public IDataResult<UserDetail> GetByUserId(int userId)
         {
+            UserDetail userDetail1 = _userDetailDal.Get(userDetail => userDetail.UserId == userId);
             return new SuccessDataResult<UserDetail>(_userDetailDal.Get(userDetail => userDetail.UserId == userId));
+        }
+
+        public IResult Add(UserDetail userDetail)
+        {
+            _userDetailDal.Add(userDetail);
+            return new SuccessResult();
         }
     }
 }

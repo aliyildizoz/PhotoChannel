@@ -16,6 +16,7 @@ namespace Business.Constants
         public static string ChannelAdminAdded = "Yönetici silme başarılı.";
 
         public static string UserNotFound = "Kullanıcı bulunamadı";
+        public static string PasswordAndUsernameError = "E-mail veya şifre yanlış.";
         public static string PasswordError = "Şifre hatalı";
         public static string SuccessfulLogin = "Sisteme giriş başarılı";
         public static string UserAlreadyExists = "Bu kullanıcı zaten mevcut";
@@ -24,5 +25,6 @@ namespace Business.Constants
 
         public static string UserNotAdded = "Kullanıcı Eklenemedi";
         public static string ChannelNameAlreadyExists = "Kanal adı zaten mevcut.";
+        public static string NoUserLogin = "Kullanıcı girişi yapılmamış";
     }
 }

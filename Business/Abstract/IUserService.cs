@@ -22,6 +22,8 @@ namespace Business.Abstract
         IResult Delete(User user);
         IResult Add(User user);
         IResult Update(UserForUpdateDto userForUpdateDto);
+        IResult UserExists(string email);
+        IResult UserExistsWithUpdate(string email, int userId);
 
     }
 }

@@ -23,6 +23,8 @@ namespace Business.Abstract
         IResult AddSubscribe(Subscriber subscriber);
         IResult DeleteChannelAdmin(ChannelAdmin channelAdmin);
         IResult AddChannelAdmin(ChannelAdmin channelAdmin);
+        IResult DeleteChannelCategory(ChannelCategory channelCategory);
+        IResult AddChannelCategory(ChannelCategory channelCategory);
         IResult Add(Channel channel);
         IResult Update(Channel channel);
     }

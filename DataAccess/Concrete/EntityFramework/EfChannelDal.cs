@@ -48,6 +48,15 @@ namespace DataAccess.Concrete.EntityFramework
             }
         }
 
+        public void AddChannelCategory(ChannelCategory channelCategory)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                context.ChannelCategories.Add(channelCategory);
+                context.SaveChanges();
+            }
+        }
+
         public void AddChannelAdmin(ChannelAdmin channelAdmin)
         {
             using (var context = new PhotoChannelContext())
@@ -56,7 +65,16 @@ namespace DataAccess.Concrete.EntityFramework
                 context.SaveChanges();
             }
         }
-
+        public void DeleteChannelCategory(ChannelCategory channelCategory)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                var category = context.ChannelCategories.FirstOrDefault(c =>
+                    c.ChannelId == channelCategory.ChannelId && c.CategoryId == channelCategory.CategoryId);
+                context.ChannelCategories.Remove(category ?? throw new InvalidOperationException());
+                context.SaveChanges();
+            }
+        }
         public void DeleteSubscribe(Subscriber subscriber)
         {
             using (var context = new PhotoChannelContext())
@@ -71,6 +89,7 @@ namespace DataAccess.Concrete.EntityFramework
                 context.SaveChanges();
             }
         }
+
 
         public void DeleteChannelAdmin(ChannelAdmin channelAdmin)
         {

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -26,47 +27,72 @@ namespace PhotoChannelWebAPI.Controllers
         private IChannelService _channelService;
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
-        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload)
+        private IAuthHelper _authHelper;
+        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, IAuthHelper authHelper)
         {
             _channelService = channelService;
             _mapper = mapper;
             _photoUpload = photoUpload;
+            _authHelper = authHelper;
         }
 
-        [HttpPost("")]
-        public IActionResult Post(ChannelForAddDto channelForAddDto)
+        [HttpPost]
+        [Route("create")]
+        public IActionResult Add([FromForm]ChannelForAddDto channelForAddDto)
         {
-            if (channelForAddDto.File.Length > 0)
+            string ownerId = _authHelper.GetCurrentUserId();
+            if (!string.IsNullOrEmpty(ownerId))
             {
-                ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForAddDto.File);
-                var mapResult = _mapper.Map<Channel>(channelForAddDto);
-                mapResult.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
-                mapResult.PublicId = imageUploadResult.PublicId;
-                IResult result = _channelService.Add(mapResult);
+                if (channelForAddDto.File.Length > 0)
+                {
+                    ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForAddDto.File);
+                    var channel = _mapper.Map<Channel>(channelForAddDto);
+                    channel.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
+                    channel.PublicId = imageUploadResult.PublicId;
+                    channel.OwnerId = int.Parse(ownerId);
+                    IResult result = _channelService.Add(channel);
+                    if (result.IsSuccessful)
+                    {
+                        var mapResult = _mapper.Map<ChannelForDetailDto>(channel);
+                        return Ok(mapResult);
+                    }
+
+                    return BadRequest(result.Message);
+                }
+            }
+            return BadRequest();
+        }
+        [HttpPost]
+        [Route("subscribe")]
+        public IActionResult Subscribe(int channelId)
+        {
+            string id = _authHelper.GetCurrentUserId();
+            if (!string.IsNullOrEmpty(id) && channelId > 0)
+            {
+                IResult result = _channelService.AddSubscribe(new Subscriber { ChannelId = channelId, UserId = int.Parse(id) });
                 if (result.IsSuccessful)
                 {
                     return Ok(result.Message);
                 }
-
                 return BadRequest(result.Message);
             }
-
             return BadRequest();
         }
         [HttpPost]
-        public IActionResult Post(Subscriber subscriber)
+        [Route("addcategory")]
+        public IActionResult AddCategory(ChannelCategory channelCategory)
         {
-            IResult result = _channelService.AddSubscribe(subscriber);
+            IResult result = _channelService.AddChannelCategory(channelCategory);
             if (result.IsSuccessful)
             {
-                return Ok(result.Message);
+                return Ok();
             }
 
             return BadRequest(result.Message);
         }
-
         [HttpPost]
-        public IActionResult Post(ChannelAdmin channelAdmin)
+        [Route("addchanneladmin")]
+        public IActionResult AddChannelAdmin(ChannelAdmin channelAdmin)
         {
             IResult result = _channelService.AddChannelAdmin(channelAdmin);
             if (result.IsSuccessful)
@@ -77,18 +103,25 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpDelete("{channelId}")]
+        [HttpDelete]
+        [Route("{channelId}")]
         public IActionResult Delete(int channelId)
         {
-            IResult result = _channelService.Delete(new Channel { Id = channelId });
-            if (result.IsSuccessful)
+            if (channelId > 0)
             {
-                return Ok(result.Message);
+                IResult result = _channelService.Delete(new Channel { Id = channelId });
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+                return BadRequest(result.Message);
             }
 
-            return BadRequest(result.Message);
+
+            return BadRequest();
         }
         [HttpDelete]
+        [Route("deletechanneladmin")]
         public IActionResult DeleteChannelAdmin(ChannelAdmin channelAdmin)
         {
             IResult result = _channelService.DeleteChannelAdmin(channelAdmin);
@@ -100,9 +133,27 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.Message);
         }
         [HttpDelete]
-        public IActionResult DeleteSubscribe(Subscriber subscriber)
+        [Route("{channelId}/unsubscribe")]
+        public IActionResult Unsubscribe(int channelId)
         {
-            IResult result = _channelService.DeleteSubscribe(subscriber);
+            string id = _authHelper.GetCurrentUserId();
+            if (!string.IsNullOrEmpty(id) && channelId > 0)
+            {
+                IResult result = _channelService.DeleteSubscribe(new Subscriber { ChannelId = channelId, UserId = int.Parse(id) });
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+                return BadRequest(result.Message);
+            }
+            return BadRequest();
+        }
+
+        [HttpDelete]
+        [Route("deletechannelcategory")]
+        public IActionResult DeleteChannelCategory(ChannelCategory channelCategory)
+        {
+            IResult result = _channelService.DeleteChannelCategory(channelCategory);
             if (result.IsSuccessful)
             {
                 return Ok(result.Message);
@@ -110,7 +161,8 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
-        [HttpPut("")]
+
+        [HttpPut]
         public IActionResult Put(ChannelForUpdateDto channelForUpdate)
         {
             if (channelForUpdate.Id > 0)
@@ -136,7 +188,7 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest();
         }
 
-        [HttpGet("")]
+        [HttpGet]
         public IActionResult Get()
         {
             IDataResult<List<Channel>> result = _channelService.GetList();
@@ -148,8 +200,9 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
-        [HttpGet("{channelName}")]
-        public IActionResult Get(string channelName)
+        [HttpGet]//böylemi yazılıyor bak
+        [Route("{channelName}")]
+        public IActionResult GetChannelByName(string channelName)
         {
             if (string.IsNullOrEmpty(channelName))
             {
@@ -159,25 +212,29 @@ namespace PhotoChannelWebAPI.Controllers
                     var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
                     return Ok(mapResult);
                 }
-                return BadRequest(result.Message);
+                return NotFound(result.Message);
             }
             return BadRequest();
         }
-        [HttpGet("{channelId}")]
-        public IActionResult Get(int channelId)
+        [HttpGet]
+        [Route("{channelId}")]
+        public IActionResult GetChannelById(int channelId)
         {
             if (channelId > 0)
             {
                 IDataResult<Channel> result = _channelService.GetById(channelId);
                 if (result.IsSuccessful)
                 {
-                    return Ok(result.Data);
+                    var mapResult = _mapper.Map<ChannelForDetailDto>(result.Data);
+                    return Ok(mapResult);
                 }
-                return BadRequest(result.Message);
+
+                return NotFound(result.Message);
             }
             return BadRequest();
         }
-        [HttpGet("{channelId}/admin-list")]
+        [HttpGet]
+        [Route("{channelId}/admin-list")]
         public IActionResult GetAdminList(int channelId)
         {
             if (channelId > 0)
@@ -185,14 +242,15 @@ namespace PhotoChannelWebAPI.Controllers
                 IDataResult<List<User>> result = _channelService.GetAdminList(new Channel { Id = channelId });
                 if (result.IsSuccessful)
                 {
-                    var mapResult = _mapper.Map<ChannelForAdminListDto>(result.Data);
+                    var mapResult = _mapper.Map<List<ChannelForAdminListDto>>(result.Data);
                     return Ok(mapResult);
                 }
-                return BadRequest(result.Message);
+                return NotFound(result.Message);
             }
             return BadRequest();
         }
-        [HttpGet("{channelId}/subscribers")]
+        [HttpGet]
+        [Route("{channelId}/subscribers")]
         public IActionResult GetSubscribers(int channelId)
         {
             if (channelId > 0)
@@ -200,14 +258,15 @@ namespace PhotoChannelWebAPI.Controllers
                 IDataResult<List<User>> result = _channelService.GetSubscribers(new Channel { Id = channelId });
                 if (result.IsSuccessful)
                 {
-                    var mapResult = _mapper.Map<SubscriberForListDto>(result.Data);
+                    var mapResult = _mapper.Map<List<SubscriberForListDto>>(result.Data);
                     return Ok(mapResult);
                 }
-                return BadRequest(result.Message);
+                return NotFound(result.Message);
             }
             return BadRequest();
         }
-        [HttpGet("{channelId}/owner")]
+        [HttpGet]
+        [Route("{channelId}/owner")]
         public IActionResult GetOwner(int channelId)
         {
             if (channelId > 0)
@@ -215,14 +274,15 @@ namespace PhotoChannelWebAPI.Controllers
                 IDataResult<User> result = _channelService.GetOwner(channelId);
                 if (result.IsSuccessful)
                 {
-                    var mapResult = _mapper.Map<ChannelForOwnerDto>(result.Data);
+                    var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
                     return Ok(mapResult);
                 }
-                return BadRequest(result.Message);
+                return NotFound(result.Message);
             }
             return BadRequest();
         }
-        [HttpGet("{channelId}/photos")]
+        [HttpGet]
+        [Route("{channelId}/photos")]
         public IActionResult GetPhotos(int channelId)
         {
             if (channelId > 0)
@@ -230,10 +290,10 @@ namespace PhotoChannelWebAPI.Controllers
                 IDataResult<List<Photo>> result = _channelService.GetPhotos(new Channel { Id = channelId });
                 if (result.IsSuccessful)
                 {
-                    var mapResult = _mapper.Map<PhotoForListDto>(result.Data);
+                    var mapResult = _mapper.Map<List<PhotoForListDto>>(result.Data);
                     return Ok(mapResult);
                 }
-                return BadRequest(result.Message);
+                return NotFound(result.Message);
             }
             return BadRequest();
         }

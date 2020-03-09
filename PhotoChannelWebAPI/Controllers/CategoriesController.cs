@@ -23,7 +23,8 @@ namespace PhotoChannelWebAPI.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost("add")]
+        [HttpPost]
+        [Route("add")]//Dto
         [Authorize(Roles = "Admin")]
         public IActionResult Add(Category category)
         {
@@ -36,7 +37,8 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.IsSuccessful);
         }
 
-        [HttpGet("")]
+        [HttpGet]
+        [Authorize]
         public IActionResult GetAll()
         {
             IDataResult<List<Category>> result = _categoryService.GetList();

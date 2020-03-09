@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using Business.Abstract;
 using Business.Constants;
+using Core.CrossCuttingConcerns.Caching;
 using Core.Entities.Concrete;
 using Core.Utilities.Hashing;
+using Core.Utilities.IoC;
 using Core.Utilities.Results;
 using Core.Utilities.Security.Jwt;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Business.Concrete
 {
@@ -15,7 +20,6 @@ namespace Business.Concrete
     {
         private IUserService _userService;
         private ITokenHelper _tokenHelper;
-
         public AuthManager(IUserService userService, ITokenHelper tokenHelper)
         {
             _userService = userService;
@@ -40,7 +44,7 @@ namespace Business.Concrete
                 }
                 return new SuccessDataResult<User>(Messages.SuccessfulLogin, result.Data);
             }
-            return new ErrorDataResult<User>(Messages.UserNotFound, result.Data);
+            return new ErrorDataResult<User>(Messages.PasswordAndUsernameError, result.Data);
         }
 
         public IDataResult<User> Register(UserForRegisterDto userForRegisterDto)
@@ -74,13 +78,7 @@ namespace Business.Concrete
 
         public IResult UserExists(string email)
         {
-            IDataResult<User> result = _userService.GetByEmail(email);
-            if (result.Data == null)
-            {
-                return new ErrorResult();
-            }
-
-            return new SuccessResult();
+            return _userService.UserExists(email);
         }
         public IDataResult<AccessToken> CreateAccessToken(User user)
         {

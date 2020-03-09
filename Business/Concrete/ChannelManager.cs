@@ -7,7 +7,6 @@ using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
-using Core.CrossCuttingConcerns.Validation.FluentValidation;
 using Core.Entities.Concrete;
 using Core.Utilities.Business;
 using Core.Utilities.Results;
@@ -22,10 +21,11 @@ namespace Business.Concrete
         private IPhotoService _photoService;
         private IUserService _userService;
 
-        public ChannelManager(IChannelDal channelDal, IPhotoService photoService)
+        public ChannelManager(IChannelDal channelDal, IPhotoService photoService, IUserService userService)
         {
             _channelDal = channelDal;
             _photoService = photoService;
+            _userService = userService;
         }
         [CacheAspect]
         public IDataResult<List<Channel>> GetList()
@@ -80,7 +80,19 @@ namespace Business.Concrete
             _channelDal.AddSubscribe(subscriber);
             return new SuccessResult(Messages.SubscribeAdded);
         }
+        [CacheRemoveAspect("IChannelService.Get")]
+        public IResult DeleteChannelCategory(ChannelCategory channelCategory)
+        {
+            _channelDal.DeleteChannelCategory(channelCategory);
+            return new SuccessResult();
+        }
 
+        [CacheRemoveAspect("IChannelService.Get")]
+        public IResult AddChannelCategory(ChannelCategory channelCategory)
+        {
+            _channelDal.AddChannelCategory(channelCategory);
+            return new SuccessResult();
+        }
         [CacheRemoveAspect("IChannelService.Get")]
         public IResult DeleteChannelAdmin(ChannelAdmin channelAdmin)
         {

@@ -19,6 +19,7 @@ namespace Core.Extensions
 
         public async Task InvokeAsync(HttpContext httpContext)
         {
+            
             try
             {
                 await _next(httpContext);
@@ -39,11 +40,8 @@ namespace Core.Extensions
             {
                 message = e.Message;
             }
-            return httpContext.Response.WriteAsync(new ErrorDetail
-            {
-                StatusCode = httpContext.Response.StatusCode,
-                Message = message
-            }.ToString());
+
+            return httpContext.Response.WriteAsync(message);
         }
     }
 }

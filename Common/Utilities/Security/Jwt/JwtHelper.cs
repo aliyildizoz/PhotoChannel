@@ -24,7 +24,7 @@ namespace Core.Utilities.Security.Jwt
             _tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
         }
 
-        public AccessToken CreateToken(User user, List<Entities.Concrete.OperationClaim> operationClaims)
+        public AccessToken CreateToken(User user, List<OperationClaim> operationClaims)
         {
             _accessTokenExpration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
             var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
@@ -39,7 +39,7 @@ namespace Core.Utilities.Security.Jwt
                 Expiration = _accessTokenExpration
             };
         }
-        public JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, SigningCredentials credentials, List<Entities.Concrete.OperationClaim> operationClaims)
+        public JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, SigningCredentials credentials, List<OperationClaim> operationClaims)
         {
             var jwt = new JwtSecurityToken(
                 issuer: tokenOptions.Issuer,
@@ -52,9 +52,9 @@ namespace Core.Utilities.Security.Jwt
             return jwt;
         }
 
-        private IEnumerable<System.Security.Claims.Claim> SetClaims(User user, List<Entities.Concrete.OperationClaim> operationClaims)
+        private IEnumerable<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
         {
-            var claims = new List<System.Security.Claims.Claim>();
+            var claims = new List<Claim>();
             claims.AddEmail(user.Email);
             claims.AddName($"{user.FirstName} {user.LastName}");
             claims.AddNameIdentifier(user.Id.ToString());

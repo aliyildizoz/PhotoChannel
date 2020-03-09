@@ -8,6 +8,6 @@ namespace Core.Utilities.PhotoUpload.Cloudinary
     {
         public string ApiKey { get; set; }
         public string ApiSecret { get; set; }
-        public string Cloud { get; set; }
+        public string CloudName { get; set; }
     }
 }

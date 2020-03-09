@@ -9,6 +9,7 @@ using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -18,14 +19,17 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private ICommentService _commentService;
         private IMapper _mapper;
+        private IAuthHelper _authHelper;
 
-        public CommentsController(ICommentService commentService, IMapper mapper)
+        public CommentsController(ICommentService commentService, IMapper mapper, IAuthHelper authHelper)
         {
             _commentService = commentService;
             _mapper = mapper;
+            _authHelper = authHelper;
         }
 
-        [HttpGet("{photoId}")]
+        [HttpGet]
+        [Route("{photoId}/photocomments")]
         public IActionResult GetCommentsByPhoto(int photoId)
         {
             IDataResult<List<Comment>> result = _commentService.GetListByPhotoId(photoId);
@@ -39,7 +43,8 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet]
+        [Route("{userId}/usercomments")]
         public IActionResult GetCommentsByUser(int userId)
         {
             IDataResult<List<Comment>> result = _commentService.GetListByUserId(userId);
@@ -55,28 +60,40 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpPost]
         public IActionResult Post(CommentForAddDto commentForAddDto)
         {
-            var mapResult = _mapper.Map<Comment>(commentForAddDto);
-            IResult result = _commentService.Add(mapResult);
-
-            if (result.IsSuccessful)
+            string userId = _authHelper.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
             {
-                return Ok(result.Message);
+                var mapResult = _mapper.Map<Comment>(commentForAddDto);
+                IResult result = _commentService.Add(mapResult);
+                mapResult.UserId = int.Parse(userId);
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+
+                return BadRequest(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest();
         }
         [HttpPut]
         public IActionResult Put(CommentForUpdateDto commentForUpdateDto)
         {
-            var mapResult = _mapper.Map<Comment>(commentForUpdateDto);
-            IResult result = _commentService.Update(mapResult);
-
-            if (result.IsSuccessful)
+            string userId = _authHelper.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
             {
-                return Ok(result.Message);
+                var mapResult = _mapper.Map<Comment>(commentForUpdateDto);
+                IResult result = _commentService.Update(mapResult);
+                mapResult.UserId = int.Parse(userId);
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+
+                return BadRequest(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest();
         }
         [HttpDelete]
         public IActionResult Delete(int commentId)

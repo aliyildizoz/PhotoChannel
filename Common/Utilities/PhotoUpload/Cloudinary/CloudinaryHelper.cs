@@ -24,7 +24,7 @@ namespace Core.Utilities.PhotoUpload.Cloudinary
         public ImageUploadResult ImageUpload(IFormFile formFile)
         {
             ImageUploadResult result;
-            Account account = new Account(_cloudinaryOptions.Cloud, _cloudinaryOptions.ApiKey, _cloudinaryOptions.ApiSecret);
+            Account account = new Account(_cloudinaryOptions.CloudName, _cloudinaryOptions.ApiKey, _cloudinaryOptions.ApiSecret);
             CloudinaryDotNet.Cloudinary cloudinary = new CloudinaryDotNet.Cloudinary(account);
             using (var stream = formFile.OpenReadStream())
             {
