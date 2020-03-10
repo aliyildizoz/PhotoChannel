@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Business.Abstract;
 using Core.Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -15,10 +16,12 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Session
         private ISession _session;
         private string currentUserKey = "CurrentUser";
         private string userIdkey = "UserId";
+        private IUserService _userService;
 
-        public AuthSessionHelper(IHttpContextAccessor accessor)
+        public AuthSessionHelper(IHttpContextAccessor accessor, IUserService userService)
         {
             _accessor = accessor;
+            _userService = userService;
             _session = accessor.HttpContext.Session;
         }
 
@@ -31,7 +34,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Session
                 _session.SetInt32(userIdkey, user.Id);
             }
         }
-        
+
         public void Logout()
         {
             HttpContext context = _accessor.HttpContext;
@@ -43,7 +46,13 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Session
         }
         public User GetCurrentUser()
         {
-            return _session.Get<User>(currentUserKey);
+            string id = GetCurrentUserId();
+            if (string.IsNullOrEmpty(id))
+            {
+                return null;
+            }
+
+            return _userService.GetById(int.Parse(id)).Data;
         }
         public string GetCurrentUserId()
         {

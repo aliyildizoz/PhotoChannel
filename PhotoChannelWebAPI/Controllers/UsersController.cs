@@ -11,6 +11,7 @@ using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -20,11 +21,12 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private IUserService _userService;
         private IMapper _mapper;
-
-        public UsersController(IMapper mapper, IUserService userService)
+        private IAuthHelper _authHelper;
+        public UsersController(IMapper mapper, IUserService userService, IAuthHelper authHelper)
         {
             _mapper = mapper;
             _userService = userService;
+            _authHelper = authHelper;
         }
         [HttpGet]
         public IActionResult Get()
@@ -106,6 +108,9 @@ namespace PhotoChannelWebAPI.Controllers
             IResult result = _userService.Update(userForUpdateDto);
             if (result.IsSuccessful)
             {
+                _authHelper.Logout();
+                User user = _userService.GetById(userForUpdateDto.Id).Data;
+                _authHelper.Login(user);
                 return Ok(result.Message);
             }
             return BadRequest(result.Message);

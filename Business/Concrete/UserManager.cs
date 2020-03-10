@@ -144,7 +144,7 @@ namespace Business.Concrete
             IDataResult<User> result = GetByEmail(email);
             if (result.IsSuccessful)
             {
-                return result.Data.Id == userId ? (IResult)new SuccessResult(Messages.UserAlreadyExists) : new ErrorResult();
+                return result.Data.Id == userId ? (IResult) new ErrorResult() : new SuccessResult(Messages.UserAlreadyExists);
             }
             return new ErrorResult();
         }
