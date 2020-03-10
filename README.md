@@ -15,7 +15,9 @@ is a simple web api project where you can share photos on these channels as well
 
 ###### Used technologies
     1. Asp.Net Core Web API 3.1
-    2. .Net standard 2.0
-    3. Entity Framework Core
-    4. Cloudinary (we keep photos on this platform)
     
+    2. .Net standard 2.0
+    
+    3. Entity Framework Core
+    
+    4. Cloudinary (we keep photos on this platform)
