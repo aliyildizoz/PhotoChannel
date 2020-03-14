@@ -65,11 +65,10 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{userId}/photos")]
         public IActionResult GetPhotos(int userId)
         {
-            IDataResult<List<Photo>> result = _userService.GetPhotos(new User { Id = userId });
+            IDataResult<List<PhotoCardDto>> result = _userService.GetPhotos(new User { Id = userId });
             if (result.IsSuccessful)
             {
-                var mapResult = _mapper.Map<List<PhotoForListDto>>(result.Data);
-                return Ok(mapResult);
+                return Ok(result.Data);
             }
             return BadRequest(result.Message);
         }
@@ -81,7 +80,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
-                return Ok(mapResult);
+                return Ok(result.Data);
             }
             return BadRequest(result.Message);
         }
@@ -89,27 +88,38 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{userId}/liked-photos")]
         public IActionResult GetLikedPhotos(int userId)
         {
-            IDataResult<List<Photo>> result = _userService.GetLikedPhotos(new User { Id = userId });
+            IDataResult<List<PhotoCardDto>> result = _userService.GetLikedPhotos(new User { Id = userId });
             if (result.IsSuccessful)
             {
-                var mapResult = _mapper.Map<List<PhotoForListDto>>(result.Data);
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
+        }
+        [HttpGet]
+        [Route("{userId}/channels")]
+        public IActionResult GetChannels(int userId)
+        {
+            IDataResult<List<Channel>> result = _userService.GetChannels(new User { Id = userId });
+            if (result.IsSuccessful)
+            {
+                var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
                 return Ok(mapResult);
             }
             return BadRequest(result.Message);
         }
         [HttpPut]
-        public IActionResult Put(UserForUpdateDto userForUpdateDto)
+        [Route("{userId}")]
+        public IActionResult Put(int userId, UserForUpdateDto userForUpdateDto)
         {
-            var userExists = _userService.UserExistsWithUpdate(userForUpdateDto.Email, userForUpdateDto.Id);
+            var userExists = _userService.UserExistsWithUpdate(userForUpdateDto.Email, userId);
             if (userExists.IsSuccessful)
             {
                 return BadRequest(userExists.Message);
             }
-            IResult result = _userService.Update(userForUpdateDto);
+            IResult result = _userService.Update(userForUpdateDto, userId);
             if (result.IsSuccessful)
             {
-                _authHelper.Logout();
-                User user = _userService.GetById(userForUpdateDto.Id).Data;
+                User user = _userService.GetById(userId).Data;
                 _authHelper.Login(user);
                 return Ok(result.Message);
             }

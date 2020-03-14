@@ -38,7 +38,6 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public IActionResult GetAll()
         {
             IDataResult<List<Category>> result = _categoryService.GetList();

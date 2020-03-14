@@ -21,12 +21,10 @@ namespace Business.Concrete
     {
         private IUserDal _userDal;
         private IUserDetailService _userDetailService;
-        private IPhotoService _photoService;
-        public UserManager(IUserDal userDal, IUserDetailService userDetailService, IPhotoService photoService)
+        public UserManager(IUserDal userDal, IUserDetailService userDetailService)
         {
             _userDal = userDal;
             _userDetailService = userDetailService;
-            _photoService = photoService;
         }
 
         [CacheAspect]
@@ -56,10 +54,9 @@ namespace Business.Concrete
             return new SuccessDataResult<User>(user);
         }
 
-        [CacheAspect]
-        public IDataResult<List<Photo>> GetPhotos(User user)
+        public IDataResult<List<PhotoCardDto>> GetPhotos(User user)
         {
-            return _photoService.GetPhotosByUser(user);
+            return new SuccessDataResult<List<PhotoCardDto>>(_userDal.GetSharedPhotos(user));
         }
 
         [CacheAspect]
@@ -73,11 +70,15 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<Channel>>(_userDal.GetSubscriptionList(user));
         }
-
         [CacheAspect]
-        public IDataResult<List<Photo>> GetLikedPhotos(User user)
+        public IDataResult<List<Channel>> GetChannels(User user)
         {
-            return new SuccessDataResult<List<Photo>>(_userDal.GetLikedPhotos(user));
+            return new SuccessDataResult<List<Channel>>(_userDal.GetChannels(user));
+        }
+
+        public IDataResult<List<PhotoCardDto>> GetLikedPhotos(User user)
+        {
+            return new SuccessDataResult<List<PhotoCardDto>>(_userDal.GetLikedPhotos(user));
         }
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
@@ -90,19 +91,19 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
         [CacheRemoveAspect("IUserService.Get")]
-        public IResult Add(User user)
+        public IDataResult<User> Add(User user)
         {
             _userDal.Add(user);
             _userDal.AddOperationClaim(user);
             _userDetailService.Add(new UserDetail { UserId = user.Id, SubscriptionCount = 0 });
-            return new SuccessResult(Messages.UserRegistered);
+            return new SuccessDataResult<User>(Messages.UserRegistered, user);
         }
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
         [CacheRemoveAspect("IUserService.Get")]
-        public IResult Update(UserForUpdateDto userForUpdateDto)
+        public IDataResult<User> Update(UserForUpdateDto userForUpdateDto, int userId)
         {
-            User user = _userDal.Get(u => u.Id == userForUpdateDto.Id);
+            User user = _userDal.Get(u => u.Id == userId);
             if (user != null)
             {
                 user.FirstName = string.IsNullOrEmpty(userForUpdateDto.FirstName)
@@ -125,10 +126,10 @@ namespace Business.Concrete
                     user.PasswordSalt = userForPasswordDto.PasswordSalt;
                 }
                 _userDal.Update(user);
-                return new SuccessResult();
+                return new SuccessDataResult<User>(user);
             }
 
-            return new ErrorResult(Messages.UserNotFound);
+            return new ErrorDataResult<User>(Messages.UserNotFound);
         }
         public IResult UserExists(string email)
         {
@@ -144,7 +145,7 @@ namespace Business.Concrete
             IDataResult<User> result = GetByEmail(email);
             if (result.IsSuccessful)
             {
-                return result.Data.Id == userId ? (IResult) new ErrorResult() : new SuccessResult(Messages.UserAlreadyExists);
+                return result.Data.Id == userId ? (IResult)new ErrorResult() : new SuccessResult(Messages.UserAlreadyExists);
             }
             return new ErrorResult();
         }

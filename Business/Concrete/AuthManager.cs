@@ -66,12 +66,12 @@ namespace Business.Concrete
                     PasswordHash = userForPasswordDto.PasswordHash,
                     PasswordSalt = userForPasswordDto.PasswordSalt
                 };
-                IResult result = _userService.Add(user);
+                IDataResult<User> result = _userService.Add(user);
                 if (!result.IsSuccessful)
                 {
                     return new ErrorDataResult<User>(result.Message, user);
                 }
-                return new SuccessDataResult<User>(result.Message, user);
+                return new SuccessDataResult<User>(result.Message, result.Data);
             }
             return new ErrorDataResult<User>(Messages.UserAlreadyExists, null);
         }
