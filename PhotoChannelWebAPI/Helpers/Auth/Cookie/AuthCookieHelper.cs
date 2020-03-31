@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Business.Abstract;
 using Core.Entities.Concrete;
 using Core.Extensions;
+using Entities.Concrete;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +35,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Cookie
             HttpContext context = _accessor.HttpContext;
             if (context != null)
             {
-                var dataResult = _userService.GetClaims(user);
+                var dataResult = _userService.GetClaims(user.Id);
                 if (dataResult.IsSuccessful)
                 {
                     var claims = new List<Claim>();

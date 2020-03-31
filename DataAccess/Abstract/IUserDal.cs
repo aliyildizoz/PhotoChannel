@@ -11,10 +11,6 @@ namespace DataAccess.Abstract
     public interface IUserDal : IEntityRepository<User>
     {
         List<OperationClaim> GetClaims(User user);
-        List<Channel> GetSubscriptionList(User user);
-        List<Channel> GetChannels(User user);
-        List<PhotoCardDto> GetLikedPhotos(User user);
-        List<PhotoCardDto> GetSharedPhotos(User user);
         void AddOperationClaim(User user);
     }
 }

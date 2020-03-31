@@ -8,6 +8,7 @@ using Business.Abstract;
 using Core.Entities.Concrete;
 using Core.Extensions;
 using Core.Utilities.Results;
+using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Core.Entities.Concrete;
-using User = Core.Entities.Concrete.User;
+using Entities.Concrete;
 
 namespace Core.Utilities.Security.Jwt
 {

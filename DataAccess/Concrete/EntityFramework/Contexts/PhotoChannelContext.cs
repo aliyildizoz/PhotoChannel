@@ -14,7 +14,7 @@ namespace DataAccess.Dal.EntityFramework.Contexts
             optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB; Database=PhotoChannel; Trusted_Connection=true");
         }
 
-        public DbSet<UserDetail> UserDetails { get; set; }
+    
         public DbSet<User> Users { get; set; }
         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<UserOperationClaim> UserOperationClaims { get; set; }

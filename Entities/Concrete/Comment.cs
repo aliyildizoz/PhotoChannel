@@ -13,5 +13,8 @@ namespace Entities.Concrete
         public DateTime ShareDate { get; set; }
         public string Description { get; set; }
 
+
+        public virtual User User { get; set; }
+        public virtual Photo Photo { get; set; }
     }
 }

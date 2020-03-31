@@ -12,8 +12,6 @@ namespace Business.ValidationRules.FluentValidation
         {
             RuleFor(photo => photo.ChannelId).NotNull();
             RuleFor(photo => photo.UserId).NotNull();
-            RuleFor(photo => photo.CommentCount).NotNull();
-            RuleFor(photo => photo.LikesCount).NotNull();
             RuleFor(photo => photo.PhotoUrl).NotNull().MaximumLength(150);
         }
     }

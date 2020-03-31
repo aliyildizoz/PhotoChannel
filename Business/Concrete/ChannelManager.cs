@@ -5,6 +5,7 @@ using System.Text;
 using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Castle.Core.Internal;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
@@ -12,20 +13,16 @@ using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 
 namespace Business.Concrete
 {
     public class ChannelManager : IChannelService
     {
         private IChannelDal _channelDal;
-        private IPhotoService _photoService;
-        private IUserService _userService;
-
-        public ChannelManager(IChannelDal channelDal, IPhotoService photoService, IUserService userService)
+        public ChannelManager(IChannelDal channelDal)
         {
             _channelDal = channelDal;
-            _photoService = photoService;
-            _userService = userService;
         }
         [CacheAspect]
         public IDataResult<List<Channel>> GetList()
@@ -35,99 +32,90 @@ namespace Business.Concrete
         [CacheAspect]
         public IDataResult<Channel> GetById(int id)
         {
-            return new SuccessDataResult<Channel>(_channelDal.Get(channel => channel.Id == id));
+            var channel = _channelDal.Get(c => c.Id == id);
+            if (channel != null)
+            {
+                return new SuccessDataResult<Channel>(channel);
+            }
+            return new ErrorDataResult<Channel>(Messages.ChannelNotFound);
         }
-
+        [CacheAspect]
         public IDataResult<User> GetOwner(int id)
         {
-            return _userService.GetById(_channelDal.Get(channel => channel.Id == id).OwnerId);
+            var result = ChannelExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<User>(result.Message);
+            }
+            return new SuccessDataResult<User>(_channelDal.Get(channel => channel.User, channel => channel.Id == id).User);
         }
-
         [CacheAspect]
         public IDataResult<List<Channel>> GetByName(string name)
         {
             return new SuccessDataResult<List<Channel>>(_channelDal.GetList(channel => channel.Name.Contains(name)).ToList());
         }
-
         [CacheAspect]
-        public IDataResult<List<Photo>> GetPhotos(Channel channel)
+        public IDataResult<List<Photo>> GetPhotos(int id)
         {
-            return _photoService.GetPhotosByChannel(channel);
+            var result = ChannelExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<Photo>>(result.Message);
+            }
+            return new SuccessDataResult<List<Photo>>(_channelDal.GetPhotos(new Channel { Id = id }));
         }
 
-        [CacheAspect]
-        public IDataResult<List<User>> GetAdminList(Channel channel)
+        public IDataResult<List<ChannelAdmin>> GetAdmins(int id)
         {
-            return new SuccessDataResult<List<User>>(_channelDal.GetAdminList(channel));
+            var result = ChannelExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<ChannelAdmin>>(result.Message);
+            }
+            return new SuccessDataResult<List<ChannelAdmin>>(_channelDal.GetAdminList(new Channel { Id = id }));
         }
 
-        [CacheAspect]
-        public IDataResult<List<User>> GetSubscribers(Channel channel)
+        public IDataResult<List<Subscriber>> GetSubscribers(int id)
         {
-            return new SuccessDataResult<List<User>>(_channelDal.GetSubscriberList(channel));
+            var result = ChannelExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<Subscriber>>(result.Message);
+            }
+            return new SuccessDataResult<List<Subscriber>>(_channelDal.GetSubscribers(new Channel { Id = id }));
         }
 
-        [CacheRemoveAspect("IChannelService.Get")]
-        public IResult DeleteSubscribe(Subscriber subscriber)
+        public IDataResult<List<Category>> GetCategories(int id)
         {
-            _channelDal.DeleteSubscribe(subscriber);
-            return new SuccessResult(Messages.SubscribeDeleted);
-        }
-
-        [CacheRemoveAspect("IChannelService.Get")]
-        public IResult AddSubscribe(Subscriber subscriber)
-        {
-            _channelDal.AddSubscribe(subscriber);
-            return new SuccessResult(Messages.SubscribeAdded);
-        }
-        [CacheRemoveAspect("IChannelService.Get")]
-        public IResult DeleteChannelCategory(ChannelCategory channelCategory)
-        {
-            _channelDal.DeleteChannelCategory(channelCategory);
-            return new SuccessResult();
-        }
-
-        [CacheRemoveAspect("IChannelService.Get")]
-        public IResult AddChannelCategory(ChannelCategory channelCategory)
-        {
-            _channelDal.AddChannelCategory(channelCategory);
-            return new SuccessResult();
-        }
-        [CacheRemoveAspect("IChannelService.Get")]
-        public IResult DeleteChannelAdmin(ChannelAdmin channelAdmin)
-        {
-            _channelDal.DeleteChannelAdmin(channelAdmin);
-            return new SuccessResult(Messages.ChannelAdminDeleted);
+            var result = ChannelExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<Category>>(result.Message);
+            }
+            return new SuccessDataResult<List<Category>>(_channelDal.GetCategories(new Channel { Id = id }));
         }
 
         [CacheRemoveAspect("IChannelService.Get")]
-        public IResult AddChannelAdmin(ChannelAdmin channelAdmin)
+        public IResult Delete(int id)
         {
-            _channelDal.AddChannelAdmin(channelAdmin);
-            return new SuccessResult(Messages.ChannelAdminAdded);
-        }
-
-        [CacheRemoveAspect("IChannelService.Get")]
-        public IResult Delete(Channel channel)
-        {
-            _channelDal.RelatedDelete(channel);
+            _channelDal.Delete(new Channel { Id = id });
             return new SuccessResult(Messages.ChannelDeleted);
         }
 
         [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
         [CacheRemoveAspect("IChannelService.Get")]
-        public IResult Add(Channel channel)
+        public IDataResult<Channel> Add(Channel channel)
         {
             IResult result = BusinessRules.Run(CheckIfChannelNameExists(channel.Name));
             if (!result.IsSuccessful)
             {
-                return result;
+                return new SuccessDataResult<Channel>(result.Message, channel);
             }
             _channelDal.Add(channel);
-            return new SuccessResult(Messages.ChannelAdded);
+            return new SuccessDataResult<Channel>(Messages.ChannelAdded, channel);
         }
 
-        private IResult CheckIfChannelNameExists(string channelName)
+        public IResult CheckIfChannelNameExists(string channelName)
         {
             var result = _channelDal.GetList(channel => channel.Name == channelName).Any();
             if (result)
@@ -139,10 +127,30 @@ namespace Business.Concrete
 
         [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
         [CacheRemoveAspect("IChannelService.Get")]
-        public IResult Update(Channel channel)
+        public IDataResult<Channel> Update(Channel channel, int channelId)
         {
+            //Todo: direkt update işlemini dene
             _channelDal.Update(channel);
-            return new SuccessResult(Messages.ChannelUpdated);
+            return new SuccessDataResult<Channel>(Messages.ChannelUpdated, channel);
+        }
+
+        public IResult ChannelExists(int id)
+        {
+            var channel = _channelDal.Get(c => c.Id == id);
+            if (channel != null)
+            {
+                return new SuccessResult();
+            }
+            return new ErrorResult(Messages.ChannelNotFound);
+        }
+        public IResult CheckIfChannelNameExistsWithUpdate(string name, int channelId)
+        {
+            Channel result = _channelDal.Get(channel => channel.Name == name);
+            if (result != null)
+            {
+                return result.Id == channelId ? (IResult)new ErrorResult() : new SuccessResult(Messages.ChannelNameAlreadyExists);
+            }
+            return new ErrorResult();
         }
     }
 }

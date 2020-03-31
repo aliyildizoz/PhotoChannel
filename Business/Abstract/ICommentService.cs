@@ -8,8 +8,9 @@ namespace Business.Abstract
 {
     public interface ICommentService
     {
-        IDataResult<List<Comment>> GetListByUserId(int userId);
-        IDataResult<List<Comment>> GetListByPhotoId(int photoId);
+        IDataResult<List<Photo>> GetPhotosByUserComment(int userId);
+        IDataResult<List<User>> GetUsersByPhotoComment(int photoId);
+        IDataResult<List<Comment>> GetPhotoComments(int photoId);
         IResult Delete(Comment comment);
         IResult Add(Comment comment);
         IResult Update(Comment comment);

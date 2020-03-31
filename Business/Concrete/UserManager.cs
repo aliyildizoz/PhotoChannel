@@ -20,23 +20,21 @@ namespace Business.Concrete
     public class UserManager : IUserService
     {
         private IUserDal _userDal;
-        private IUserDetailService _userDetailService;
-        public UserManager(IUserDal userDal, IUserDetailService userDetailService)
+        public UserManager(IUserDal userDal)
         {
             _userDal = userDal;
-            _userDetailService = userDetailService;
         }
 
         [CacheAspect]
         public IDataResult<User> GetById(int id)
         {
-            return new SuccessDataResult<User>(_userDal.Get(user => user.Id == id));
-        }
+            var user = _userDal.Get(u => u.Id == id);
+            if (user != null)
+            {
+                return new SuccessDataResult<User>(user);
+            }
+            return new ErrorDataResult<User>();
 
-        [CacheAspect]
-        public IDataResult<UserDetail> GetUserDetailById(int id)
-        {
-            return _userDetailService.GetByUserId(id);
         }
         [CacheAspect]
         public IDataResult<List<User>> GetList()
@@ -47,45 +45,68 @@ namespace Business.Concrete
         public IDataResult<User> GetByEmail(string email)
         {
             User user = _userDal.Get(u => u.Email == email);
-            if (user == null)
+            if (user != null)
             {
-                return new ErrorDataResult<User>(user);
+                return new SuccessDataResult<User>(user);
             }
-            return new SuccessDataResult<User>(user);
+            return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public IDataResult<List<PhotoCardDto>> GetPhotos(User user)
+        public IDataResult<List<Photo>> GetPhotos(int id)
         {
-            return new SuccessDataResult<List<PhotoCardDto>>(_userDal.GetSharedPhotos(user));
+            var result = UserExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<Photo>>(result.Message);
+            }
+            return new SuccessDataResult<List<Photo>>(_userDal.GetPhotos(new User { Id = id }));
         }
 
         [CacheAspect]
-        public IDataResult<List<OperationClaim>> GetClaims(User user)
+        public IDataResult<List<OperationClaim>> GetClaims(int id)
         {
-            return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(user));
+            var result = UserExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<OperationClaim>>(result.Message);
+            }
+            return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(new User { Id = id }));
+        }
+        public IDataResult<List<Like>> GetLikes(int id)
+        {
+            var result = UserExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<Like>>(result.Message);
+            }
+            return new SuccessDataResult<List<Like>>(_userDal.GetLikes(new User { Id = id }));
         }
 
-        [CacheAspect]
-        public IDataResult<List<Channel>> GetSubscriptions(User user)
+        public IDataResult<List<ChannelAdmin>> GetChannelsManaged(int id)
         {
-            return new SuccessDataResult<List<Channel>>(_userDal.GetSubscriptionList(user));
-        }
-        [CacheAspect]
-        public IDataResult<List<Channel>> GetChannels(User user)
-        {
-            return new SuccessDataResult<List<Channel>>(_userDal.GetChannels(user));
+            var result = UserExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<ChannelAdmin>>(result.Message);
+            }
+            return new SuccessDataResult<List<ChannelAdmin>>(_userDal.GetChannelsManaged(new User { Id = id }));
         }
 
-        public IDataResult<List<PhotoCardDto>> GetLikedPhotos(User user)
+        public IDataResult<List<Subscriber>> GetSubscriptions(int id)
         {
-            return new SuccessDataResult<List<PhotoCardDto>>(_userDal.GetLikedPhotos(user));
+            var result = UserExists(id);
+            if (!result.IsSuccessful)
+            {
+                return new ErrorDataResult<List<Subscriber>>(result.Message);
+            }
+            return new SuccessDataResult<List<Subscriber>>(_userDal.GetSubscriptions(new User { Id = id }));
         }
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]
         [CacheRemoveAspect("IUserService.Get")]
-        public IResult Delete(User user)
+        public IResult Delete(int id)
         {
-            _userDal.Delete(user);
+            _userDal.Delete(new User { Id = id });
             return new SuccessResult();
         }
 
@@ -95,7 +116,6 @@ namespace Business.Concrete
         {
             _userDal.Add(user);
             _userDal.AddOperationClaim(user);
-            _userDetailService.Add(new UserDetail { UserId = user.Id, SubscriptionCount = 0 });
             return new SuccessDataResult<User>(Messages.UserRegistered, user);
         }
 
@@ -103,17 +123,17 @@ namespace Business.Concrete
         [CacheRemoveAspect("IUserService.Get")]
         public IDataResult<User> Update(UserForUpdateDto userForUpdateDto, int userId)
         {
-            User user = _userDal.Get(u => u.Id == userId);
-            if (user != null)
+            IDataResult<User> dataResult = GetById(userId);
+            if (dataResult.IsSuccessful)
             {
-                user.FirstName = string.IsNullOrEmpty(userForUpdateDto.FirstName)
-                    ? user.FirstName
+                dataResult.Data.FirstName = string.IsNullOrEmpty(userForUpdateDto.FirstName)
+                    ? dataResult.Data.FirstName
                     : userForUpdateDto.FirstName;
-                user.LastName = string.IsNullOrEmpty(userForUpdateDto.LastName)
-                    ? user.LastName
+                dataResult.Data.LastName = string.IsNullOrEmpty(userForUpdateDto.LastName)
+                    ? dataResult.Data.LastName
                     : userForUpdateDto.LastName;
-                user.Email = string.IsNullOrEmpty(userForUpdateDto.Email)
-                    ? user.Email
+                dataResult.Data.Email = string.IsNullOrEmpty(userForUpdateDto.Email)
+                    ? dataResult.Data.Email
                     : userForUpdateDto.Email;
                 if (!string.IsNullOrEmpty(userForUpdateDto.Password))
                 {
@@ -122,14 +142,14 @@ namespace Business.Concrete
                         Password = userForUpdateDto.Password
                     };
                     HashingHelper.CreatePasswordHash(userForPasswordDto);
-                    user.PasswordHash = userForPasswordDto.PasswordHash;
-                    user.PasswordSalt = userForPasswordDto.PasswordSalt;
+                    dataResult.Data.PasswordHash = userForPasswordDto.PasswordHash;
+                    dataResult.Data.PasswordSalt = userForPasswordDto.PasswordSalt;
                 }
-                _userDal.Update(user);
-                return new SuccessDataResult<User>(user);
+                _userDal.Update(dataResult.Data);
+                return new SuccessDataResult<User>(dataResult.Data);
             }
 
-            return new ErrorDataResult<User>(Messages.UserNotFound);
+            return dataResult;
         }
         public IResult UserExists(string email)
         {
@@ -140,6 +160,17 @@ namespace Business.Concrete
             }
             return new ErrorResult();
         }
+
+        public IResult UserExists(int id)
+        {
+            IDataResult<User> result = GetById(id);
+            if (result.IsSuccessful)
+            {
+                return new SuccessResult(Messages.UserNotFound);
+            }
+            return new ErrorResult();
+        }
+
         public IResult UserExistsWithUpdate(string email, int userId)
         {
             IDataResult<User> result = GetByEmail(email);

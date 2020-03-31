@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Entities.Abstract;
 
-
-namespace Core.Entities.Concrete
+namespace Entities.Concrete
 {
     public class User : IEntity
     {
@@ -16,6 +13,5 @@ namespace Core.Entities.Concrete
         public byte[] PasswordSalt { get; set; }
         public byte[] PasswordHash { get; set; }
         public bool IsActive { get; set; }
-
     }
 }

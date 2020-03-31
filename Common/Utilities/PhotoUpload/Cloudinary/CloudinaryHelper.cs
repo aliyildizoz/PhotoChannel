@@ -15,26 +15,35 @@ namespace Core.Utilities.PhotoUpload.Cloudinary
     {
         private IConfiguration _configuration;
         private CloudinaryOptions _cloudinaryOptions;
+        private CloudinaryDotNet.Cloudinary _cloudinary;
         public CloudinaryHelper(IConfiguration configuration)
         {
             _configuration = configuration;
             _cloudinaryOptions = _configuration.GetSection("CloudinaryOptions").Get<CloudinaryOptions>();
+            Account account = new Account(_cloudinaryOptions.CloudName, _cloudinaryOptions.ApiKey, _cloudinaryOptions.ApiSecret);
+            _cloudinary = new CloudinaryDotNet.Cloudinary(account);
         }
 
         public ImageUploadResult ImageUpload(IFormFile formFile)
         {
             ImageUploadResult result;
-            Account account = new Account(_cloudinaryOptions.CloudName, _cloudinaryOptions.ApiKey, _cloudinaryOptions.ApiSecret);
-            CloudinaryDotNet.Cloudinary cloudinary = new CloudinaryDotNet.Cloudinary(account);
+           
             using (var stream = formFile.OpenReadStream())
             {
                 var uploadParams = new ImageUploadParams()
                 {
                     File = new FileDescription(formFile.FileName, stream)
                 };
-                result = cloudinary.Upload(uploadParams);
+                result = _cloudinary.Upload(uploadParams);
             }
             return result;
+        }
+
+        public DeletionResult ImageDelete(string publicId)
+        {
+            var deletionParams = new DeletionParams(publicId);
+            var deletionResult = _cloudinary.Destroy(deletionParams);
+            return deletionResult;
         }
     }
 }

@@ -11,9 +11,10 @@ namespace Entities.Concrete
         public int UserId { get; set; }
         public int ChannelId { get; set; }
         public DateTime ShareDate { get; set; }
-        public int LikesCount { get; set; }
-        public int CommentCount { get; set; }
         public string PhotoUrl { get; set; }
         public string PublicId { get; set; }
+
+        public virtual User User { get; set; }
+        public virtual Channel Channel { get; set; }
     }
 }

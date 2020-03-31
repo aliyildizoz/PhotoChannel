@@ -20,7 +20,7 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<Channel, ChannelForListDto>();
             CreateMap<User, SubscriberForListDto>();
             CreateMap<User, ChannelForAdminListDto>();
-            CreateMap<ChannelForDetailDto, Channel>();
+            CreateMap<Channel, ChannelForDetailDto>();
 
             CreateMap<Photo, PhotoForListDto>();
             CreateMap<PhotoForAddDto, Photo>();
@@ -35,6 +35,21 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<User, UserForDetailDto>();
             CreateMap<User, CurrentUserDto>();
             CreateMap<UserForUpdateDto, User>();
+
+            CreateMap<Category, CategoryForListDto>();
+
+
+            CreateMap<ChannelAdminForAddDto, ChannelAdmin>();
+            CreateMap<ChannelAdminForDeleteDto, ChannelAdmin>();
+
+            CreateMap<ChannelCategoryForAddDto, ChannelCategory>();
+            CreateMap<ChannelCategoryForDeleteDto, ChannelCategory>();
+
+            CreateMap<LikeForAddDto, Like>();
+            CreateMap<LikeForDeleteDto, Like>();
+
+            CreateMap<SubscriberForAddDto, Subscriber>();
+            CreateMap<SubscriberForDeleteDto, Subscriber>();
         }
     }
 }

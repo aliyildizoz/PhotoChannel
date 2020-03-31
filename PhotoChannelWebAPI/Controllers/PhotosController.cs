@@ -46,22 +46,37 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(dataResult.Message);
         }
         [HttpGet]
-        [Route("{photoId}/likes")]
-        public IActionResult GetLikes(int photoId)
+        [Route("{channelId}/channel-photos")]
+        public IActionResult GetChannelPhotos(int channelId)
         {
-            IDataResult<List<User>> result = _photoService.GetLikeUsersByPhoto(new Photo { Id = photoId });
+            IDataResult<List<Photo>> dataResult = _photoService.GetChannelPhotos(channelId);
 
-            if (result.IsSuccessful)
+            if (dataResult.IsSuccessful)
             {
-                var mapResult = _mapper.Map<List<LikeForUserListDto>>(result.Data);
-                return Ok(mapResult);
+                //Todo:Dto
+                //var mapResult = _mapper.Map<PhotoForDetailDto>(dataResult.Data);
+                return Ok();
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(dataResult.Message);
+        }
+        [HttpGet]
+        [Route("{userId}/user-photos")]
+        public IActionResult GetUserPhotos(int userId)
+        {
+            IDataResult<List<Photo>> dataResult = _photoService.GetUserPhotos(userId);
+
+            if (dataResult.IsSuccessful)
+            {
+                //Todo:Dto
+                //var mapResult = _mapper.Map<PhotoForDetailDto>(dataResult.Data);
+                return Ok();
+            }
+
+            return BadRequest(dataResult.Message);
         }
         [HttpPost]
-        [Route("add")]
-        public IActionResult Add([FromForm]PhotoForAddDto photoForAddDto)
+        public IActionResult Post([FromForm]PhotoForAddDto photoForAddDto)
         {
             string userId = _authHelper.GetCurrentUserId();
             if (!string.IsNullOrEmpty(userId))
@@ -88,52 +103,16 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{photoId}")]
         public IActionResult Delete(int photoId)
         {
-            IResult result = _photoService.Delete(new Photo { Id = photoId });
-
-            if (result.IsSuccessful)
+            var deletedPhotos = _photoService.GetById(photoId);
+            if (deletedPhotos.IsSuccessful)
             {
+                IResult result = _photoService.Delete(deletedPhotos.Data);
+                _photoUpload.ImageDelete(deletedPhotos.Data.PublicId);
                 return Ok(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(deletedPhotos.Message);
         }
-        [HttpDelete]
-        [Route("{photoId}/deletelike")]
-        public IActionResult DeleteLike(int photoId)
-        {
-            string userId = _authHelper.GetCurrentUserId();
-            if (!string.IsNullOrEmpty(userId))
-            {
-                IResult result = _photoService.DeleteLike(new Like { PhotoId = photoId, UserId = int.Parse(userId) });
 
-                if (result.IsSuccessful)
-                {
-                    return Ok(result.Message);
-                }
-                return BadRequest(result.Message);
-            }
-
-
-            return BadRequest();
-        }
-        [HttpPost]
-        [Route("like")]
-        public IActionResult AddLike(int photoId)
-        {
-            string userId = _authHelper.GetCurrentUserId();
-            if (!string.IsNullOrEmpty(userId))
-            {
-                IResult result = _photoService.AddLike(new Like { PhotoId = photoId, UserId = int.Parse(userId) });
-
-                if (result.IsSuccessful)
-                {
-                    return Ok(result.Message);
-                }
-                return BadRequest(result.Message);
-            }
-
-
-            return BadRequest();
-        }
     }
 }

@@ -9,5 +9,6 @@ namespace Core.Utilities.PhotoUpload
     public interface IPhotoUpload
     {
         ImageUploadResult ImageUpload(IFormFile formFile);
+        DeletionResult ImageDelete(string publicId);
     }
 }

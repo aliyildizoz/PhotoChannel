@@ -8,6 +8,8 @@ namespace DataAccess.Abstract
 {
     public interface ICommentDal : IEntityRepository<Comment>
     {
-
+        List<Photo> GetPhotosByUserComment(User user);
+        List<User> GetUsersByPhotoComment(Photo photo);
+        List<Comment> GetPhotoComments(Photo photo);
     }
 }

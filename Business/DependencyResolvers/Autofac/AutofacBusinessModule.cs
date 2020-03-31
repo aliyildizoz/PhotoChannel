@@ -22,6 +22,10 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<CommentManager>().As<ICommentService>();
             builder.RegisterType<EfCommentDal>().As<ICommentDal>();
 
+
+            builder.RegisterType<LikeManager>().As<ILikeService>();
+            builder.RegisterType<EfLikeDal>().As<ILikeDal>();
+
             builder.RegisterType<ChannelManager>().As<IChannelService>();
             builder.RegisterType<EfChannelDal>().As<IChannelDal>();
 
@@ -31,7 +35,6 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<CategoryManager>().As<ICategoryService>();
             builder.RegisterType<EfCategoryDal>().As<ICategoryDal>();
 
-            builder.RegisterType<EfUserDetailDal>().As<IUserDetailDal>();
 
             builder.RegisterType<AuthManager>().As<IAuthService>();
             builder.RegisterType<JwtHelper>().As<ITokenHelper>();

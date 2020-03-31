@@ -4,6 +4,7 @@ using System.Text;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using Entities.Concrete;
+using Entities.Dtos;
 
 namespace Business.Abstract
 {
@@ -11,21 +12,19 @@ namespace Business.Abstract
     {
         IDataResult<List<Channel>> GetList();
         IDataResult<Channel> GetById(int id);
-        IDataResult<User> GetOwner(int id);
         IDataResult<List<Channel>> GetByName(string name);
-        IDataResult<List<Photo>> GetPhotos(Channel channel);
 
-        IDataResult<List<User>> GetAdminList(Channel channel);
-        IDataResult<List<User>> GetSubscribers(Channel channel);
+        IDataResult<User> GetOwner(int id);
+        IDataResult<List<Photo>> GetPhotos(int id);
+        IDataResult<List<ChannelAdmin>> GetAdmins(int id);
+        IDataResult<List<Subscriber>> GetSubscribers(int id);
+        IDataResult<List<Category>> GetCategories(int id);
 
-        IResult Delete(Channel channel);
-        IResult DeleteSubscribe(Subscriber subscriber);
-        IResult AddSubscribe(Subscriber subscriber);
-        IResult DeleteChannelAdmin(ChannelAdmin channelAdmin);
-        IResult AddChannelAdmin(ChannelAdmin channelAdmin);
-        IResult DeleteChannelCategory(ChannelCategory channelCategory);
-        IResult AddChannelCategory(ChannelCategory channelCategory);
-        IResult Add(Channel channel);
-        IResult Update(Channel channel);
+        IResult Delete(int id);
+        IDataResult<Channel> Add(Channel channel);
+        IDataResult<Channel> Update(Channel channel, int id);
+        IResult ChannelExists(int id);
+        IResult CheckIfChannelNameExistsWithUpdate(string name, int id);
+        IResult CheckIfChannelNameExists(string channelName);
     }
 }

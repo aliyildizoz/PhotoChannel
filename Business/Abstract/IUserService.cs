@@ -10,21 +10,21 @@ namespace Business.Abstract
 {
     public interface IUserService
     {
-        IDataResult<User> GetById(int id);
-        IDataResult<UserDetail> GetUserDetailById(int id);
         IDataResult<List<User>> GetList();
+        IDataResult<User> GetById(int id);
         IDataResult<User> GetByEmail(string email);
-        IDataResult<List<PhotoCardDto>> GetPhotos(User user);
 
-        IDataResult<List<OperationClaim>> GetClaims(User user);
-        IDataResult<List<Channel>> GetSubscriptions(User user);
-        IDataResult<List<Channel>> GetChannels(User user);
-        IDataResult<List<PhotoCardDto>> GetLikedPhotos(User user);
-        IResult Delete(User user);
+        IDataResult<List<Photo>> GetPhotos(int id);
+        IDataResult<List<OperationClaim>> GetClaims(int id);
+        IDataResult<List<Like>> GetLikes(int id);
+        IDataResult<List<ChannelAdmin>> GetChannelsManaged(int id);
+        IDataResult<List<Subscriber>> GetSubscriptions(int id);
+
+        IResult Delete(int id);
         IDataResult<User> Add(User user);
-        IDataResult<User> Update(UserForUpdateDto userForUpdateDto, int userId);
+        IDataResult<User> Update(UserForUpdateDto userForUpdateDto, int id);
         IResult UserExists(string email);
-        IResult UserExistsWithUpdate(string email, int userId);
-
+        IResult UserExists(int id);
+        IResult UserExistsWithUpdate(string email, int id);
     }
 }

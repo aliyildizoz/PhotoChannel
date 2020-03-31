@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Core.Entities.Concrete;
+using Entities.Concrete;
 using FluentValidation;
 
 namespace Business.ValidationRules.FluentValidation

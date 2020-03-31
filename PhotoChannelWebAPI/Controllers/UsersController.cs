@@ -40,73 +40,6 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
-
-        [HttpGet("{userId}")]
-        public IActionResult Get(int userId)
-        {
-            if (userId > 0)
-            {
-                IDataResult<User> userResult = _userService.GetById(userId);
-                IDataResult<UserDetail> userDetailResult = _userService.GetUserDetailById(userId);
-
-                if (userResult.IsSuccessful && userDetailResult.IsSuccessful)
-                {
-                    var mapResult = _mapper.Map<UserForDetailDto>(userResult.Data);
-                    mapResult.SubscriptionCount = userDetailResult.Data.SubscriptionCount;
-                    return Ok(mapResult);
-                }
-                return NotFound(userResult.Message + " " + userDetailResult.Message);
-            }
-
-            return BadRequest();
-
-        }
-        [HttpGet]
-        [Route("{userId}/photos")]
-        public IActionResult GetPhotos(int userId)
-        {
-            IDataResult<List<PhotoCardDto>> result = _userService.GetPhotos(new User { Id = userId });
-            if (result.IsSuccessful)
-            {
-                return Ok(result.Data);
-            }
-            return BadRequest(result.Message);
-        }
-        [HttpGet]
-        [Route("{userId}/subscriptions")]
-        public IActionResult GetSubscriptions(int userId)
-        {
-            IDataResult<List<Channel>> result = _userService.GetSubscriptions(new User { Id = userId });
-            if (result.IsSuccessful)
-            {
-                var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
-                return Ok(result.Data);
-            }
-            return BadRequest(result.Message);
-        }
-        [HttpGet]
-        [Route("{userId}/liked-photos")]
-        public IActionResult GetLikedPhotos(int userId)
-        {
-            IDataResult<List<PhotoCardDto>> result = _userService.GetLikedPhotos(new User { Id = userId });
-            if (result.IsSuccessful)
-            {
-                return Ok(result.Data);
-            }
-            return BadRequest(result.Message);
-        }
-        [HttpGet]
-        [Route("{userId}/channels")]
-        public IActionResult GetChannels(int userId)
-        {
-            IDataResult<List<Channel>> result = _userService.GetChannels(new User { Id = userId });
-            if (result.IsSuccessful)
-            {
-                var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
-                return Ok(mapResult);
-            }
-            return BadRequest(result.Message);
-        }
         [HttpPut]
         [Route("{userId}")]
         public IActionResult Put(int userId, UserForUpdateDto userForUpdateDto)
@@ -128,7 +61,7 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpDelete]
         public IActionResult Delete(int userId)
         {
-            IResult result = _userService.Delete(new User { Id = userId });
+            IResult result = _userService.Delete(userId);
             if (result.IsSuccessful)
             {
                 return Ok(result.Message);

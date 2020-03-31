@@ -12,7 +12,6 @@ namespace Business.ValidationRules.FluentValidation
         {
             RuleFor(channel => channel.ChannelPhotoUrl).NotNull().MaximumLength(150);
             RuleFor(channel => channel.Name).NotNull().MaximumLength(100);
-            RuleFor(channel => channel.SubscribersCount).NotNull();
 
         }
     }

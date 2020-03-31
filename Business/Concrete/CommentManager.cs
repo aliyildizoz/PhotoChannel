@@ -15,23 +15,24 @@ namespace Business.Concrete
     public class CommentManager : ICommentService
     {
         private ICommentDal _commentDal;
-        private IPhotoService _photoService;
-        public CommentManager(ICommentDal commentDal, IPhotoService photoService)
+        public CommentManager(ICommentDal commentDal)
         {
             _commentDal = commentDal;
-            _photoService = photoService;
         }
 
-        [CacheAspect]
-        public IDataResult<List<Comment>> GetListByUserId(int userId)
+        public IDataResult<List<Photo>> GetPhotosByUserComment(int userId)
         {
-            return new SuccessDataResult<List<Comment>>(_commentDal.GetList(comment => comment.UserId == userId).ToList());
+            return new SuccessDataResult<List<Photo>>(_commentDal.GetPhotosByUserComment(new User { Id = userId }));
         }
 
-        [CacheAspect]
-        public IDataResult<List<Comment>> GetListByPhotoId(int photoId)
+        public IDataResult<List<User>> GetUsersByPhotoComment(int photoId)
         {
-            return new SuccessDataResult<List<Comment>>(_commentDal.GetList(comment => comment.PhotoId == photoId).ToList());
+            return new SuccessDataResult<List<User>>(_commentDal.GetUsersByPhotoComment(new Photo { Id = photoId }));
+        }
+
+        public IDataResult<List<Comment>> GetPhotoComments(int photoId)
+        {
+            return new SuccessDataResult<List<Comment>>(_commentDal.GetPhotoComments(new Photo { Id = photoId }).ToList());
         }
 
         [ValidationAspect(typeof(CommentValidator), Priority = 1)]
@@ -39,7 +40,6 @@ namespace Business.Concrete
         public IResult Delete(Comment comment)
         {
             _commentDal.Delete(comment);
-            _photoService.CommentCountUpdate(false, comment.PhotoId);
             return new SuccessDataResult<Comment>(comment);
         }
 
@@ -48,7 +48,6 @@ namespace Business.Concrete
         public IResult Add(Comment comment)
         {
             _commentDal.Add(comment);
-            _photoService.CommentCountUpdate(true, comment.PhotoId);
             return new SuccessDataResult<Comment>(comment);
         }
 

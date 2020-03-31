@@ -30,14 +30,28 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("{photoId}/photocomments")]
-        public IActionResult GetCommentsByPhoto(int photoId)
+        [Route("{userId}/user-comment-photos")]
+        public IActionResult GetPhotosByUserComment(int userId)
         {
-            IDataResult<List<Comment>> result = _commentService.GetListByPhotoId(photoId);
+            IDataResult<List<Photo>> result = _commentService.GetPhotosByUserComment(userId);
 
             if (result.IsSuccessful)
             {
-                var mapResult = _mapper.Map<List<CommentForListDto>>(result.Data);
+                var mapResult = _mapper.Map<List<PhotoForDetailDto>>(result.Data);
+                return Ok(mapResult);
+            }
+
+            return BadRequest(result.Message);
+        }
+        [HttpGet]
+        [Route("{photoId}/photo-comment-users")]
+        public IActionResult GetUsersByPhotoComment(int photoId)
+        {
+            IDataResult<List<User>> result = _commentService.GetUsersByPhotoComment(photoId);
+
+            if (result.IsSuccessful)
+            {
+                var mapResult = _mapper.Map<List<UserForDetailDto>>(result.Data);
                 return Ok(mapResult);
             }
 
@@ -45,13 +59,14 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("{userId}/usercomments")]
-        public IActionResult GetCommentsByUser(int userId)
+        [Route("{photoId}/photo-comments")]
+        public IActionResult GetPhotoComments(int photoId)
         {
-            IDataResult<List<Comment>> result = _commentService.GetListByUserId(userId);
+            IDataResult<List<Comment>> result = _commentService.GetPhotoComments(photoId);
 
             if (result.IsSuccessful)
             {
+                //Todo:Dto ile veriyi eşleştir
                 var mapResult = _mapper.Map<List<CommentForListDto>>(result.Data);
                 return Ok(mapResult);
             }

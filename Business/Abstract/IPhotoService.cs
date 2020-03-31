@@ -9,14 +9,12 @@ namespace Business.Abstract
 {
     public interface IPhotoService
     {
-        IDataResult<List<User>> GetLikeUsersByPhoto(Photo photo);
-        IDataResult<List<Photo>> GetPhotosByUser(User user);
-        IDataResult<List<Photo>> GetPhotosByChannel(Channel channel);
+        IDataResult<List<Photo>> GetChannelPhotos(int channelId);
+        IDataResult<List<Photo>> GetUserPhotos(int userId);
+       
         IDataResult<Photo> GetById(int id);
-        IResult Add(Photo photo);
+        IDataResult<Photo> Add(Photo photo);
         IResult Delete(Photo photo);
-        IResult DeleteLike(Like like);
-        IResult AddLike(Like like);
-        void CommentCountUpdate(bool isIncreasing, int photoId);
+        IResult Exists(int id);
     }
 }

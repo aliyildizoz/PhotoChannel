@@ -10,6 +10,7 @@ using Core.Utilities.Hashing;
 using Core.Utilities.IoC;
 using Core.Utilities.Results;
 using Core.Utilities.Security.Jwt;
+using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,7 +83,7 @@ namespace Business.Concrete
         }
         public IDataResult<AccessToken> CreateAccessToken(User user)
         {
-            var dataResult = _userService.GetClaims(user);
+            var dataResult = _userService.GetClaims(user.Id);
             var accessToken = _tokenHelper.CreateToken(user, dataResult.Data);
             return new SuccessDataResult<AccessToken>(Messages.AccessTokenCreated, accessToken);
         }
