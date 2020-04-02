@@ -15,5 +15,13 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfChannelDal : EfEntityRepositoryBase<Channel, PhotoChannelContext>, IChannelDal
     {
+        public User GetOwner(Channel channel)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                var result = context.Channels.Include(c => c.User).SingleOrDefault(c => c.Id == channel.Id);
+                return result?.User;
+            }
+        }
     }
 }

@@ -27,7 +27,8 @@ namespace DataAccess.Concrete.EntityFramework
             using (var context = new PhotoChannelContext())
             {
                 var channels = context.ChannelCategories.Include(c => c.Channel)
-                    .Where(c => c.CategoryId == c.Id).Select(c => c.Channel);
+                    .Where(c => c.CategoryId == category.Id).Select(c => c.Channel);
+
                 return channels.ToList();
             }
         }
@@ -36,8 +37,10 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new PhotoChannelContext())
             {
-                //Todo:conf
+                var result = context.ChannelCategories.Where(category => category.ChannelId == channelCategories[0].ChannelId).ToList();
+                context.ChannelCategories.RemoveRange(result);
                 context.ChannelCategories.AddRange(channelCategories);
+                context.SaveChanges();
             }
         }
     }

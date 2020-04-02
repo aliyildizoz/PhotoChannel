@@ -22,11 +22,13 @@ namespace PhotoChannelWebAPI.Controllers
         private IUserService _userService;
         private IMapper _mapper;
         private IAuthHelper _authHelper;
-        public UsersController(IMapper mapper, IUserService userService, IAuthHelper authHelper)
+        private ICountService _countService;
+        public UsersController(IMapper mapper, IUserService userService, IAuthHelper authHelper, ICountService countService)
         {
             _mapper = mapper;
             _userService = userService;
             _authHelper = authHelper;
+            _countService = countService;
         }
         [HttpGet]
         public IActionResult Get()
@@ -40,6 +42,21 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+        [HttpGet]
+        [Route("{userId}")]
+        public IActionResult Get(int userId)
+        {
+            IDataResult<User> result = _userService.GetById(userId);
+
+            if (result.IsSuccessful)
+            {
+                var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
+                mapResult.SubscriptionCount = _countService.GetSubscriptionsCount(userId).Data;
+                return Ok(mapResult);
+            }
+            return BadRequest(result.Message);
+        }
+
         [HttpPut]
         [Route("{userId}")]
         public IActionResult Put(int userId, UserForUpdateDto userForUpdateDto)
@@ -59,6 +76,7 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.Message);
         }
         [HttpDelete]
+        [Route("{userId}")]
         public IActionResult Delete(int userId)
         {
             IResult result = _userService.Delete(userId);

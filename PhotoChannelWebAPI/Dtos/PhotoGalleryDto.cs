@@ -2,9 +2,9 @@
 
 namespace PhotoChannelWebAPI.Dtos
 {
-    //ToDo:configuration
     public class PhotoGalleryDto
     {
+        public int Id { get; set; }
         public string PhotoUrl { get; set; }
         public DateTime ShareDate { get; set; }
         public int LikeCount { get; set; }

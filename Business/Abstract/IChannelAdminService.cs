@@ -6,7 +6,7 @@ using Entities.Concrete;
 
 namespace Business.Abstract
 {
-    public interface IChannelAdminsService
+    public interface IChannelAdminService
     {
         IDataResult<List<User>> GetChannelAdmins(int channelId);
         IDataResult<List<Channel>> GetAdminChannels(int userId);

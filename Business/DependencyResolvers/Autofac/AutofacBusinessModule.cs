@@ -26,6 +26,18 @@ namespace Business.DependencyResolvers.Autofac
             builder.RegisterType<LikeManager>().As<ILikeService>();
             builder.RegisterType<EfLikeDal>().As<ILikeDal>();
 
+            builder.RegisterType<SubscriberManager>().As<ISubscriberService>();
+            builder.RegisterType<EfSubscriberDal>().As<ISubscriberDal>();
+
+            builder.RegisterType<ChannelAdminManager>().As<IChannelAdminService>();
+            builder.RegisterType<EfChannelAdminDal>().As<IChannelAdminDal>();
+
+            builder.RegisterType<ChannelCategoryManager>().As<IChannelCategoryService>();
+            builder.RegisterType<EfChannelCategoryDal>().As<IChannelCategoryDal>();
+
+            builder.RegisterType<CountManager>().As<ICountService>();
+            builder.RegisterType<EfCountDal>().As<ICountDal>();
+
             builder.RegisterType<ChannelManager>().As<IChannelService>();
             builder.RegisterType<EfChannelDal>().As<IChannelDal>();
 

@@ -18,18 +18,23 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<ChannelForAddDto, Channel>();
             CreateMap<ChannelForUpdateDto, Channel>();
             CreateMap<Channel, ChannelForListDto>();
-            CreateMap<User, SubscriberForListDto>();
-            CreateMap<User, ChannelForAdminListDto>();
+
+
             CreateMap<Channel, ChannelForDetailDto>();
 
             CreateMap<Photo, PhotoForListDto>();
             CreateMap<PhotoForAddDto, Photo>();
             CreateMap<Photo, PhotoForDetailDto>();
-            CreateMap<User, LikeForUserListDto>();
+            CreateMap<Photo, PhotoGalleryDto>().ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))
+                .ForMember(dto => dto.UserName, opt => opt.MapFrom(photo => photo.User.UserName));
+
+            CreateMap<Photo, PhotoCardDto>().ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))
+                .ForMember(dto => dto.UserName, opt => opt.MapFrom(photo => photo.User.UserName)).ForMember(dto => dto.ChannelId, opt => opt.MapFrom(photo => photo.ChannelId)).ForMember(dto => dto.ChannelName, opt => opt.MapFrom(photo => photo.Channel.Name)).ForMember(dto => dto.ChannelPublicId, opt => opt.MapFrom(photo => photo.Channel.PublicId)).ForMember(dto => dto.PhotoPublicId, opt => opt.MapFrom(photo => photo.PublicId));
+
 
             CreateMap<CommentForAddDto, Comment>();
             CreateMap<CommentForUpdateDto, Comment>();
-            CreateMap<Comment, CommentForListDto>();
+            CreateMap<Comment, CommentForListDto>().ForMember(dto => dto.UserId, opt => opt.MapFrom(comment => comment.UserId)).ForMember(dto => dto.CommentId, opt => opt.MapFrom(comment => comment.Id)).ForMember(dto => dto.FirstName, opt => opt.MapFrom(comment => comment.User.FirstName)).ForMember(dto => dto.LastName, opt => opt.MapFrom(comment => comment.User.LastName));
 
             CreateMap<User, UserForListDto>();
             CreateMap<User, UserForDetailDto>();
@@ -38,16 +43,18 @@ namespace PhotoChannelWebAPI.Helpers
 
             CreateMap<Category, CategoryForListDto>();
 
-
+            CreateMap<User, ChannelForAdminListDto>();
             CreateMap<ChannelAdminForAddDto, ChannelAdmin>();
             CreateMap<ChannelAdminForDeleteDto, ChannelAdmin>();
 
             CreateMap<ChannelCategoryForAddDto, ChannelCategory>();
             CreateMap<ChannelCategoryForDeleteDto, ChannelCategory>();
 
+            CreateMap<User, LikeForUserListDto>();
             CreateMap<LikeForAddDto, Like>();
             CreateMap<LikeForDeleteDto, Like>();
 
+            CreateMap<User, SubscriberForListDto>();
             CreateMap<SubscriberForAddDto, Subscriber>();
             CreateMap<SubscriberForDeleteDto, Subscriber>();
         }

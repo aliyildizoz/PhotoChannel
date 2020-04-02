@@ -30,12 +30,14 @@ namespace PhotoChannelWebAPI.Controllers
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
         private IAuthHelper _authHelper;
-        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, IAuthHelper authHelper)
+        private ICountService _countService;
+        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, IAuthHelper authHelper, ICountService countService)
         {
             _channelService = channelService;
             _mapper = mapper;
             _photoUpload = photoUpload;
             _authHelper = authHelper;
+            _countService = countService;
         }
 
         [HttpPost]
@@ -165,6 +167,7 @@ namespace PhotoChannelWebAPI.Controllers
                 if (result.IsSuccessful)
                 {
                     var mapResult = _mapper.Map<ChannelForDetailDto>(result.Data);
+                    mapResult.SubscribersCount = _countService.GetSubscriberCount(channelId).Data;
                     return Ok(mapResult);
                 }
 

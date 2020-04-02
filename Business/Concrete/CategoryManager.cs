@@ -26,16 +26,6 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Category>>(_categoryDal.GetList().ToList());
         }
 
-        public IDataResult<List<Channel>> GetChannels(int id)
-        {
-            var result = Exists(id);
-            if (result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<Channel>>(result.Message);
-            }
-            return new SuccessDataResult<List<Channel>>(_categoryDal.GetChannels(new Channel { Id = id }));
-        }
-
         [CacheRemoveAspect("ICategoryService.Get")]
         public IResult Add(Category category)
         {

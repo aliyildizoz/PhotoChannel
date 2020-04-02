@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,9 +16,9 @@ namespace PhotoChannelWebAPI.Controllers
     [ApiController]
     public class ChannelAdminsController : ControllerBase
     {
-        private IChannelAdminsService _channelAdminsService;
+        private IChannelAdminService _channelAdminsService;
         private IMapper _mapper;
-        public ChannelAdminsController(IChannelAdminsService channelAdminsService, IMapper mapper)
+        public ChannelAdminsController(IChannelAdminService channelAdminsService, IMapper mapper)
         {
             _channelAdminsService = channelAdminsService;
             _mapper = mapper;

@@ -66,7 +66,6 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
-                //Todo:Dto ile veriyi eşleştir
                 var mapResult = _mapper.Map<List<CommentForListDto>>(result.Data);
                 return Ok(mapResult);
             }

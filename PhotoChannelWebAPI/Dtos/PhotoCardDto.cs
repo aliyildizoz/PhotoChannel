@@ -14,7 +14,7 @@ namespace PhotoChannelWebAPI.Dtos
         public string UserName { get; set; }
         public string ChannelName { get; set; }
         public string ChannelPublicId { get; set; }
-        public List<CommentForListDto> Comments { get; set; }
-        public List<LikeForUserListDto> Likes { get; set; }
+        public int CommentCount { get; set; }
+        public int LikeCount { get; set; }
     }
 }

@@ -14,11 +14,7 @@ namespace Business.Abstract
         IDataResult<User> GetById(int id);
         IDataResult<User> GetByEmail(string email);
 
-        IDataResult<List<Photo>> GetPhotos(int id);
         IDataResult<List<OperationClaim>> GetClaims(int id);
-        IDataResult<List<Like>> GetLikes(int id);
-        IDataResult<List<ChannelAdmin>> GetChannelsManaged(int id);
-        IDataResult<List<Subscriber>> GetSubscriptions(int id);
 
         IResult Delete(int id);
         IDataResult<User> Add(User user);

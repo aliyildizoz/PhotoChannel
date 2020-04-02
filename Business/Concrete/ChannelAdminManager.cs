@@ -9,7 +9,7 @@ using Entities.Concrete;
 
 namespace Business.Concrete
 {
-    public class ChannelAdminManager : IChannelAdminsService
+    public class ChannelAdminManager : IChannelAdminService
     {
         private IChannelAdminDal _channelAdminDal;
 

@@ -15,10 +15,6 @@ namespace Business.Abstract
         IDataResult<List<Channel>> GetByName(string name);
 
         IDataResult<User> GetOwner(int id);
-        IDataResult<List<Photo>> GetPhotos(int id);
-        IDataResult<List<ChannelAdmin>> GetAdmins(int id);
-        IDataResult<List<Subscriber>> GetSubscribers(int id);
-        IDataResult<List<Category>> GetCategories(int id);
 
         IResult Delete(int id);
         IDataResult<Channel> Add(Channel channel);

@@ -48,17 +48,6 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
-        [HttpGet]
-        [Route("{categoryId}/channels")]
-        public IActionResult GetChannels(int categoryId)
-        {
-            IDataResult<List<Channel>> result = _categoryService.GetChannels(categoryId);
-            if (result.IsSuccessful)
-            {
-                return Ok(result.Data);
-            }
-
-            return BadRequest(result.Message);
-        }
+      
     }
 }

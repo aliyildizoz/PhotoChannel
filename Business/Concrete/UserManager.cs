@@ -52,16 +52,6 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        public IDataResult<List<Photo>> GetPhotos(int id)
-        {
-            var result = UserExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<Photo>>(result.Message);
-            }
-            return new SuccessDataResult<List<Photo>>(_userDal.GetPhotos(new User { Id = id }));
-        }
-
         [CacheAspect]
         public IDataResult<List<OperationClaim>> GetClaims(int id)
         {
@@ -71,35 +61,6 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<OperationClaim>>(result.Message);
             }
             return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(new User { Id = id }));
-        }
-        public IDataResult<List<Like>> GetLikes(int id)
-        {
-            var result = UserExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<Like>>(result.Message);
-            }
-            return new SuccessDataResult<List<Like>>(_userDal.GetLikes(new User { Id = id }));
-        }
-
-        public IDataResult<List<ChannelAdmin>> GetChannelsManaged(int id)
-        {
-            var result = UserExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<ChannelAdmin>>(result.Message);
-            }
-            return new SuccessDataResult<List<ChannelAdmin>>(_userDal.GetChannelsManaged(new User { Id = id }));
-        }
-
-        public IDataResult<List<Subscriber>> GetSubscriptions(int id)
-        {
-            var result = UserExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<Subscriber>>(result.Message);
-            }
-            return new SuccessDataResult<List<Subscriber>>(_userDal.GetSubscriptions(new User { Id = id }));
         }
 
         [ValidationAspect(typeof(UserValidator), Priority = 1)]

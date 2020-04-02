@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Core.Utilities.Results
 {
-    public class DataResultBase<T> : IDataResult<T> where T : class
+    public class DataResultBase<T> : IDataResult<T>
     {
         public T Data { get; }
         public string Message { get; }

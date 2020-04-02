@@ -9,6 +9,7 @@ using Entities.Dtos;
 namespace DataAccess.Abstract
 {
     public interface IChannelDal : IEntityRepository<Channel>
-    {  
+    {
+        User GetOwner(Channel channel);
     }
 }

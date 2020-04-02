@@ -47,53 +47,14 @@ namespace Business.Concrete
             {
                 return new ErrorDataResult<User>(result.Message);
             }
-            return new SuccessDataResult<User>(_channelDal.Get(channel => channel.User, channel => channel.Id == id).User);
+            return new SuccessDataResult<User>(_channelDal.GetOwner(new Channel { Id = id }));
         }
         [CacheAspect]
         public IDataResult<List<Channel>> GetByName(string name)
         {
             return new SuccessDataResult<List<Channel>>(_channelDal.GetList(channel => channel.Name.Contains(name)).ToList());
         }
-        [CacheAspect]
-        public IDataResult<List<Photo>> GetPhotos(int id)
-        {
-            var result = ChannelExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<Photo>>(result.Message);
-            }
-            return new SuccessDataResult<List<Photo>>(_channelDal.GetPhotos(new Channel { Id = id }));
-        }
-
-        public IDataResult<List<ChannelAdmin>> GetAdmins(int id)
-        {
-            var result = ChannelExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<ChannelAdmin>>(result.Message);
-            }
-            return new SuccessDataResult<List<ChannelAdmin>>(_channelDal.GetAdminList(new Channel { Id = id }));
-        }
-
-        public IDataResult<List<Subscriber>> GetSubscribers(int id)
-        {
-            var result = ChannelExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<Subscriber>>(result.Message);
-            }
-            return new SuccessDataResult<List<Subscriber>>(_channelDal.GetSubscribers(new Channel { Id = id }));
-        }
-
-        public IDataResult<List<Category>> GetCategories(int id)
-        {
-            var result = ChannelExists(id);
-            if (!result.IsSuccessful)
-            {
-                return new ErrorDataResult<List<Category>>(result.Message);
-            }
-            return new SuccessDataResult<List<Category>>(_channelDal.GetCategories(new Channel { Id = id }));
-        }
+      
 
         [CacheRemoveAspect("IChannelService.Get")]
         public IResult Delete(int id)

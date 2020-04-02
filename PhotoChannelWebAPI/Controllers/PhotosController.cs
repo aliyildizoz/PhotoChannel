@@ -25,12 +25,15 @@ namespace PhotoChannelWebAPI.Controllers
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
         private IAuthHelper _authHelper;
-        public PhotosController(IPhotoService photoService, IMapper mapper, IPhotoUpload photoUpload, IAuthHelper authHelper)
+        private ICountService _countService;
+
+        public PhotosController(IPhotoService photoService, IMapper mapper, IPhotoUpload photoUpload, IAuthHelper authHelper, ICountService countService)
         {
             _photoService = photoService;
             _mapper = mapper;
             _photoUpload = photoUpload;
             _authHelper = authHelper;
+            _countService = countService;
         }
         [HttpGet("{photoId}")]
         public IActionResult Get(int photoId)
@@ -53,9 +56,13 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
-                //Todo:Dto
-                //var mapResult = _mapper.Map<PhotoForDetailDto>(dataResult.Data);
-                return Ok();
+                var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
+                mapResult.ForEach(dto =>
+                {
+                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.Id).Data;
+                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.Id).Data;
+                });
+                return Ok(mapResult);
             }
 
             return BadRequest(dataResult.Message);
@@ -68,13 +75,34 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
-                //Todo:Dto
-                //var mapResult = _mapper.Map<PhotoForDetailDto>(dataResult.Data);
-                return Ok();
+                var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
+                mapResult.ForEach(dto =>
+                {
+                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.Id).Data;
+                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.Id).Data;
+                });
+                return Ok(mapResult);
             }
-
             return BadRequest(dataResult.Message);
         }
+        [HttpGet]
+        [Route("{channelId}/photo-gallery")]
+        public IActionResult GetGallery(int channelId)
+        {
+            IDataResult<List<Photo>> dataResult = _photoService.GetChannelPhotos(channelId);
+
+            if (dataResult.IsSuccessful)
+            {
+                var mapResult = _mapper.Map<List<PhotoGalleryDto>>(dataResult.Data);
+                mapResult.ForEach(dto =>
+                {
+                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.Id).Data;
+                });
+                return Ok(mapResult);
+            }
+            return BadRequest(dataResult.Message);
+        }
+
         [HttpPost]
         public IActionResult Post([FromForm]PhotoForAddDto photoForAddDto)
         {
