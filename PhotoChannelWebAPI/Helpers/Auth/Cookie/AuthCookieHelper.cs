@@ -39,7 +39,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Cookie
                 if (dataResult.IsSuccessful)
                 {
                     var claims = new List<Claim>();
-                    claims.AddName($"{user.FirstName} {user.LastName}");
+                    claims.AddFirstName($"{user.FirstName} {user.LastName}");
                     claims.AddNameIdentifier(user.Id.ToString());
                     claims.AddUserName(user.UserName);
                     claims.AddRoles(dataResult.Data.Select(claim => claim.ClaimName).ToArray());

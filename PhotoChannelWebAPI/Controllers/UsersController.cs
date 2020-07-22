@@ -8,6 +8,7 @@ using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
@@ -21,13 +22,11 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private IUserService _userService;
         private IMapper _mapper;
-        private IAuthHelper _authHelper;
         private ICountService _countService;
-        public UsersController(IMapper mapper, IUserService userService, IAuthHelper authHelper, ICountService countService)
+        public UsersController(IMapper mapper, IUserService userService, ICountService countService)
         {
             _mapper = mapper;
             _userService = userService;
-            _authHelper = authHelper;
             _countService = countService;
         }
         [HttpGet]
@@ -58,25 +57,53 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpPut]
-        [Route("{userId}")]
-        public IActionResult Put(int userId, UserForUpdateDto userForUpdateDto)
+        [Route("{userId}/updateuserabout")]
+        [Authorize]
+        public IActionResult UpdateUserAbout(int userId, UserForUpdateDto userForUpdateDto)
         {
             var userExists = _userService.UserExistsWithUpdate(userForUpdateDto.Email, userId);
             if (userExists.IsSuccessful)
             {
                 return BadRequest(userExists.Message);
             }
-            IResult result = _userService.Update(userForUpdateDto, userId);
-            if (result.IsSuccessful)
+
+            var oldUserResult = _userService.GetById(userId);
+            if (oldUserResult.IsSuccessful)
             {
-                User user = _userService.GetById(userId).Data;
-                _authHelper.Login(user);
-                return Ok(result.Message);
+                oldUserResult.Data.Email = userForUpdateDto.Email;
+                oldUserResult.Data.FirstName = userForUpdateDto.FirstName;
+                oldUserResult.Data.LastName = userForUpdateDto.LastName;
+                IResult result = _userService.UpdateUserAbout(oldUserResult.Data);
+                if (result.IsSuccessful)
+                {
+                    //User user = _userService.GetById(userId).Data;
+                    //Todo:Güncellendiğinde yeni bir accsesstoken yarat
+                    return Ok(result.Message);
+                }
             }
-            return BadRequest(result.Message);
+
+            return BadRequest(oldUserResult.Message);
+        }
+        [HttpPut]
+        [Route("{userId}/updatepassword")]
+        [Authorize]
+        public IActionResult UpdatePassword(int userId, string password)
+        {
+            var oldUserResult = _userService.GetById(userId);
+            if (oldUserResult.IsSuccessful)
+            {
+                IResult result = _userService.UpdatePassword(oldUserResult.Data, password);
+                if (result.IsSuccessful)
+                {
+                    //User user = _userService.GetById(userId).Data;
+                    return Ok(result.Message);
+                }
+            }
+            return BadRequest(oldUserResult.Message);
         }
         [HttpDelete]
         [Route("{userId}")]
+        [Authorize]
         public IActionResult Delete(int userId)
         {
             IResult result = _userService.Delete(userId);

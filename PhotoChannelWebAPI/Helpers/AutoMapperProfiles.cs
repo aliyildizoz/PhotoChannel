@@ -15,6 +15,7 @@ namespace PhotoChannelWebAPI.Helpers
     {
         public AutoMapperProfiles()
         {
+
             CreateMap<ChannelForAddDto, Channel>();
             CreateMap<ChannelForUpdateDto, Channel>();
             CreateMap<Channel, ChannelForListDto>();
@@ -43,20 +44,14 @@ namespace PhotoChannelWebAPI.Helpers
 
             CreateMap<Category, CategoryForListDto>();
 
-            CreateMap<User, ChannelForAdminListDto>();
-            CreateMap<ChannelAdminForAddDto, ChannelAdmin>();
-            CreateMap<ChannelAdminForDeleteDto, ChannelAdmin>();
-
             CreateMap<ChannelCategoryForAddDto, ChannelCategory>();
             CreateMap<ChannelCategoryForDeleteDto, ChannelCategory>();
 
             CreateMap<User, LikeForUserListDto>();
-            CreateMap<LikeForAddDto, Like>();
-            CreateMap<LikeForDeleteDto, Like>();
 
             CreateMap<User, SubscriberForListDto>();
-            CreateMap<SubscriberForAddDto, Subscriber>();
-            CreateMap<SubscriberForDeleteDto, Subscriber>();
+
         }
+
     }
 }

@@ -6,8 +6,6 @@ using System.Text;
 using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
-using Core.Aspects.Autofac.Caching;
-using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
 using Core.Utilities.Hashing;
 using Core.Utilities.Results;
@@ -20,12 +18,13 @@ namespace Business.Concrete
     public class UserManager : IUserService
     {
         private IUserDal _userDal;
+
+        private Validation<UserValidator> _validation;
         public UserManager(IUserDal userDal)
         {
             _userDal = userDal;
         }
 
-        [CacheAspect]
         public IDataResult<User> GetById(int id)
         {
             var user = _userDal.Get(u => u.Id == id);
@@ -36,12 +35,10 @@ namespace Business.Concrete
             return new ErrorDataResult<User>();
 
         }
-        [CacheAspect]
         public IDataResult<List<User>> GetList()
         {
             return new SuccessDataResult<List<User>>(_userDal.GetList().ToList());
         }
-        [CacheAspect]
         public IDataResult<User> GetByEmail(string email)
         {
             User user = _userDal.Get(u => u.Email == email);
@@ -52,7 +49,16 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
-        [CacheAspect]
+        public IDataResult<User> GetByRefreshToken(string refreshToken)
+        {
+            User user = _userDal.Get(u => u.RefreshToken.Contains(refreshToken));
+            if (user != null)
+            {
+                return new SuccessDataResult<User>(user);
+            }
+            return new ErrorDataResult<User>(Messages.UserNotFound);
+        }
+
         public IDataResult<List<OperationClaim>> GetClaims(int id)
         {
             var result = UserExists(id);
@@ -63,55 +69,63 @@ namespace Business.Concrete
             return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(new User { Id = id }));
         }
 
-        [ValidationAspect(typeof(UserValidator), Priority = 1)]
-        [CacheRemoveAspect("IUserService.Get")]
         public IResult Delete(int id)
         {
             _userDal.Delete(new User { Id = id });
             return new SuccessResult();
         }
 
-        [ValidationAspect(typeof(UserValidator), Priority = 1)]
-        [CacheRemoveAspect("IUserService.Get")]
         public IDataResult<User> Add(User user)
         {
+            _validation = new Validation<UserValidator>();
+            _validation.Validate(user);
             _userDal.Add(user);
             _userDal.AddOperationClaim(user);
             return new SuccessDataResult<User>(Messages.UserRegistered, user);
         }
 
-        [ValidationAspect(typeof(UserValidator), Priority = 1)]
-        [CacheRemoveAspect("IUserService.Get")]
-        public IDataResult<User> Update(UserForUpdateDto userForUpdateDto, int userId)
+        public IDataResult<User> UpdateUserAbout(User user)
         {
-            IDataResult<User> dataResult = GetById(userId);
-            if (dataResult.IsSuccessful)
-            {
-                dataResult.Data.FirstName = string.IsNullOrEmpty(userForUpdateDto.FirstName)
-                    ? dataResult.Data.FirstName
-                    : userForUpdateDto.FirstName;
-                dataResult.Data.LastName = string.IsNullOrEmpty(userForUpdateDto.LastName)
-                    ? dataResult.Data.LastName
-                    : userForUpdateDto.LastName;
-                dataResult.Data.Email = string.IsNullOrEmpty(userForUpdateDto.Email)
-                    ? dataResult.Data.Email
-                    : userForUpdateDto.Email;
-                if (!string.IsNullOrEmpty(userForUpdateDto.Password))
-                {
-                    UserForPasswordDto userForPasswordDto = new UserForPasswordDto
-                    {
-                        Password = userForUpdateDto.Password
-                    };
-                    HashingHelper.CreatePasswordHash(userForPasswordDto);
-                    dataResult.Data.PasswordHash = userForPasswordDto.PasswordHash;
-                    dataResult.Data.PasswordSalt = userForPasswordDto.PasswordSalt;
-                }
-                _userDal.Update(dataResult.Data);
-                return new SuccessDataResult<User>(dataResult.Data);
-            }
+            _validation = new Validation<UserValidator>();
+            _validation.Validate(user);
 
-            return dataResult;
+            _userDal.Update(user);
+            return new SuccessDataResult<User>(Messages.UserRegistered, user);
         }
+
+        public IDataResult<User> UpdatePassword(User user, string password)
+        {
+            _validation = new Validation<UserValidator>();
+            _validation.Validate(user);
+
+            if (!string.IsNullOrEmpty(password))
+            {
+                UserForPasswordDto userForPasswordDto = new UserForPasswordDto
+                {
+                    Password = password
+                };
+                HashingHelper.CreatePasswordHash(userForPasswordDto);
+                user.PasswordHash = userForPasswordDto.PasswordHash;
+                user.PasswordSalt = userForPasswordDto.PasswordSalt;
+                _userDal.Update(user);
+
+                return new SuccessDataResult<User>(user);
+            }
+          
+            return new ErrorDataResult<User>(Messages.PasswordIsNull, user);
+        }
+
+        public IDataResult<User> UpdateRefreshToken(User user)
+        {
+            User oldUser = _userDal.Get(u => u.Id == user.Id);
+            if (oldUser != null)
+            {
+                _userDal.Update(user);
+                return new SuccessDataResult<User>(user);
+            }
+            return new ErrorDataResult<User>(Messages.UserNotFound);
+        }
+
         public IResult UserExists(string email)
         {
             IDataResult<User> result = GetByEmail(email);

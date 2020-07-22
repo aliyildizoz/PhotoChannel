@@ -11,7 +11,6 @@ namespace Business.Concrete
     public class ChannelCategoryManager : IChannelCategoryService
     {
         private IChannelCategoryDal _channelCategoryDal;
-
         public ChannelCategoryManager(IChannelCategoryDal channelCategoryDal)
         {
             _channelCategoryDal = channelCategoryDal;

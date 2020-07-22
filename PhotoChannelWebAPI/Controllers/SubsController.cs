@@ -6,9 +6,11 @@ using AutoMapper;
 using Business.Abstract;
 using Core.Utilities.Results;
 using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -53,12 +55,17 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(dataResult.Message);
         }
 
-        [HttpPost]
-        public IActionResult Post(SubscriberForAddDto subscriberDto)
-        {
-            var subscriber = _mapper.Map<Subscriber>(subscriberDto);
-            IDataResult<Subscriber> dataResult = _subscriberService.Add(subscriber);
 
+        [HttpPost]
+        [Authorize]
+        public IActionResult Post(int channelId)
+        {
+            var resultId = User.Claims.GetUserId();
+            if (!resultId.IsSuccessful)
+            {
+                return BadRequest();
+            }
+            IDataResult<Subscriber> dataResult = _subscriberService.Add(new Subscriber { UserId = resultId.Data, ChannelId = channelId });
             if (dataResult.IsSuccessful)
             {
                 return Ok(dataResult.Data);
@@ -66,11 +73,17 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+
         [HttpDelete]
-        public IActionResult Delete(SubscriberForDeleteDto subscriberDto)
+        [Authorize]
+        public IActionResult Delete(int channelId)
         {
-            var subscriber = _mapper.Map<Subscriber>(subscriberDto);
-            IResult result = _subscriberService.Delete(subscriber);
+            var resultId = User.Claims.GetUserId();
+            if (!resultId.IsSuccessful)
+            {
+                return BadRequest();
+            }
+            var result = _subscriberService.Delete(new Subscriber { UserId = resultId.Data, ChannelId = channelId });
 
             if (result.IsSuccessful)
             {

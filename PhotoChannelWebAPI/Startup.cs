@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.DependencyResolvers;
+using Business.Abstract;
+using Business.AutoMapperConfig;
+using Business.Concrete;
 using Core.Extensions;
-using Core.Utilities.IoC;
+using Core.Utilities.PhotoUpload;
+using Core.Utilities.PhotoUpload.Cloudinary;
 using Core.Utilities.Security.Encyption;
+using Core.Utilities.Security.Jwt;
+using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -20,6 +26,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using PhotoChannelWebAPI.Helpers;
 using PhotoChannelWebAPI.Helpers.Auth.Cookie;
@@ -30,6 +37,7 @@ namespace PhotoChannelWebAPI
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -49,9 +57,9 @@ namespace PhotoChannelWebAPI
                         .AllowAnyHeader().AllowCredentials()
                 );
             });
-
             services.AddAutoMapper(typeof(Startup));
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -64,28 +72,56 @@ namespace PhotoChannelWebAPI
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                 };
+                options.Events = new JwtEvents();
             });
 
             services.AddDistributedMemoryCache();
 
-            services.AddSession(options =>
-            {
-                // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromMinutes(10);
-                options.Cookie.HttpOnly = true;
-                // Make the session cookie essential
-                options.Cookie.IsEssential = true;
-            });
             services.AddHttpContextAccessor();
             services.AddScoped<IAuthHelper, AuthSessionHelper>();
 
             services.AddControllers();
-            services.AddDependencyResolvers(new ICoreModule[]
-            {
-                new CoreModule()
-            });
+
+            #region ServicesDP
+
+            services.AddScoped<IUserService, UserManager>();
+            services.AddScoped<IUserDal, EfUserDal>();
+
+            services.AddScoped<ICommentService, CommentManager>();
+            services.AddScoped<ICommentDal, EfCommentDal>();
+
+
+            services.AddScoped<ILikeService, LikeManager>();
+            services.AddScoped<ILikeDal, EfLikeDal>();
+
+            services.AddScoped<ISubscriberService, SubscriberManager>();
+            services.AddScoped<ISubscriberDal, EfSubscriberDal>();
+
+
+            services.AddScoped<IChannelCategoryService, ChannelCategoryManager>();
+            services.AddScoped<IChannelCategoryDal, EfChannelCategoryDal>();
+
+            services.AddScoped<ICountService, CountManager>();
+            services.AddScoped<ICountDal, EfCountDal>();
+
+            services.AddScoped<IChannelService, ChannelManager>();
+            services.AddScoped<IChannelDal, EfChannelDal>();
+
+            services.AddScoped<IPhotoService, PhotoManager>();
+            services.AddScoped<IPhotoDal, EfPhotoDal>();
+
+            services.AddScoped<ICategoryService, CategoryManager>();
+            services.AddScoped<ICategoryDal, EfCategoryDal>();
+
+
+            services.AddScoped<IAuthService, AuthManager>();
+            services.AddScoped<ITokenHelper, JwtHelper>();
+            services.AddScoped<IPhotoUpload, CloudinaryHelper>();
+
+            #endregion
 
             services.AddAuthorization();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,17 +132,12 @@ namespace PhotoChannelWebAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseCookiePolicy();
-
-            //app.Use(async (context, next) => { await next.Invoke(); });
-            app.ConfigureCustomExceptionMiddleware();
             app.UseCors("AllowOrigin");
             app.UseHttpsRedirection();
-
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSession();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

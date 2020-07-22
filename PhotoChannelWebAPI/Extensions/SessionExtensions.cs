@@ -21,5 +21,11 @@ namespace PhotoChannelWebAPI.Extensions
             return value == null ? default(T) :
                 JsonConvert.DeserializeObject<T>(value);
         }
+        public static string GetCurrentUserId(this ISession session)
+        {
+            var value = session.GetString("UserId");
+
+            return value;
+        }
     }
 }

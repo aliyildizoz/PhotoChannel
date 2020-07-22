@@ -21,7 +21,6 @@ namespace Business.Concrete
         {
             return new DataResultBase<int>(true, _countDal.GetPhotoLikeCount(new Photo { Id = photoId }));
         }
-
         public IDataResult<int> GetPhotoCommentCount(int photoId)
         {
             return new DataResultBase<int>(true, _countDal.GetPhotoCommentCount(new Photo { Id = photoId }));

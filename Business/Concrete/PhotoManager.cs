@@ -5,8 +5,6 @@ using System.Text;
 using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
-using Core.Aspects.Autofac.Caching;
-using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -17,7 +15,6 @@ namespace Business.Concrete
     public class PhotoManager : IPhotoService
     {
         private IPhotoDal _photoDal;
-
         public PhotoManager(IPhotoDal photoDal)
         {
             _photoDal = photoDal;
@@ -34,8 +31,6 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Photo>>(_photoDal.GetUserPhotos(new User { Id = userId }));
         }
 
-        [ValidationAspect(typeof(PhotoValidator), Priority = 1)]
-        [CacheAspect]
         public IDataResult<Photo> GetById(int id)
         {
             var photo = _photoDal.Get(p => p.Id == id);
@@ -46,17 +41,16 @@ namespace Business.Concrete
             return new ErrorDataResult<Photo>(Messages.PhotoNotFound);
         }
 
-        [CacheRemoveAspect("IPhotoService.Get")]
         public IResult Delete(Photo photo)
         {
             _photoDal.Delete(photo);
             return new SuccessResult();
         }
 
-        [ValidationAspect(typeof(PhotoValidator), Priority = 1)]
-        [CacheRemoveAspect("IPhotoService.Get")]
         public IDataResult<Photo> Add(Photo photo)
         {
+            Validation<PhotoValidator> validation = new Validation<PhotoValidator>();
+            validation.Validate(photo);
             _photoDal.Add(photo);
             return new SuccessDataResult<Photo>(photo);
         }

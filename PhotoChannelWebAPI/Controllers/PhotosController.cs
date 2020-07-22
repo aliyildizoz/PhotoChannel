@@ -10,9 +10,11 @@ using Core.Utilities.PhotoUpload;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
@@ -24,15 +26,13 @@ namespace PhotoChannelWebAPI.Controllers
         private IPhotoService _photoService;
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
-        private IAuthHelper _authHelper;
         private ICountService _countService;
 
-        public PhotosController(IPhotoService photoService, IMapper mapper, IPhotoUpload photoUpload, IAuthHelper authHelper, ICountService countService)
+        public PhotosController(IPhotoService photoService, IMapper mapper, IPhotoUpload photoUpload, ICountService countService)
         {
             _photoService = photoService;
             _mapper = mapper;
             _photoUpload = photoUpload;
-            _authHelper = authHelper;
             _countService = countService;
         }
         [HttpGet("{photoId}")]
@@ -104,18 +104,19 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromForm]PhotoForAddDto photoForAddDto)
+        [Authorize]
+        public IActionResult Post([FromForm] PhotoForAddDto photoForAddDto)
         {
-            string userId = _authHelper.GetCurrentUserId();
-            if (!string.IsNullOrEmpty(userId))
+            if (photoForAddDto.File.Length > 0)
             {
-                if (photoForAddDto.File.Length > 0)
+                var resultId = User.Claims.GetUserId();
+                if (resultId.IsSuccessful)
                 {
                     ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(photoForAddDto.File);
                     var mapResult = _mapper.Map<Photo>(photoForAddDto);
                     mapResult.PhotoUrl = imageUploadResult.Uri.ToString();
                     mapResult.PublicId = imageUploadResult.PublicId;
-                    mapResult.UserId = int.Parse(userId);
+                    mapResult.UserId = resultId.Data;
                     IResult result = _photoService.Add(mapResult);
 
                     if (result.IsSuccessful)
@@ -124,11 +125,14 @@ namespace PhotoChannelWebAPI.Controllers
                     }
                     return BadRequest(result.Message);
                 }
+
+                return Forbid();
             }
             return BadRequest();
         }
         [HttpDelete]
         [Route("{photoId}")]
+        [Authorize]
         public IActionResult Delete(int photoId)
         {
             var deletedPhotos = _photoService.GetById(photoId);

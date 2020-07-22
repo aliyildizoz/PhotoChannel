@@ -7,9 +7,11 @@ using Business.Abstract;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
@@ -20,13 +22,11 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private ICommentService _commentService;
         private IMapper _mapper;
-        private IAuthHelper _authHelper;
 
-        public CommentsController(ICommentService commentService, IMapper mapper, IAuthHelper authHelper)
+        public CommentsController(ICommentService commentService, IMapper mapper)
         {
             _commentService = commentService;
             _mapper = mapper;
-            _authHelper = authHelper;
         }
 
         [HttpGet]
@@ -73,14 +73,15 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.Message);
         }
         [HttpPost]
+        [Authorize]
         public IActionResult Post(CommentForAddDto commentForAddDto)
         {
-            string userId = _authHelper.GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
+            var resultId = User.Claims.GetUserId();
+            if (resultId.IsSuccessful)
             {
                 var mapResult = _mapper.Map<Comment>(commentForAddDto);
                 IResult result = _commentService.Add(mapResult);
-                mapResult.UserId = int.Parse(userId);
+                mapResult.UserId = resultId.Data;
                 if (result.IsSuccessful)
                 {
                     return Ok(result.Message);
@@ -92,14 +93,15 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest();
         }
         [HttpPut]
+        [Authorize]
         public IActionResult Put(CommentForUpdateDto commentForUpdateDto)
         {
-            string userId = _authHelper.GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
+            var resultId = User.Claims.GetUserId();
+            if (resultId.IsSuccessful)
             {
                 var mapResult = _mapper.Map<Comment>(commentForUpdateDto);
                 IResult result = _commentService.Update(mapResult);
-                mapResult.UserId = int.Parse(userId);
+                mapResult.UserId = resultId.Data;
                 if (result.IsSuccessful)
                 {
                     return Ok(result.Message);

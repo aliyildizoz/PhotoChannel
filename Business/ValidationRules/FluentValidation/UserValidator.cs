@@ -17,7 +17,6 @@ namespace Business.ValidationRules.FluentValidation
             RuleFor(user => user.UserName).NotNull().MaximumLength(50);
             RuleFor(user => user.PasswordHash).NotNull();
             RuleFor(user => user.PasswordSalt).NotNull();
-            RuleFor(user => user.IsActive).NotNull();
         }
     }
 }

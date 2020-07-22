@@ -25,7 +25,6 @@ namespace DataAccess.Dal.EntityFramework.Contexts
         public DbSet<Like> Likes { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<ChannelCategory> ChannelCategories { get; set; }
-        public DbSet<ChannelAdmin> ChannelAdmins { get; set; }
        
 
 

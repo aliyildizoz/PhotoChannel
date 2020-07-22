@@ -5,9 +5,6 @@ using System.Text;
 using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
-using Castle.Core.Internal;
-using Core.Aspects.Autofac.Caching;
-using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
 using Core.Utilities.Business;
 using Core.Utilities.Results;
@@ -20,16 +17,18 @@ namespace Business.Concrete
     public class ChannelManager : IChannelService
     {
         private IChannelDal _channelDal;
+
+        private Validation<ChannelValidator> _validation;
         public ChannelManager(IChannelDal channelDal)
         {
             _channelDal = channelDal;
         }
-        [CacheAspect]
+
         public IDataResult<List<Channel>> GetList()
         {
             return new SuccessDataResult<List<Channel>>(_channelDal.GetList().ToList());
         }
-        [CacheAspect]
+
         public IDataResult<Channel> GetById(int id)
         {
             var channel = _channelDal.Get(c => c.Id == id);
@@ -39,7 +38,7 @@ namespace Business.Concrete
             }
             return new ErrorDataResult<Channel>(Messages.ChannelNotFound);
         }
-        [CacheAspect]
+
         public IDataResult<User> GetOwner(int id)
         {
             var result = ChannelExists(id);
@@ -49,24 +48,23 @@ namespace Business.Concrete
             }
             return new SuccessDataResult<User>(_channelDal.GetOwner(new Channel { Id = id }));
         }
-        [CacheAspect]
+
         public IDataResult<List<Channel>> GetByName(string name)
         {
             return new SuccessDataResult<List<Channel>>(_channelDal.GetList(channel => channel.Name.Contains(name)).ToList());
         }
-      
 
-        [CacheRemoveAspect("IChannelService.Get")]
         public IResult Delete(int id)
         {
             _channelDal.Delete(new Channel { Id = id });
             return new SuccessResult(Messages.ChannelDeleted);
         }
 
-        [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
-        [CacheRemoveAspect("IChannelService.Get")]
+
         public IDataResult<Channel> Add(Channel channel)
         {
+            _validation = new Validation<ChannelValidator>();
+            _validation.Validate(channel);
             IResult result = BusinessRules.Run(CheckIfChannelNameExists(channel.Name));
             if (!result.IsSuccessful)
             {
@@ -86,11 +84,10 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-        [ValidationAspect(typeof(ChannelValidator), Priority = 1)]
-        [CacheRemoveAspect("IChannelService.Get")]
-        public IDataResult<Channel> Update(Channel channel, int channelId)
+        public IDataResult<Channel> Update(Channel channel)
         {
-            //Todo: direkt update işlemini dene
+            _validation = new Validation<ChannelValidator>();
+            _validation.Validate(channel);
             _channelDal.Update(channel);
             return new SuccessDataResult<Channel>(Messages.ChannelUpdated, channel);
         }

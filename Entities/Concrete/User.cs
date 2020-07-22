@@ -13,5 +13,7 @@ namespace Entities.Concrete
         public byte[] PasswordSalt { get; set; }
         public byte[] PasswordHash { get; set; }
         public bool IsActive { get; set; }
+
+        public string RefreshToken { get; set; }
     }
 }

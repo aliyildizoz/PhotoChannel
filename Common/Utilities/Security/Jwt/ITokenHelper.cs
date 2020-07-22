@@ -10,5 +10,7 @@ namespace Core.Utilities.Security.Jwt
     {
         AccessToken CreateToken(User user, List<OperationClaim> operationClaims);
 
+        AccessToken CreateTokenShortExp(User user, List<OperationClaim> operationClaims);
+        string CreateRefreshToken();
     }
 }

@@ -19,5 +19,17 @@ namespace Core.Utilities.Business
 
             return new SuccessResult();
         }
+        public static IResult ImageExtensionValidate(string imageExtension)
+        {
+            string[] extensions = { "png", "jpg", "jpeg" };
+            foreach (string extension in extensions)
+            {
+                if (extension == imageExtension)
+                {
+                    return new ErrorResult();
+                }
+            }
+            return new SuccessResult();
+        }
     }
 }

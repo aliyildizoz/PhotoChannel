@@ -6,27 +6,26 @@ namespace Business.Constants
 {
     public static class Messages
     {
-        public static string ChannelAdded = "Kanal başarıyla eklendi";
-        public static string ChannelDeleted = "Kanal başarıyla silindi";
-        public static string ChannelUpdated = "Kanal başarıyla güncellendi";
-
-        public static string SubscribeAdded = "Abonelik başarıyla tamamlandı.";
-        public static string SubscribeDeleted = "Abonelik başarıyla iptal edildi.";
-        public static string ChannelAdminAdded = "Yönetici ekleme başarılı.";
-        public static string ChannelAdminDeleted = "Yönetici silme başarılı.";
-
-        public static string UserNotFound = "Kullanıcı bulunamadı";
-        public static string PasswordAndUsernameError = "E-mail veya şifre yanlış.";
-        public static string PasswordError = "Şifre hatalı";
-        public static string SuccessfulLogin = "Sisteme giriş başarılı";
-        public static string UserAlreadyExists = "Bu kullanıcı zaten mevcut";
-        public static string UserRegistered = "Kullanıcı başarıyla kaydedildi";
-        public static string AccessTokenCreated = "Access token başarıyla oluşturuldu";
-
-        public static string UserNotAdded = "Kullanıcı Eklenemedi";
-        public static string ChannelNameAlreadyExists = "Kanal adı zaten mevcut.";
-        public static string ChannelNotFound = "Kanal bulunamadı.";
-        public static string PhotoNotFound = "Fotoğraf bulunamadı.";
-        public static string CategoryNotFound = "Kategori bulunamadı.";
+        public const string ChannelAdded = "Kanal başarıyla eklendi";
+        public const string ChannelDeleted = "Kanal başarıyla silindi";
+        public const string ChannelUpdated = "Kanal başarıyla güncellendi";
+               
+        public const string SubscribeAdded = "Abonelik başarıyla tamamlandı.";
+        public const string SubscribeDeleted = "Abonelik başarıyla iptal edildi.";
+               
+        public const string UserNotFound = "Kullanıcı bulunamadı";
+        public const string PasswordAndUsernameError = "E-mail veya şifre yanlış.";
+        public const string PasswordError = "Şifre hatalı";
+        public const string SuccessfulLogin = "Sisteme giriş başarılı";
+        public const string UserAlreadyExists = "Bu kullanıcı zaten mevcut";
+        public const string UserRegistered = "Kullanıcı başarıyla kaydedildi";
+        public const string AccessTokenCreated = "Access token başarıyla oluşturuldu";
+               
+        public const string UserNotAdded = "Kullanıcı Eklenemedi";
+        public const string ChannelNameAlreadyExists = "Kanal adı zaten mevcut.";
+        public const string ChannelNotFound = "Kanal bulunamadı.";
+        public const string PhotoNotFound = "Fotoğraf bulunamadı.";
+        public const string CategoryNotFound = "Kategori bulunamadı.";
+        public static string PasswordIsNull = "Şifre bulunamadı.";
     }
 }

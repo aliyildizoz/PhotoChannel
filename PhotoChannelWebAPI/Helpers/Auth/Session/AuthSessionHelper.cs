@@ -19,6 +19,16 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Session
         private string userIdkey = "UserId";
         private IUserService _userService;
 
+        #region Session conf
+        /*services.AddSession(options =>
+        {
+            // Set a short timeout for easy testing.
+            options.IdleTimeout = TimeSpan.FromMinutes(10);
+            options.Cookie.HttpOnly = true;
+            // Make the session cookie essential
+            options.Cookie.IsEssential = true;
+        });*/
+        #endregion
         public AuthSessionHelper(IHttpContextAccessor accessor, IUserService userService)
         {
             _accessor = accessor;

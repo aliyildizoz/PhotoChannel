@@ -7,10 +7,12 @@ using Business.Abstract;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -56,10 +58,15 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(LikeForAddDto likeDto)
+        [Authorize]
+        public IActionResult Post(int photoId)
         {
-            var like = _mapper.Map<Like>(likeDto);
-            IDataResult<Like> dataResult = _likeService.Add(like);
+            var result = User.Claims.GetUserId();
+            if (!result.IsSuccessful)
+            {
+                return BadRequest();
+            }
+            IDataResult<Like> dataResult = _likeService.Add(new Like() { UserId = result.Data, PhotoId = photoId });
 
             if (dataResult.IsSuccessful)
             {
@@ -68,11 +75,17 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+
         [HttpDelete]
-        public IActionResult Delete(LikeForDeleteDto likeDto)
+        [Authorize]
+        public IActionResult Delete(int photoId)
         {
-            var like = _mapper.Map<Like>(likeDto);
-            IResult result = _likeService.Delete(like);
+            var resultId = User.Claims.GetUserId();
+            if (!resultId.IsSuccessful)
+            {
+                return BadRequest();
+            }
+            var result = _likeService.Delete(new Like() { UserId = resultId.Data, PhotoId = photoId });
 
             if (result.IsSuccessful)
             {

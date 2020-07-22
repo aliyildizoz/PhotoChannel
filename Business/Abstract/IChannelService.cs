@@ -18,7 +18,7 @@ namespace Business.Abstract
 
         IResult Delete(int id);
         IDataResult<Channel> Add(Channel channel);
-        IDataResult<Channel> Update(Channel channel, int id);
+        IDataResult<Channel> Update(Channel channel);
         IResult ChannelExists(int id);
         IResult CheckIfChannelNameExistsWithUpdate(string name, int id);
         IResult CheckIfChannelNameExists(string channelName);

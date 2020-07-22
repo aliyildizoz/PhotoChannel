@@ -5,19 +5,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Abstract;
-using Castle.Core.Internal;
 using CloudinaryDotNet.Actions;
 using Core.Entities.Concrete;
+using Core.Utilities.Business;
 using Core.Utilities.PhotoUpload;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.Dtos;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
@@ -29,22 +31,21 @@ namespace PhotoChannelWebAPI.Controllers
         private IChannelService _channelService;
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
-        private IAuthHelper _authHelper;
         private ICountService _countService;
-        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, IAuthHelper authHelper, ICountService countService)
+        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, ICountService countService)
         {
             _channelService = channelService;
             _mapper = mapper;
             _photoUpload = photoUpload;
-            _authHelper = authHelper;
             _countService = countService;
         }
 
         [HttpPost]
-        public IActionResult Post([FromForm]ChannelForAddDto channelForAddDto)
+        [Authorize]
+        public IActionResult Post([FromForm] ChannelForAddDto channelForAddDto)
         {
-            string ownerId = _authHelper.GetCurrentUserId();
-            if (!string.IsNullOrEmpty(ownerId))
+            var resultId = User.Claims.GetUserId();
+            if (resultId.IsSuccessful)
             {
                 IResult checkResult = _channelService.CheckIfChannelNameExists(channelForAddDto.Name);
                 if (!checkResult.IsSuccessful)
@@ -58,7 +59,7 @@ namespace PhotoChannelWebAPI.Controllers
                     var channel = _mapper.Map<Channel>(channelForAddDto);
                     channel.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
                     channel.PublicId = imageUploadResult.PublicId;
-                    //channel.UserId = int.Parse(ownerId);
+                    channel.UserId = resultId.Data;
                     IResult result = _channelService.Add(channel);
                     if (result.IsSuccessful)
                     {
@@ -93,36 +94,34 @@ namespace PhotoChannelWebAPI.Controllers
 
         [HttpPut]
         [Route("{channelId}")]
-        public IActionResult Put(int channelId, [FromForm]ChannelForUpdateDto channelForUpdate)
+        public IActionResult Put(int channelId, [FromForm] ChannelForUpdateDto channelForUpdate)
         {
             var dataResult = _channelService.GetById(channelId);
             if (dataResult.IsSuccessful)
             {
-                if (channelForUpdate.File != null || !channelForUpdate.Name.IsNullOrEmpty())
+                if (string.IsNullOrEmpty(channelForUpdate.Name))
                 {
-                    if (!channelForUpdate.Name.IsNullOrEmpty())
-                    {
-                        IResult result = _channelService.CheckIfChannelNameExistsWithUpdate(channelForUpdate.Name, channelId);
-                        if (result.IsSuccessful)
-                        {
-                            return BadRequest(result.Message);
-                        }
+                    return BadRequest();
+                }
+                if (channelForUpdate.File != null && channelForUpdate.File.Length > 0 && BusinessRules.ImageExtensionValidate(channelForUpdate.File.ContentType).IsSuccessful)
+                {
+                    DeletionResult deletionResult = _photoUpload.ImageDelete(dataResult.Data.PublicId);
+                    ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForUpdate.File);
+                    dataResult.Data.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
+                    dataResult.Data.PublicId = imageUploadResult.PublicId;
+                }
+                IResult result = _channelService.CheckIfChannelNameExistsWithUpdate(channelForUpdate.Name, channelId);
+                if (result.IsSuccessful)
+                {
+                    return BadRequest(result.Message);
+                }
+                dataResult.Data.Name = channelForUpdate.Name;
 
-                        dataResult.Data.Name = channelForUpdate.Name;
-                    }
-                    if (channelForUpdate.File != null && channelForUpdate.File.Length > 0)
-                    {
-                        DeletionResult deletionResult = _photoUpload.ImageDelete(dataResult.Data.PublicId);
-                        ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForUpdate.File);
-                        dataResult.Data.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
-                        dataResult.Data.PublicId = imageUploadResult.PublicId;
-                    }
-                    IDataResult<Channel> updateDataResult = _channelService.Update(dataResult.Data, channelId);
-                    if (dataResult.IsSuccessful)
-                    {
-                        var map = _mapper.Map<ChannelForDetailDto>(updateDataResult.Data);
-                        return Ok(map);
-                    }
+                IDataResult<Channel> updateDataResult = _channelService.Update(dataResult.Data);
+                if (dataResult.IsSuccessful)
+                {
+                    var map = _mapper.Map<ChannelForDetailDto>(updateDataResult.Data);
+                    return Ok(map);
                 }
                 return BadRequest();
             }

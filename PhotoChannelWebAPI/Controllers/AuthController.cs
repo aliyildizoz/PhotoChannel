@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using Business.Abstract;
-using Core.Entities.Concrete;
-using Core.Extensions;
-using Core.Utilities.Results;
-using Entities.Concrete;
 using Entities.Dtos;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Newtonsoft.Json;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
+using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -26,13 +19,10 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private IAuthService _authService;
         private IMapper _mapper;
-        private IAuthHelper _authHelper;
-
-        public AuthController(IAuthService authService, IMapper mapper, IAuthHelper authHelper)
+        public AuthController(IAuthService authService, IMapper mapper)
         {
             _authService = authService;
             _mapper = mapper;
-            _authHelper = authHelper;
         }
 
         [HttpPost]
@@ -47,31 +37,48 @@ namespace PhotoChannelWebAPI.Controllers
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.IsSuccessful)
             {
-                _authHelper.Login(userToLogin.Data);
                 return Ok(result.Data);
             }
 
             return BadRequest(result.Message);
         }
         [HttpGet]
+        [Route("refreshtoken")]
+        public ActionResult RefreshToken([FromForm]string refreshToken)
+        {
+            var result = _authService.CreateRefreshToken(refreshToken);
+            if (result.IsSuccessful) return Ok(result.Data);
+
+            return BadRequest(result.Message);
+        }
+        [HttpGet]
         [Route("currentuser")]
+        [Authorize]
         public ActionResult GetCurrentUser()
         {
-            User user = _authHelper.GetCurrentUser();
-            if (user == null)
+            var result = User.Claims.GetCurrentUser();
+            if (result.IsSuccessful)
             {
-                return BadRequest();
+                return Ok(result.Data);
             }
-            CurrentUserDto currentUserDto = _mapper.Map<CurrentUserDto>(user);
-            return Ok(currentUserDto);
-
+            return BadRequest(result.Message);
         }
         [HttpGet]
         [Route("logout")]
+        [Authorize]
         public ActionResult Logout()
         {
-            _authHelper.Logout();
-            return Ok();
+            var id = User.Claims.GetUserId();
+            if (id.IsSuccessful)
+            {
+                var result = _authService.TokenExpiration(id.Data);
+                if (result.IsSuccessful)
+                {
+                    return Ok();
+                }
+            }
+           
+            return BadRequest();
         }
         [HttpPost]
         [Route("register")]
@@ -90,7 +97,6 @@ namespace PhotoChannelWebAPI.Controllers
             var result = _authService.CreateAccessToken(registerResult.Data);
             if (result.IsSuccessful)
             {
-                _authHelper.Login(registerResult.Data);
                 return Ok(result.Data);
             }
 
