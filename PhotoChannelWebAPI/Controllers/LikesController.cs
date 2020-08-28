@@ -56,7 +56,13 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
-
+        [HttpGet]
+        [Route("islike/{photoId}")]
+        [Authorize]
+        public IActionResult GetIsSubs(int photoId)
+        {
+            return Ok(_likeService.GetIsUserLike(photoId, User.Claims.GetUserId().Data));
+        }
         [HttpPost]
         [Authorize]
         public IActionResult Post(int photoId)

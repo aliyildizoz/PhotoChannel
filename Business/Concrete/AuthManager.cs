@@ -108,7 +108,6 @@ namespace Business.Concrete
             var result = _userService.UpdateRefreshToken(userDataResult.Data);
             if (result.IsSuccessful)
             {
-
                 return new SuccessResult();
             }
             return new ErrorResult();

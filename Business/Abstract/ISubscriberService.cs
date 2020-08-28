@@ -12,6 +12,7 @@ namespace Business.Abstract
         IDataResult<List<Channel>> GetSubscriptions(int userId);
         IDataResult<Subscriber> Add(Subscriber subscriber);
         IResult Delete(Subscriber subscriber);
+        bool GetIsUserSubs(int channelId, int userId);
 
     }
 }

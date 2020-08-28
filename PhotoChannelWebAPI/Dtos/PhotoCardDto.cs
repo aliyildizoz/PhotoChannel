@@ -6,7 +6,7 @@ namespace PhotoChannelWebAPI.Dtos
 {
     public class PhotoCardDto
     {
-        public int Id { get; set; }
+        public int PhotoId { get; set; }
         public int UserId { get; set; }
         public int ChannelId { get; set; }
         public DateTime ShareDate { get; set; }

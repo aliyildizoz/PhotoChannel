@@ -20,22 +20,35 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<ChannelForUpdateDto, Channel>();
             CreateMap<Channel, ChannelForListDto>();
 
+            CreateMap<User, OwnerDto>();
+
 
             CreateMap<Channel, ChannelForDetailDto>();
 
             CreateMap<Photo, PhotoForListDto>();
             CreateMap<PhotoForAddDto, Photo>();
             CreateMap<Photo, PhotoForDetailDto>();
-            CreateMap<Photo, PhotoGalleryDto>().ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))
+            CreateMap<Photo, PhotoGalleryDto>()
+                .ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))
                 .ForMember(dto => dto.UserName, opt => opt.MapFrom(photo => photo.User.UserName));
 
-            CreateMap<Photo, PhotoCardDto>().ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))
-                .ForMember(dto => dto.UserName, opt => opt.MapFrom(photo => photo.User.UserName)).ForMember(dto => dto.ChannelId, opt => opt.MapFrom(photo => photo.ChannelId)).ForMember(dto => dto.ChannelName, opt => opt.MapFrom(photo => photo.Channel.Name)).ForMember(dto => dto.ChannelPublicId, opt => opt.MapFrom(photo => photo.Channel.PublicId)).ForMember(dto => dto.PhotoPublicId, opt => opt.MapFrom(photo => photo.PublicId));
+            CreateMap<Photo, PhotoCardDto>()
+                .ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))
+                .ForMember(dto => dto.UserName, opt => opt.MapFrom(photo => photo.User.UserName))
+                .ForMember(dto => dto.ChannelId, opt => opt.MapFrom(photo => photo.ChannelId))
+                .ForMember(dto => dto.ChannelName, opt => opt.MapFrom(photo => photo.Channel.Name))
+                .ForMember(dto => dto.ChannelPublicId, opt => opt.MapFrom(photo => photo.Channel.PublicId))
+                .ForMember(dto => dto.PhotoPublicId, opt => opt.MapFrom(photo => photo.PublicId))
+                .ForMember(dto => dto.PhotoId, opt => opt.MapFrom(photo => photo.Id));
 
 
             CreateMap<CommentForAddDto, Comment>();
             CreateMap<CommentForUpdateDto, Comment>();
-            CreateMap<Comment, CommentForListDto>().ForMember(dto => dto.UserId, opt => opt.MapFrom(comment => comment.UserId)).ForMember(dto => dto.CommentId, opt => opt.MapFrom(comment => comment.Id)).ForMember(dto => dto.FirstName, opt => opt.MapFrom(comment => comment.User.FirstName)).ForMember(dto => dto.LastName, opt => opt.MapFrom(comment => comment.User.LastName));
+            CreateMap<Comment, CommentForListDto>()
+                .ForMember(dto => dto.UserId, opt => opt.MapFrom(comment => comment.UserId))
+                .ForMember(dto => dto.CommentId, opt => opt.MapFrom(comment => comment.Id))
+                .ForMember(dto => dto.FirstName, opt => opt.MapFrom(comment => comment.User.FirstName))
+                .ForMember(dto => dto.LastName, opt => opt.MapFrom(comment => comment.User.LastName));
 
             CreateMap<User, UserForListDto>();
             CreateMap<User, UserForDetailDto>();

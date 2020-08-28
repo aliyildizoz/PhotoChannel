@@ -44,7 +44,7 @@ namespace PhotoChannelWebAPI.Controllers
         }
         [HttpGet]
         [Route("refreshtoken")]
-        public ActionResult RefreshToken([FromForm]string refreshToken)
+        public ActionResult RefreshToken([FromHeader]string refreshToken)
         {
             var result = _authService.CreateRefreshToken(refreshToken);
             if (result.IsSuccessful) return Ok(result.Data);

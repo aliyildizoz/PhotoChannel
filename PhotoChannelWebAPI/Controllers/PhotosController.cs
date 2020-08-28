@@ -27,7 +27,6 @@ namespace PhotoChannelWebAPI.Controllers
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
         private ICountService _countService;
-
         public PhotosController(IPhotoService photoService, IMapper mapper, IPhotoUpload photoUpload, ICountService countService)
         {
             _photoService = photoService;
@@ -59,8 +58,8 @@ namespace PhotoChannelWebAPI.Controllers
                 var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
                 mapResult.ForEach(dto =>
                 {
-                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.Id).Data;
-                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.Id).Data;
+                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
+                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
                 return Ok(mapResult);
             }
@@ -78,8 +77,8 @@ namespace PhotoChannelWebAPI.Controllers
                 var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
                 mapResult.ForEach(dto =>
                 {
-                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.Id).Data;
-                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.Id).Data;
+                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
+                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
                 return Ok(mapResult);
             }

@@ -26,7 +26,7 @@ namespace PhotoChannelWebAPI.Controllers
 
         [HttpGet]
         [Route("{categoryId}/category-channels")]
-        public IActionResult GetPhotoLikes(int categoryId)
+        public IActionResult GetCategoryChannels(int categoryId)
         {
             IDataResult<List<Channel>> dataResult = _channelCategoryService.GetCategoryChannels(categoryId);
 
@@ -41,7 +41,7 @@ namespace PhotoChannelWebAPI.Controllers
 
         [HttpGet]
         [Route("{channelId}/channel-categories")]
-        public IActionResult GetLikePhotos(int channelId)
+        public IActionResult GetChannelCategories(int channelId)
         {
             IDataResult<List<Category>> dataResult = _channelCategoryService.GetChannelCategories(channelId);
 

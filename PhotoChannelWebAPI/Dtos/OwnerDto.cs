@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PhotoChannelWebAPI.Dtos
 {
-    public class SubscriberForListDto
+    public class OwnerDto
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

@@ -39,7 +39,13 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
-
+        [HttpGet]
+        [Route("issub/{channelId}")]
+        [Authorize]
+        public IActionResult GetIsSubs(int channelId)
+        {
+            return Ok(_subscriberService.GetIsUserSubs(channelId, User.Claims.GetUserId().Data));
+        }
         [HttpGet]
         [Route("{userId}/subscriptions")]
         public IActionResult GetSubscriptions(int userId)

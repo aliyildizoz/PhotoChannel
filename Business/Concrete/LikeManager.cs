@@ -29,6 +29,12 @@ namespace Business.Concrete
             return new SuccessDataResult<List<User>>(_likeDal.GetPhotoLikes(new Photo { Id = photoId }));
         }
 
+        public bool GetIsUserLike(int photoId, int userId)
+        {
+            var result = _likeDal.Get(like => like.UserId == userId && like.PhotoId == photoId);
+            return result != null;
+        }
+
         public IDataResult<Like> Add(Like like)
         {
             _likeDal.Add(like);

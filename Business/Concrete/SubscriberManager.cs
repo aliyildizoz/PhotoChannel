@@ -28,6 +28,12 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Channel>>(_subscriberDal.GetSubscriptions(new User { Id = userId }));
         }
 
+        public bool GetIsUserSubs(int channelId, int userId)
+        {
+            var result = _subscriberDal.Get(subs=> subs.UserId == userId && subs.ChannelId== channelId);
+            return result != null;
+        }
+
         public IDataResult<Subscriber> Add(Subscriber subscriber)
         {
             _subscriberDal.Add(subscriber);

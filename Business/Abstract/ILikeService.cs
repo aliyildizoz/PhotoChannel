@@ -11,6 +11,7 @@ namespace Business.Abstract
     {
         IDataResult<List<Photo>> GetLikePhotos(int userId);
         IDataResult<List<User>> GetPhotoLikes(int photoId);
+        bool GetIsUserLike(int photoId, int userId);
         IDataResult<Like> Add(Like like);
         IResult Delete(Like like);
     }

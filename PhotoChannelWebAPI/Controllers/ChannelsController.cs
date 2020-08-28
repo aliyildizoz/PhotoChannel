@@ -162,6 +162,7 @@ namespace PhotoChannelWebAPI.Controllers
         {
             if (channelId > 0)
             {
+                var a=User.Claims.GetUserId();
                 IDataResult<Channel> result = _channelService.GetById(channelId);
                 if (result.IsSuccessful)
                 {

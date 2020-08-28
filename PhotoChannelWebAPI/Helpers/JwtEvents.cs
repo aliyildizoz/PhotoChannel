@@ -13,10 +13,7 @@ namespace PhotoChannelWebAPI.Helpers
 {
     public class JwtEvents : JwtBearerEvents, IJwtEvents
     {
-        public JwtEvents()
-        {
-        }
-        public override Task TokenValidated(TokenValidatedContext context)
+       public override Task TokenValidated(TokenValidatedContext context)
         {
             if (IsPathIgnore(context.HttpContext.Request.Path.Value)) return Task.CompletedTask;
 
