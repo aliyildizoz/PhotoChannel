@@ -26,7 +26,7 @@ namespace Core.DataAccess.EntityFramework
                 return filter == null ? context.Set<TEntity>().ToList() : context.Set<TEntity>().Where(filter).ToList();
             }
         }
-        public void Add(TEntity entity)
+        public virtual void Add(TEntity entity)
         {
             using (var context = new TContext())
             {
@@ -35,21 +35,21 @@ namespace Core.DataAccess.EntityFramework
                 context.SaveChanges();
             }
         }
-        public void Update(TEntity entity)
-        {
-            using (var context = new TContext())
-            {
-                var deletedEntity = context.Entry(entity);
-                deletedEntity.State = EntityState.Modified;
-                context.SaveChanges();
-            }
-        }
-        public void Delete(TEntity entity)
+        public virtual void Update(TEntity entity)
         {
             using (var context = new TContext())
             {
                 var updatedEntity = context.Entry(entity);
-                updatedEntity.State = EntityState.Deleted;
+                updatedEntity.State = EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
+        public virtual void Delete(TEntity entity)
+        {
+            using (var context = new TContext())
+            {
+                var deletedEntity = context.Entry(entity);
+                deletedEntity.State = EntityState.Deleted;
                 context.SaveChanges();
             }
         }

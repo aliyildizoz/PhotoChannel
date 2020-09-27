@@ -42,7 +42,7 @@ namespace Business.Concrete
 
         public IResult Delete(Subscriber subscriber)
         {
-            _subscriberDal.Delete(_subscriberDal.Get(subscriber1 => subscriber1.UserId == subscriber.UserId && subscriber1.ChannelId == subscriber1.ChannelId));
+            _subscriberDal.Delete(_subscriberDal.Get(subscriber1 => subscriber1.UserId == subscriber.UserId && subscriber1.ChannelId == subscriber.ChannelId));
             return new SuccessResult();
         }
     }

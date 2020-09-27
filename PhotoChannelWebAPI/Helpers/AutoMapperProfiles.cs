@@ -28,9 +28,6 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<Photo, PhotoForListDto>();
             CreateMap<PhotoForAddDto, Photo>();
             CreateMap<Photo, PhotoForDetailDto>();
-            CreateMap<Photo, PhotoGalleryDto>()
-                .ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))
-                .ForMember(dto => dto.UserName, opt => opt.MapFrom(photo => photo.User.UserName));
 
             CreateMap<Photo, PhotoCardDto>()
                 .ForMember(dto => dto.UserId, opt => opt.MapFrom(photo => photo.UserId))

@@ -66,24 +66,29 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
-        [HttpPost]
-        public IActionResult Post(ChannelCategoryForAddRangeDto channelCategoriesDto)
+        [HttpPut]
+        [Route("{channelId}")]
+        public IActionResult Put(int channelId, ChannelCategoryForAddRangeDto channelCategoriesDto)
         {
-            ChannelCategory[] channelCategories = new ChannelCategory[channelCategoriesDto.CategoryIds.Length];
-
-            for (int i = 0; i < channelCategoriesDto.CategoryIds.Length; i++)
+            if (channelId > 0)
             {
-                channelCategories[i] = new ChannelCategory { ChannelId = channelCategoriesDto.ChannelId, CategoryId = channelCategoriesDto.CategoryIds[i] };
+                ChannelCategory[] channelCategories = new ChannelCategory[channelCategoriesDto.CategoryIds.Length];
+
+                for (int i = 0; i < channelCategoriesDto.CategoryIds.Length; i++)
+                {
+                    channelCategories[i] = new ChannelCategory { ChannelId = channelId, CategoryId = channelCategoriesDto.CategoryIds[i] };
+                }
+
+                IResult result = _channelCategoryService.AddRange(channelCategories);
+
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+
+                return BadRequest(result.Message);
             }
-
-            IResult result = _channelCategoryService.AddRange(channelCategories);
-
-            if (result.IsSuccessful)
-            {
-                return Ok(result.Message);
-            }
-
-            return BadRequest(result.Message);
+            return BadRequest();
         }
         [HttpDelete]
         public IActionResult Delete(ChannelCategoryForDeleteDto channelCategoryDto)

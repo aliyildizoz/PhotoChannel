@@ -11,6 +11,7 @@ namespace PhotoChannelWebAPI.Dtos
         public int ChannelId { get; set; }
         public DateTime ShareDate { get; set; }
         public string PhotoPublicId { get; set; }
+        public string PhotoUrl { get; set; }
         public string UserName { get; set; }
         public string ChannelName { get; set; }
         public string ChannelPublicId { get; set; }

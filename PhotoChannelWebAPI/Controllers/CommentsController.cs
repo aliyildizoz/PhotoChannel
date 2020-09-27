@@ -76,53 +76,68 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult Post(CommentForAddDto commentForAddDto)
         {
-            var resultId = User.Claims.GetUserId();
-            if (resultId.IsSuccessful)
-            {
-                var mapResult = _mapper.Map<Comment>(commentForAddDto);
-                IResult result = _commentService.Add(mapResult);
-                mapResult.UserId = resultId.Data;
-                if (result.IsSuccessful)
-                {
-                    return Ok(result.Message);
-                }
-
-                return BadRequest(result.Message);
-            }
-
-            return BadRequest();
-        }
-        [HttpPut]
-        [Authorize]
-        public IActionResult Put(CommentForUpdateDto commentForUpdateDto)
-        {
-            var resultId = User.Claims.GetUserId();
-            if (resultId.IsSuccessful)
-            {
-                var mapResult = _mapper.Map<Comment>(commentForUpdateDto);
-                IResult result = _commentService.Update(mapResult);
-                mapResult.UserId = resultId.Data;
-                if (result.IsSuccessful)
-                {
-                    return Ok(result.Message);
-                }
-
-                return BadRequest(result.Message);
-            }
-
-            return BadRequest();
-        }
-        [HttpDelete]
-        public IActionResult Delete(int commentId)
-        {
-            IResult result = _commentService.Delete(new Comment { Id = commentId });
-
+            var currentUser = User.Claims.GetCurrentUser().Data;
+            var mapResult = _mapper.Map<Comment>(commentForAddDto);
+            mapResult.UserId = currentUser.Id;
+            IResult result = _commentService.Add(mapResult);
             if (result.IsSuccessful)
             {
-                return Ok(result.Message);
+                CommentForListDto dto = new CommentForListDto
+                {
+                    CommentId = mapResult.Id,
+                    Description = mapResult.Description,
+                    ShareDate = mapResult.ShareDate,
+                    UserId = mapResult.UserId,
+                    LastName = currentUser.LastName,
+                    FirstName = currentUser.FirstName
+                };
+                return Ok(dto);
             }
 
             return BadRequest(result.Message);
+        }
+        [HttpPut]
+        [Authorize]
+        [Route("{commentId}")]
+        public IActionResult Put(int commentId, CommentForUpdateDto commentForUpdateDto)
+        {
+            if (commentId > 0)
+            {
+                var comment = _commentService.GetById(commentId);
+                if (comment.IsSuccessful)
+                {
+                    comment.Data.Description = commentForUpdateDto.Description;
+                    IResult result = _commentService.Update(comment.Data);
+                    if (result.IsSuccessful)
+                    {
+                        return Ok(result.Message);
+                    }
+                    return this.ServerError(result.Message);
+                }
+
+                return NotFound();
+
+            }
+            return BadRequest();
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [Route("{commentId}")]
+        public IActionResult Delete(int commentId)
+        {
+            if (commentId > 0)
+            {
+                IResult result = _commentService.Delete(new Comment { Id = commentId });
+
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+
+                return BadRequest(result.Message);
+            }
+            return BadRequest();
         }
     }
 }

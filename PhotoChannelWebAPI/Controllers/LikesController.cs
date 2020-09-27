@@ -59,16 +59,16 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpGet]
         [Route("islike/{photoId}")]
         [Authorize]
-        public IActionResult GetIsSubs(int photoId)
+        public IActionResult GetIsLike(int photoId)
         {
             return Ok(_likeService.GetIsUserLike(photoId, User.Claims.GetUserId().Data));
         }
         [HttpPost]
         [Authorize]
-        public IActionResult Post(int photoId)
+        public IActionResult Post([FromForm] int photoId)
         {
             var result = User.Claims.GetUserId();
-            if (!result.IsSuccessful)
+            if (!result.IsSuccessful && photoId > 0)
             {
                 return BadRequest();
             }
@@ -83,11 +83,12 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpDelete]
+        [Route("{photoId}")]
         [Authorize]
         public IActionResult Delete(int photoId)
         {
             var resultId = User.Claims.GetUserId();
-            if (!resultId.IsSuccessful)
+            if (!resultId.IsSuccessful && photoId > 0)
             {
                 return BadRequest();
             }

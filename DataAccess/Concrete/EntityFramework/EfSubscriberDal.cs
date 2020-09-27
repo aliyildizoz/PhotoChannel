@@ -30,5 +30,22 @@ namespace DataAccess.Concrete.EntityFramework
                 return channels.ToList();
             }
         }
+
+        public override void Add(Subscriber entity)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                var contains = context.Subscribers.Contains(entity);
+                if (!contains) base.Add(entity);
+            }
+        }
+        public override void Delete(Subscriber entity)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                var contains = context.Subscribers.Contains(entity);
+                if (contains) base.Delete(entity);
+            }
+        }
     }
 }

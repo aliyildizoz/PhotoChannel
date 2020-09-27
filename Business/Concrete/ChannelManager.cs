@@ -101,6 +101,13 @@ namespace Business.Concrete
             }
             return new ErrorResult(Messages.ChannelNotFound);
         }
+
+        public IResult GetIsOwner(int channelId, int userId)
+        {
+            var result = GetOwner(channelId);
+            return result.IsSuccessful ? result.Data.Id == userId ? (IResult)new SuccessResult() : new ErrorResult() : new ErrorResult();
+        }
+
         public IResult CheckIfChannelNameExistsWithUpdate(string name, int channelId)
         {
             Channel result = _channelDal.Get(channel => channel.Name == name);

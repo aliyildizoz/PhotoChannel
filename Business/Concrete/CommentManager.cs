@@ -35,6 +35,11 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Comment>>(_commentDal.GetPhotoComments(new Photo { Id = photoId }).ToList());
         }
 
+        public IDataResult<Comment> GetById(int commentId)
+        {
+            return new SuccessDataResult<Comment>(_commentDal.Get(c=>c.Id==commentId));
+        }
+
         public IResult Delete(Comment comment)
         {
             _commentDal.Delete(comment);

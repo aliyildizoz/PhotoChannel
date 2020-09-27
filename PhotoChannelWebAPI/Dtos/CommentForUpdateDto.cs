@@ -7,7 +7,6 @@ namespace PhotoChannelWebAPI.Dtos
 {
     public class CommentForUpdateDto
     {
-        public int Id { get; set; }
         public string Description { get; set; }
     }
 }

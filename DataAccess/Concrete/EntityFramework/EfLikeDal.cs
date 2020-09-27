@@ -32,5 +32,24 @@ namespace DataAccess.Concrete.EntityFramework
                 return users.ToList();
             }
         }
+
+        public override void Delete(Like entity)
+        {
+            using (var context = new PhotoChannelContext())
+            {
+                var contains = context.Likes.Contains(entity);
+                if (contains) base.Delete(entity);
+            }
+        }
+
+        public override void Add(Like entity)
+        {
+
+            using (var context = new PhotoChannelContext())
+            {
+                var contains = context.Likes.Contains(entity);
+                if (!contains) base.Add(entity);
+            }
+        }
     }
 }

@@ -20,10 +20,12 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private ISubscriberService _subscriberService;
         private IMapper _mapper;
-        public SubsController(ISubscriberService subscriberService, IMapper mapper)
+        private IChannelService _channelService;
+        public SubsController(ISubscriberService subscriberService, IMapper mapper, IChannelService channelService)
         {
             _subscriberService = subscriberService;
             _mapper = mapper;
+            _channelService = channelService;
         }
         [HttpGet]
         [Route("{channelId}/subscribers")]
@@ -64,10 +66,10 @@ namespace PhotoChannelWebAPI.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Post(int channelId)
+        public IActionResult Post([FromForm] int channelId)
         {
             var resultId = User.Claims.GetUserId();
-            if (!resultId.IsSuccessful)
+            if (!resultId.IsSuccessful && channelId > 0)
             {
                 return BadRequest();
             }
@@ -81,11 +83,12 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpDelete]
+        [Route("{channelId}")]
         [Authorize]
         public IActionResult Delete(int channelId)
         {
             var resultId = User.Claims.GetUserId();
-            if (!resultId.IsSuccessful)
+            if (!resultId.IsSuccessful && channelId > 0)
             {
                 return BadRequest();
             }
@@ -97,6 +100,30 @@ namespace PhotoChannelWebAPI.Controllers
             }
 
             return BadRequest(result.Message);
+        }
+
+        [HttpDelete]
+        [Route("{channelId}/byowner/{userId}")]
+        [Authorize]
+        public IActionResult Delete(int channelId, int userId)
+        {
+            var resultId = User.Claims.GetUserId();
+            if (!resultId.IsSuccessful && userId > 0 && channelId > 0)
+            {
+                return BadRequest();
+            }
+            var isOwnerResult = _channelService.GetIsOwner(channelId, resultId.Data);
+            if (isOwnerResult.IsSuccessful)
+            {
+                var result = _subscriberService.Delete(new Subscriber { ChannelId = channelId, UserId = userId });
+                if (result.IsSuccessful)
+                {
+                    return Ok(result.Message);
+                }
+                return BadRequest(result.Message);
+            }
+
+            return Forbid();
         }
     }
 }

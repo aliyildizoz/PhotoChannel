@@ -20,6 +20,7 @@ namespace Business.Abstract
         IDataResult<Channel> Add(Channel channel);
         IDataResult<Channel> Update(Channel channel);
         IResult ChannelExists(int id);
+        IResult GetIsOwner(int channelId, int userId);
         IResult CheckIfChannelNameExistsWithUpdate(string name, int id);
         IResult CheckIfChannelNameExists(string channelName);
     }

@@ -33,5 +33,15 @@ namespace DataAccess.Concrete.EntityFramework
                 return photos.ToList();
             }
         }
+
+        //public override void Delete(Photo entity)
+        //{
+        //    using (var context = new PhotoChannelContext())
+        //    {
+        //        var photos = context.
+        //        base.Delete(entity);
+        //    }
+
+        //}
     }
 }

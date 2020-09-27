@@ -61,7 +61,7 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
-                return Ok(mapResult);
+                return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
 
             return BadRequest(dataResult.Message);
@@ -79,23 +79,6 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
-                });
-                return Ok(mapResult);
-            }
-            return BadRequest(dataResult.Message);
-        }
-        [HttpGet]
-        [Route("{channelId}/photo-gallery")]
-        public IActionResult GetGallery(int channelId)
-        {
-            IDataResult<List<Photo>> dataResult = _photoService.GetChannelPhotos(channelId);
-
-            if (dataResult.IsSuccessful)
-            {
-                var mapResult = _mapper.Map<List<PhotoGalleryDto>>(dataResult.Data);
-                mapResult.ForEach(dto =>
-                {
-                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.Id).Data;
                 });
                 return Ok(mapResult);
             }

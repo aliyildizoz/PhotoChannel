@@ -7,6 +7,10 @@ namespace PhotoChannelWebAPI.Dtos
 {
     public class CommentForAddDto
     {
+        public CommentForAddDto()
+        {
+            ShareDate = DateTime.Now;
+        }
         public int PhotoId { get; set; }
         public DateTime ShareDate { get; set; }
         public string Description { get; set; }

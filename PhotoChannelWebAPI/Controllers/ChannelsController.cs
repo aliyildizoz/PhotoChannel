@@ -75,16 +75,26 @@ namespace PhotoChannelWebAPI.Controllers
 
         [HttpDelete]
         [Route("{channelId}")]
+        [Authorize]
         public IActionResult Delete(int channelId)
         {
             if (channelId > 0)
             {
-                IResult result = _channelService.Delete(channelId);
-                if (result.IsSuccessful)
+                IResult isOwner = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
+                if (isOwner.IsSuccessful)
                 {
-                    return Ok(result.Message);
+
+                    IDataResult<Channel> dataResult = _channelService.GetById(channelId);
+                    IResult result = _channelService.Delete(channelId);
+                    if (result.IsSuccessful)
+                    {
+                        _photoUpload.ImageDelete(dataResult.Data.PublicId);
+                        return Ok(result.Message);
+                    }
+                    return this.ServerError(result.Message);
                 }
-                return BadRequest(result.Message);
+
+                return Forbid();
             }
 
 
@@ -94,6 +104,7 @@ namespace PhotoChannelWebAPI.Controllers
 
         [HttpPut]
         [Route("{channelId}")]
+        [Authorize]
         public IActionResult Put(int channelId, [FromForm] ChannelForUpdateDto channelForUpdate)
         {
             var dataResult = _channelService.GetById(channelId);
@@ -121,9 +132,11 @@ namespace PhotoChannelWebAPI.Controllers
                 if (dataResult.IsSuccessful)
                 {
                     var map = _mapper.Map<ChannelForDetailDto>(updateDataResult.Data);
+                    map.SubscribersCount = _countService.GetSubscriberCount(map.Id).Data;
                     return Ok(map);
                 }
-                return BadRequest();
+
+                return this.ServerError();
             }
             return NotFound(dataResult.Message);
         }
@@ -162,7 +175,7 @@ namespace PhotoChannelWebAPI.Controllers
         {
             if (channelId > 0)
             {
-                var a=User.Claims.GetUserId();
+                var a = User.Claims.GetUserId();
                 IDataResult<Channel> result = _channelService.GetById(channelId);
                 if (result.IsSuccessful)
                 {
@@ -189,6 +202,19 @@ namespace PhotoChannelWebAPI.Controllers
                     return Ok(mapResult);
                 }
                 return NotFound(result.Message);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("{channelId}/isowner")]
+        public IActionResult GetChannelIsOwner(int channelId)
+        {
+            if (channelId > 0)
+            {
+                IResult result = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
+                return Ok(result.IsSuccessful);
             }
             return BadRequest();
         }

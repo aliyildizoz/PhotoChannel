@@ -16,5 +16,8 @@ namespace Entities.Concrete
 
         public virtual User User { get; set; }
         public virtual Channel Channel { get; set; }
+
+        public virtual List<Like> Likes { get; set; }
+        public virtual List<Comment> Comments { get; set; }
     }
 }
