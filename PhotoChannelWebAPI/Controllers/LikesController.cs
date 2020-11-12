@@ -22,16 +22,21 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private ILikeService _likeService;
         private IMapper _mapper;
-        public LikesController(ILikeService likeService, IMapper mapper)
+        private ICountService _countService;
+
+        public LikesController(ICountService countService, ILikeService likeService, IMapper mapper)
         {
             _likeService = likeService;
             _mapper = mapper;
+            _countService = countService;
         }
 
         [HttpGet]
         [Route("{photoId}/photo-likes")]
         public IActionResult GetPhotoLikes(int photoId)
         {
+            //Todo: photoId var mı kontrolü 
+
             IDataResult<List<User>> dataResult = _likeService.GetPhotoLikes(photoId);
 
             if (dataResult.IsSuccessful)
@@ -44,14 +49,22 @@ namespace PhotoChannelWebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("{photoId}/like-photos")]
+        [Route("{userId}/like-photos")]
         public IActionResult GetLikePhotos(int userId)
         {
+            //Todo: userId var mı kontrolü 
+
             IDataResult<List<Photo>> dataResult = _likeService.GetLikePhotos(userId);
 
             if (dataResult.IsSuccessful)
             {
-                return Ok(dataResult.Data);
+                var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
+                mapResult.ForEach(dto =>
+                {
+                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
+                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
+                });
+                return Ok(mapResult);
             }
 
             return BadRequest(dataResult.Message);
@@ -61,6 +74,8 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult GetIsLike(int photoId)
         {
+            //Todo: photoId var mı kontrolü 
+
             return Ok(_likeService.GetIsUserLike(photoId, User.Claims.GetUserId().Data));
         }
         [HttpPost]

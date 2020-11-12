@@ -14,16 +14,16 @@ namespace Business.Abstract
         IDataResult<User> GetById(int id);
         IDataResult<User> GetByEmail(string email);
         IDataResult<User> GetByRefreshToken(string refreshToken);
+        bool Contains(User user);
 
         IDataResult<List<OperationClaim>> GetClaims(int id);
 
         IResult Delete(int id);
         IDataResult<User> Add(User user);
-        IDataResult<User> UpdateUserAbout(User user);
+        IDataResult<User> Update(User user);
         IDataResult<User> UpdatePassword(User user, string password);
         IDataResult<User> UpdateRefreshToken(User user);
         IResult UserExists(string email);
-        IResult UserExists(int id);
         IResult UserExistsWithUpdate(string email, int id);
     }
 }

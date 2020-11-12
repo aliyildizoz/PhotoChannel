@@ -13,6 +13,5 @@ namespace Business.Abstract
         IDataResult<Subscriber> Add(Subscriber subscriber);
         IResult Delete(Subscriber subscriber);
         bool GetIsUserSubs(int channelId, int userId);
-
     }
 }

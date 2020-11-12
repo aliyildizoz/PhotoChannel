@@ -26,6 +26,15 @@ namespace Core.DataAccess.EntityFramework
                 return filter == null ? context.Set<TEntity>().ToList() : context.Set<TEntity>().Where(filter).ToList();
             }
         }
+
+        public bool Contains(TEntity entity)
+        {
+            using (var context = new TContext())
+            {
+                return context.Set<TEntity>().Contains(entity);
+            }
+        }
+
         public virtual void Add(TEntity entity)
         {
             using (var context = new TContext())

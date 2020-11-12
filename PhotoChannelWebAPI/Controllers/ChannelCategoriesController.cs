@@ -43,6 +43,8 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{channelId}/channel-categories")]
         public IActionResult GetChannelCategories(int channelId)
         {
+            //Todo: channelId var mı kontrolü 
+
             IDataResult<List<Category>> dataResult = _channelCategoryService.GetChannelCategories(channelId);
 
             if (dataResult.IsSuccessful)
@@ -56,6 +58,8 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpPost]
         public IActionResult Post(ChannelCategoryForAddDto channelCategoryDto)
         {
+            //Todo: channelId,categoryId var mı kontrolü 
+
             var channelCategory = _mapper.Map<ChannelCategory>(channelCategoryDto);
             IDataResult<ChannelCategory> dataResult = _channelCategoryService.Add(channelCategory);
 
@@ -70,6 +74,8 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{channelId}")]
         public IActionResult Put(int channelId, ChannelCategoryForAddRangeDto channelCategoriesDto)
         {
+            //Todo: channelId var mı kontrolü 
+
             if (channelId > 0)
             {
                 ChannelCategory[] channelCategories = new ChannelCategory[channelCategoriesDto.CategoryIds.Length];
@@ -93,6 +99,8 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpDelete]
         public IActionResult Delete(ChannelCategoryForDeleteDto channelCategoryDto)
         {
+            //Todo: channelId,categoryId var mı kontrolü 
+
             var channelCategory = _mapper.Map<ChannelCategory>(channelCategoryDto);
             IResult result = _channelCategoryService.Delete(channelCategory);
 

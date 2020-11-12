@@ -37,20 +37,28 @@ namespace PhotoChannelWebAPI.Controllers
         [HttpGet("{photoId}")]
         public IActionResult Get(int photoId)
         {
-            IDataResult<Photo> dataResult = _photoService.GetById(photoId);
-
-            if (dataResult.IsSuccessful)
+            var contains = _photoService.Contains(new Photo { Id = photoId });
+            if (contains)
             {
-                var mapResult = _mapper.Map<PhotoForDetailDto>(dataResult.Data);
-                return Ok(mapResult);
+                IDataResult<Photo> dataResult = _photoService.GetById(photoId);
+
+                if (dataResult.IsSuccessful)
+                {
+                    var mapResult = _mapper.Map<PhotoForDetailDto>(dataResult.Data);
+                    return Ok(mapResult);
+                }
+
+                return this.ServerError(dataResult.Message);
+
             }
 
-            return BadRequest(dataResult.Message);
+            return NotFound();
         }
         [HttpGet]
         [Route("{channelId}/channel-photos")]
         public IActionResult GetChannelPhotos(int channelId)
         {
+            //Todo: channelId var mı kontrolü 
             IDataResult<List<Photo>> dataResult = _photoService.GetChannelPhotos(channelId);
 
             if (dataResult.IsSuccessful)
@@ -64,12 +72,14 @@ namespace PhotoChannelWebAPI.Controllers
                 return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
 
-            return BadRequest(dataResult.Message);
+            return this.ServerError(dataResult.Message);
         }
         [HttpGet]
         [Route("{userId}/user-photos")]
         public IActionResult GetUserPhotos(int userId)
         {
+            //Todo: userId var mı kontrolü 
+
             IDataResult<List<Photo>> dataResult = _photoService.GetUserPhotos(userId);
 
             if (dataResult.IsSuccessful)
@@ -82,7 +92,7 @@ namespace PhotoChannelWebAPI.Controllers
                 });
                 return Ok(mapResult);
             }
-            return BadRequest(dataResult.Message);
+            return this.ServerError(dataResult.Message);
         }
 
         [HttpPost]
@@ -91,24 +101,18 @@ namespace PhotoChannelWebAPI.Controllers
         {
             if (photoForAddDto.File.Length > 0)
             {
-                var resultId = User.Claims.GetUserId();
-                if (resultId.IsSuccessful)
+                ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(photoForAddDto.File);
+                var mapResult = _mapper.Map<Photo>(photoForAddDto);
+                mapResult.PhotoUrl = imageUploadResult.Uri.ToString();
+                mapResult.PublicId = imageUploadResult.PublicId;
+                mapResult.UserId = User.Claims.GetUserId().Data;
+                IResult result = _photoService.Add(mapResult);
+
+                if (result.IsSuccessful)
                 {
-                    ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(photoForAddDto.File);
-                    var mapResult = _mapper.Map<Photo>(photoForAddDto);
-                    mapResult.PhotoUrl = imageUploadResult.Uri.ToString();
-                    mapResult.PublicId = imageUploadResult.PublicId;
-                    mapResult.UserId = resultId.Data;
-                    IResult result = _photoService.Add(mapResult);
-
-                    if (result.IsSuccessful)
-                    {
-                        return Ok(result.Message);
-                    }
-                    return BadRequest(result.Message);
+                    return Ok(result.Message);
                 }
-
-                return Forbid();
+                return this.ServerError(result.Message);
             }
             return BadRequest();
         }
@@ -117,15 +121,21 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult Delete(int photoId)
         {
-            var deletedPhotos = _photoService.GetById(photoId);
-            if (deletedPhotos.IsSuccessful)
+            var contains = _photoService.Contains(new Photo { Id = photoId });
+            if (contains)
             {
-                IResult result = _photoService.Delete(deletedPhotos.Data);
-                _photoUpload.ImageDelete(deletedPhotos.Data.PublicId);
-                return Ok(result.Message);
+                var deletedPhotos = _photoService.GetById(photoId);
+                if (deletedPhotos.IsSuccessful)
+                {
+                    IResult result = _photoService.Delete(deletedPhotos.Data);
+                    _photoUpload.ImageDelete(deletedPhotos.Data.PublicId);
+                    return Ok(result.Message);
+                }
+
+                return BadRequest(deletedPhotos.Message);
             }
 
-            return BadRequest(deletedPhotos.Message);
+            return NotFound();
         }
 
     }

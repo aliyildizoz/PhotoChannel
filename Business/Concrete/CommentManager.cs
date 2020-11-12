@@ -61,5 +61,10 @@ namespace Business.Concrete
             _commentDal.Update(comment);
             return new SuccessResult();
         }
+
+        public bool Contains(Comment comment)
+        {
+            return _commentDal.Contains(comment);
+        }
     }
 }

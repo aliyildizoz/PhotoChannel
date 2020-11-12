@@ -47,21 +47,17 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
+        public bool Contains(Photo photo)
+        {
+            return _photoDal.Contains(photo);
+        }
+
         public IDataResult<Photo> Add(Photo photo)
         {
             Validation<PhotoValidator> validation = new Validation<PhotoValidator>();
             validation.Validate(photo);
             _photoDal.Add(photo);
             return new SuccessDataResult<Photo>(photo);
-        }
-        public IResult Exists(int id)
-        {
-            var photo = _photoDal.Get(p => p.Id == id);
-            if (photo != null)
-            {
-                return new SuccessResult();
-            }
-            return new ErrorResult(Messages.PhotoNotFound);
         }
     }
 }

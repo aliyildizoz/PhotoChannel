@@ -16,8 +16,9 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new PhotoChannelContext())
             {
-                var photos = context.Comments.Include(comment => comment.Photo)
-                    .Where(comment => comment.UserId == user.Id).Select(comment => comment.Photo);
+                var photos = context.Comments.Include(comment => comment.Photo).
+                    Include(comment => comment.Photo.User).
+                    Include(comment => comment.Photo.Channel).Where(like => like.UserId == user.Id).Where(comment => comment.UserId == user.Id).Select(comment => comment.Photo);
                 return photos.ToList();
             }
         }

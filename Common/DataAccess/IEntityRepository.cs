@@ -11,6 +11,7 @@ namespace Core.DataAccess
     {
         T Get(Expression<Func<T, bool>> filter);
         IList<T> GetList(Expression<Func<T, bool>> filter = null);
+        bool Contains(T entity);
         void Add(T entity);
         void Delete(T entity);
         void Update(T entity);

@@ -22,31 +22,42 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private ICommentService _commentService;
         private IMapper _mapper;
+        private ICountService _countService;
 
-        public CommentsController(ICommentService commentService, IMapper mapper)
+        public CommentsController(ICommentService commentService, IMapper mapper, ICountService countService)
         {
             _commentService = commentService;
             _mapper = mapper;
+            _countService = countService;
         }
 
         [HttpGet]
         [Route("{userId}/user-comment-photos")]
         public IActionResult GetPhotosByUserComment(int userId)
         {
-            IDataResult<List<Photo>> result = _commentService.GetPhotosByUserComment(userId);
+            //Todo: userId var mı kontrolü 
 
-            if (result.IsSuccessful)
+            IDataResult<List<Photo>> dataResult = _commentService.GetPhotosByUserComment(userId);
+
+            if (dataResult.IsSuccessful)
             {
-                var mapResult = _mapper.Map<List<PhotoForDetailDto>>(result.Data);
+                var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
+                mapResult.ForEach(dto =>
+                {
+                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
+                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
+                });
                 return Ok(mapResult);
             }
 
-            return BadRequest(result.Message);
+            return BadRequest(dataResult.Message);
         }
         [HttpGet]
         [Route("{photoId}/photo-comment-users")]
         public IActionResult GetUsersByPhotoComment(int photoId)
         {
+            //Todo: photoId var mı kontrolü 
+
             IDataResult<List<User>> result = _commentService.GetUsersByPhotoComment(photoId);
 
             if (result.IsSuccessful)
@@ -62,6 +73,8 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{photoId}/photo-comments")]
         public IActionResult GetPhotoComments(int photoId)
         {
+            //Todo: photoId var mı kontrolü 
+
             IDataResult<List<Comment>> result = _commentService.GetPhotoComments(photoId);
 
             if (result.IsSuccessful)
@@ -76,6 +89,8 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult Post(CommentForAddDto commentForAddDto)
         {
+            //Todo: photoId var mı kontrolü 
+
             var currentUser = User.Claims.GetCurrentUser().Data;
             var mapResult = _mapper.Map<Comment>(commentForAddDto);
             mapResult.UserId = currentUser.Id;
@@ -128,14 +143,21 @@ namespace PhotoChannelWebAPI.Controllers
         {
             if (commentId > 0)
             {
-                IResult result = _commentService.Delete(new Comment { Id = commentId });
-
-                if (result.IsSuccessful)
+                var contains = _commentService.Contains(new Comment {Id = commentId});
+                if (contains)
                 {
-                    return Ok(result.Message);
+                    IResult result = _commentService.Delete(new Comment { Id = commentId });
+
+                    if (result.IsSuccessful)
+                    {
+                        return Ok(result.Message);
+                    }
+
+                    return this.ServerError(result.Message);
                 }
 
-                return BadRequest(result.Message);
+                return NotFound();
+
             }
             return BadRequest();
         }

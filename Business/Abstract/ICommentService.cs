@@ -15,5 +15,6 @@ namespace Business.Abstract
         IResult Delete(Comment comment);
         IResult Add(Comment comment);
         IResult Update(Comment comment);
+        bool Contains(Comment comment);
     }
 }

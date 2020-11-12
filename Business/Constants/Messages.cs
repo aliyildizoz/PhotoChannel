@@ -17,7 +17,7 @@ namespace Business.Constants
         public const string PasswordAndUsernameError = "E-mail veya şifre yanlış.";
         public const string PasswordError = "Şifre hatalı";
         public const string SuccessfulLogin = "Sisteme giriş başarılı";
-        public const string UserAlreadyExists = "Bu kullanıcı zaten mevcut";
+        public const string UserAlreadyExists = "Böyle bir kullanıcı zaten mevcut.";
         public const string UserRegistered = "Kullanıcı başarıyla kaydedildi";
         public const string AccessTokenCreated = "Access token başarıyla oluşturuldu";
                
@@ -26,6 +26,7 @@ namespace Business.Constants
         public const string ChannelNotFound = "Kanal bulunamadı.";
         public const string PhotoNotFound = "Fotoğraf bulunamadı.";
         public const string CategoryNotFound = "Kategori bulunamadı.";
-        public static string PasswordIsNull = "Şifre bulunamadı.";
+        public static string PasswordIsNull = "Şifre null veya boş olamaz.";
+        public static string UpdatePasswordError = "Girdiğiniz şifre hatalıdır.";
     }
 }

@@ -39,7 +39,7 @@ namespace PhotoChannelWebAPI.Controllers
                 return Ok(mapResult);
             }
 
-            return BadRequest(dataResult.Message);
+            return this.ServerError(dataResult.Message);
         }
         [HttpGet]
         [Route("issub/{channelId}")]
@@ -60,26 +60,23 @@ namespace PhotoChannelWebAPI.Controllers
                 return Ok(mapResult);
             }
 
-            return BadRequest(dataResult.Message);
+            return this.ServerError(dataResult.Message);
         }
 
 
         [HttpPost]
         [Authorize]
-        public IActionResult Post([FromForm] int channelId)
+        public IActionResult Post([FromForm]int channelId)
         {
-            var resultId = User.Claims.GetUserId();
-            if (!resultId.IsSuccessful && channelId > 0)
-            {
-                return BadRequest();
-            }
-            IDataResult<Subscriber> dataResult = _subscriberService.Add(new Subscriber { UserId = resultId.Data, ChannelId = channelId });
+            //Todo: channelId var mı kontrolü 
+
+            IDataResult<Subscriber> dataResult = _subscriberService.Add(new Subscriber { UserId = User.Claims.GetUserId().Data, ChannelId = channelId });
             if (dataResult.IsSuccessful)
             {
                 return Ok(dataResult.Data);
             }
 
-            return BadRequest(dataResult.Message);
+            return this.ServerError(dataResult.Message);
         }
 
         [HttpDelete]
@@ -87,19 +84,14 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult Delete(int channelId)
         {
-            var resultId = User.Claims.GetUserId();
-            if (!resultId.IsSuccessful && channelId > 0)
-            {
-                return BadRequest();
-            }
-            var result = _subscriberService.Delete(new Subscriber { UserId = resultId.Data, ChannelId = channelId });
+            var result = _subscriberService.Delete(new Subscriber { UserId = User.Claims.GetUserId().Data, ChannelId = channelId });
 
             if (result.IsSuccessful)
             {
                 return Ok(result.Message);
             }
 
-            return BadRequest(result.Message);
+            return this.ServerError(result.Message);
         }
 
         [HttpDelete]
@@ -107,12 +99,11 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult Delete(int channelId, int userId)
         {
-            var resultId = User.Claims.GetUserId();
-            if (!resultId.IsSuccessful && userId > 0 && channelId > 0)
+            if (userId > 0 && channelId > 0)
             {
                 return BadRequest();
             }
-            var isOwnerResult = _channelService.GetIsOwner(channelId, resultId.Data);
+            var isOwnerResult = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
             if (isOwnerResult.IsSuccessful)
             {
                 var result = _subscriberService.Delete(new Subscriber { ChannelId = channelId, UserId = userId });
@@ -120,7 +111,8 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     return Ok(result.Message);
                 }
-                return BadRequest(result.Message);
+                return this.ServerError(result.Message);
+
             }
 
             return Forbid();

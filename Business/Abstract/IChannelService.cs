@@ -13,13 +13,12 @@ namespace Business.Abstract
         IDataResult<List<Channel>> GetList();
         IDataResult<Channel> GetById(int id);
         IDataResult<List<Channel>> GetByName(string name);
-
         IDataResult<User> GetOwner(int id);
-
+        bool Contains(Channel channel);
         IResult Delete(int id);
         IDataResult<Channel> Add(Channel channel);
         IDataResult<Channel> Update(Channel channel);
-        IResult ChannelExists(int id);
+        IDataResult<List<Channel>> GetUserChannels(int userId);
         IResult GetIsOwner(int channelId, int userId);
         IResult CheckIfChannelNameExistsWithUpdate(string name, int id);
         IResult CheckIfChannelNameExists(string channelName);

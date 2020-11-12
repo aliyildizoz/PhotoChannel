@@ -41,17 +41,22 @@ namespace Business.Concrete
 
         public IDataResult<User> GetOwner(int id)
         {
-            var result = ChannelExists(id);
-            if (!result.IsSuccessful)
+            var result = Contains(new Channel { Id = id });
+            if (!result)
             {
-                return new ErrorDataResult<User>(result.Message);
+                return new ErrorDataResult<User>(Messages.ChannelNotFound);
             }
             return new SuccessDataResult<User>(_channelDal.GetOwner(new Channel { Id = id }));
         }
 
+        public bool Contains(Channel channel)
+        {
+            return _channelDal.Contains(channel);
+        }
+
         public IDataResult<List<Channel>> GetByName(string name)
         {
-            return new SuccessDataResult<List<Channel>>(_channelDal.GetList(channel => channel.Name.Contains(name)).ToList());
+            return new SuccessDataResult<List<Channel>>(_channelDal.GetList(channel => channel.Name.ToLower().Contains(name.ToLower())).ToList());
         }
 
         public IResult Delete(int id)
@@ -92,14 +97,9 @@ namespace Business.Concrete
             return new SuccessDataResult<Channel>(Messages.ChannelUpdated, channel);
         }
 
-        public IResult ChannelExists(int id)
+        public IDataResult<List<Channel>> GetUserChannels(int userId)
         {
-            var channel = _channelDal.Get(c => c.Id == id);
-            if (channel != null)
-            {
-                return new SuccessResult();
-            }
-            return new ErrorResult(Messages.ChannelNotFound);
+            return new SuccessDataResult<List<Channel>>(_channelDal.GetList(channel => channel.UserId == userId).ToList());
         }
 
         public IResult GetIsOwner(int channelId, int userId)

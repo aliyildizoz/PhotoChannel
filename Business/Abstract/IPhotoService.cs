@@ -15,6 +15,6 @@ namespace Business.Abstract
         IDataResult<Photo> GetById(int id);
         IDataResult<Photo> Add(Photo photo);
         IResult Delete(Photo photo);
-        IResult Exists(int id);
+        bool Contains(Photo photo);
     }
 }

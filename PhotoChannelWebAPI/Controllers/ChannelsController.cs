@@ -78,7 +78,8 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult Delete(int channelId)
         {
-            if (channelId > 0)
+            var contains = _channelService.Contains(new Channel { Id = channelId });
+            if (contains)
             {
                 IResult isOwner = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
                 if (isOwner.IsSuccessful)
@@ -98,7 +99,7 @@ namespace PhotoChannelWebAPI.Controllers
             }
 
 
-            return BadRequest();
+            return NotFound();
         }
 
 
@@ -171,29 +172,39 @@ namespace PhotoChannelWebAPI.Controllers
         }
         [HttpGet]
         [Route("{channelId}")]
-        public IActionResult GetChannelById(int channelId)
+        public IActionResult GetId(int channelId)
         {
-            if (channelId > 0)
+            var a = User.Claims.GetUserId();
+            IDataResult<Channel> result = _channelService.GetById(channelId);
+            if (result.IsSuccessful)
             {
-                var a = User.Claims.GetUserId();
-                IDataResult<Channel> result = _channelService.GetById(channelId);
-                if (result.IsSuccessful)
-                {
-                    var mapResult = _mapper.Map<ChannelForDetailDto>(result.Data);
-                    mapResult.SubscribersCount = _countService.GetSubscriberCount(channelId).Data;
-                    return Ok(mapResult);
-                }
-
-                return NotFound(result.Message);
+                var mapResult = _mapper.Map<ChannelForDetailDto>(result.Data);
+                mapResult.SubscribersCount = _countService.GetSubscriberCount(channelId).Data;
+                return Ok(mapResult);
             }
-            return BadRequest();
-        }
 
+            return NotFound(result.Message);
+        }
+        [HttpGet]
+        [Route("{userId}/user-channels")]
+        public IActionResult GetUserChannels(int userId)
+        {
+            //Todo: userId var mı kontrolü
+            var result = _channelService.GetUserChannels(userId);
+            if (result.IsSuccessful)
+            {
+                var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
+                return Ok(mapResult);
+            }
+
+            return this.ServerError(result.Message);
+        }
         [HttpGet]
         [Route("{channelId}/owner")]
         public IActionResult GetOwner(int channelId)
         {
-            if (channelId > 0)
+            var contains = _channelService.Contains(new Channel { Id = channelId });
+            if (contains)
             {
                 IDataResult<User> result = _channelService.GetOwner(channelId);
                 if (result.IsSuccessful)
@@ -202,8 +213,10 @@ namespace PhotoChannelWebAPI.Controllers
                     return Ok(mapResult);
                 }
                 return NotFound(result.Message);
+
             }
-            return BadRequest();
+
+            return NotFound();
         }
 
         [HttpGet]
@@ -211,12 +224,14 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{channelId}/isowner")]
         public IActionResult GetChannelIsOwner(int channelId)
         {
-            if (channelId > 0)
+            var contains = _channelService.Contains(new Channel { Id = channelId });
+            if (contains)
             {
                 IResult result = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
                 return Ok(result.IsSuccessful);
             }
-            return BadRequest();
+
+            return NotFound();
         }
     }
 }

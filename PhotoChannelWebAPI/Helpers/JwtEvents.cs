@@ -17,7 +17,6 @@ namespace PhotoChannelWebAPI.Helpers
     {
        public override Task TokenValidated(TokenValidatedContext context)
         {
-            Debug.WriteLine("TokenValidated çalıştı");
             if (IsPathIgnore(context.HttpContext.Request.Path.Value)) return Task.CompletedTask;
 
             string refreshToken = context.Request.Headers["refreshToken"].ToString();
@@ -28,6 +27,7 @@ namespace PhotoChannelWebAPI.Helpers
                 var result = authService.RefreshTokenValidate(refreshToken);
                 if (result.IsSuccessful)
                 {
+                    
                     return Task.CompletedTask;
                 }
             }
@@ -50,30 +50,6 @@ namespace PhotoChannelWebAPI.Helpers
             return isIgnore;
         }
 
-        public override Task AuthenticationFailed(AuthenticationFailedContext context)
-        {
-            Debug.WriteLine("AuthenticationFailed çalıştı");
-            return base.AuthenticationFailed(context);
-        }
-
-        public override Task Forbidden(ForbiddenContext context)
-        {
-            Debug.WriteLine("Forbidden çalıştı");
-            return base.Forbidden(context);
-        }
-
-        public override Task MessageReceived(MessageReceivedContext context)
-        {
-
-            Debug.WriteLine("MessageReceived çalıştı");
-            return base.MessageReceived(context);
-        }
-
-        public override Task Challenge(JwtBearerChallengeContext context)
-        {
-            Debug.WriteLine("Challenge çalıştı");
-            return base.Challenge(context);
-        }
     }
     
 

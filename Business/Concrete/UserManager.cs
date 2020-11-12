@@ -27,12 +27,14 @@ namespace Business.Concrete
 
         public IDataResult<User> GetById(int id)
         {
+            
             var user = _userDal.Get(u => u.Id == id);
+          
             if (user != null)
             {
                 return new SuccessDataResult<User>(user);
             }
-            return new ErrorDataResult<User>();
+            return new ErrorDataResult<User>(Messages.UserNotFound);
 
         }
         public IDataResult<List<User>> GetList()
@@ -59,12 +61,17 @@ namespace Business.Concrete
             return new ErrorDataResult<User>(Messages.UserNotFound);
         }
 
+        public bool Contains(User user)
+        {
+            return _userDal.Contains(user);
+        }
+
         public IDataResult<List<OperationClaim>> GetClaims(int id)
         {
-            var result = UserExists(id);
-            if (!result.IsSuccessful)
+            var result = Contains(new User { Id = id });
+            if (!result)
             {
-                return new ErrorDataResult<List<OperationClaim>>(result.Message);
+                return new ErrorDataResult<List<OperationClaim>>();
             }
             return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(new User { Id = id }));
         }
@@ -84,7 +91,7 @@ namespace Business.Concrete
             return new SuccessDataResult<User>(Messages.UserRegistered, user);
         }
 
-        public IDataResult<User> UpdateUserAbout(User user)
+        public IDataResult<User> Update(User user)
         {
             _validation = new Validation<UserValidator>();
             _validation.Validate(user);
@@ -95,6 +102,7 @@ namespace Business.Concrete
 
         public IDataResult<User> UpdatePassword(User user, string password)
         {
+
             _validation = new Validation<UserValidator>();
             _validation.Validate(user);
 
@@ -111,7 +119,7 @@ namespace Business.Concrete
 
                 return new SuccessDataResult<User>(user);
             }
-          
+
             return new ErrorDataResult<User>(Messages.PasswordIsNull, user);
         }
 
@@ -136,22 +144,12 @@ namespace Business.Concrete
             return new ErrorResult();
         }
 
-        public IResult UserExists(int id)
-        {
-            IDataResult<User> result = GetById(id);
-            if (result.IsSuccessful)
-            {
-                return new SuccessResult(Messages.UserNotFound);
-            }
-            return new ErrorResult();
-        }
-
         public IResult UserExistsWithUpdate(string email, int userId)
         {
-            IDataResult<User> result = GetByEmail(email);
-            if (result.IsSuccessful)
+            var user = _userDal.Get(u=> u.Id != userId && u.Email == email);
+            if (user != null)
             {
-                return result.Data.Id == userId ? (IResult)new ErrorResult() : new SuccessResult(Messages.UserAlreadyExists);
+                return new SuccessResult(Messages.UserAlreadyExists);
             }
             return new ErrorResult();
         }
