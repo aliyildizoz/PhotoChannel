@@ -87,6 +87,12 @@ namespace PhotoChannelWebAPI
             services.AddScoped<IUserService, UserManager>();
             services.AddScoped<IUserDal, EfUserDal>();
 
+            services.AddScoped<IHomeService, HomeManager>();
+            services.AddScoped<IHomeDal, EfHomeDal>();
+
+            services.AddScoped<ISearchService, SearchManager>();
+            services.AddScoped<ISearchDal, EfSearchDal>();
+
             services.AddScoped<ICommentService, CommentManager>();
             services.AddScoped<ICommentDal, EfCommentDal>();
 

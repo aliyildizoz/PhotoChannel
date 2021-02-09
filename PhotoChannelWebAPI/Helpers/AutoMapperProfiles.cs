@@ -19,12 +19,12 @@ namespace PhotoChannelWebAPI.Helpers
             CreateMap<ChannelForAddDto, Channel>();
             CreateMap<ChannelForUpdateDto, Channel>();
             CreateMap<Channel, ChannelForListDto>();
+            CreateMap<Channel, SearchByCategoryDto>().ForMember(dto=>dto.OwnerId,opt=>opt.MapFrom(channel => channel.User.Id)).ForMember(dto => dto.FirstName, opt => opt.MapFrom(channel => channel.User.FirstName)).ForMember(dto => dto.LastName, opt => opt.MapFrom(channel => channel.User.LastName));
 
             CreateMap<User, OwnerDto>();
 
 
             CreateMap<Channel, ChannelForDetailDto>();
-
             CreateMap<Photo, PhotoForListDto>();
             CreateMap<PhotoForAddDto, Photo>();
             CreateMap<Photo, PhotoForDetailDto>();
