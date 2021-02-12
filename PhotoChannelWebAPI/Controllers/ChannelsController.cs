@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Caching.Memory;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
@@ -90,6 +91,7 @@ namespace PhotoChannelWebAPI.Controllers
                     if (result.IsSuccessful)
                     {
                         _photoUpload.ImageDelete(dataResult.Data.PublicId);
+                        this.RemoveCache();
                         return Ok(result.Message);
                     }
                     return this.ServerError(result.Message);
@@ -134,6 +136,7 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     var map = _mapper.Map<ChannelForDetailDto>(updateDataResult.Data);
                     map.SubscribersCount = _countService.GetSubscriberCount(map.Id).Data;
+                    this.RemoveCache();
                     return Ok(map);
                 }
 
@@ -150,6 +153,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -164,6 +168,7 @@ namespace PhotoChannelWebAPI.Controllers
                 if (result.IsSuccessful)
                 {
                     var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
+                    this.CacheFill(mapResult);
                     return Ok(mapResult);
                 }
                 return NotFound(result.Message);
@@ -174,12 +179,12 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{channelId}")]
         public IActionResult GetId(int channelId)
         {
-            var a = User.Claims.GetUserId();
             IDataResult<Channel> result = _channelService.GetById(channelId);
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<ChannelForDetailDto>(result.Data);
                 mapResult.SubscribersCount = _countService.GetSubscriberCount(channelId).Data;
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -194,9 +199,9 @@ namespace PhotoChannelWebAPI.Controllers
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
-
             return this.ServerError(result.Message);
         }
         [HttpGet]
@@ -210,12 +215,11 @@ namespace PhotoChannelWebAPI.Controllers
                 if (result.IsSuccessful)
                 {
                     var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
+                    this.CacheFill(mapResult);
                     return Ok(mapResult);
                 }
                 return NotFound(result.Message);
-
             }
-
             return NotFound();
         }
 
@@ -228,6 +232,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (contains)
             {
                 IResult result = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
+                this.CacheFill(result.IsSuccessful);
                 return Ok(result.IsSuccessful);
             }
 

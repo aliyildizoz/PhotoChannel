@@ -42,6 +42,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<UserForListDto>>(result.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
             return this.ServerError(result.Message);
@@ -59,6 +60,7 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
                     mapResult.SubscriptionCount = _countService.GetSubscriptionsCount(userId).Data;
+                    this.CacheFill(mapResult);
                     return Ok(mapResult);
                 }
                 return this.ServerError(result.Message);
@@ -90,6 +92,7 @@ namespace PhotoChannelWebAPI.Controllers
                 if (result.IsSuccessful)
                 {
                     var accessToken = _authService.CreateAccessToken(oldUserResult.Data);
+                    this.RemoveCacheByContains("users/" + userId);
                     return Ok(accessToken.Data);
                 }
             }
@@ -119,6 +122,7 @@ namespace PhotoChannelWebAPI.Controllers
                 IResult result = _userService.UpdatePassword(oldUserResult.Data, passwordUpdateDto.NewPassword);
                 if (result.IsSuccessful)
                 {
+                    this.RemoveCacheByContains("users/" + userId);
                     return Ok(result.Message);
                 }
                 return this.ServerError(result.Message);
@@ -133,6 +137,7 @@ namespace PhotoChannelWebAPI.Controllers
             IResult result = _userService.Delete(userId);
             if (result.IsSuccessful)
             {
+                this.RemoveCacheByContains("users/" + userId);
                 return Ok(result.Message);
             }
             return this.ServerError(result.Message);

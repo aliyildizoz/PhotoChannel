@@ -45,6 +45,7 @@ namespace PhotoChannelWebAPI.Controllers
                 if (dataResult.IsSuccessful)
                 {
                     var mapResult = _mapper.Map<PhotoForDetailDto>(dataResult.Data);
+                    this.CacheFill(mapResult);
                     return Ok(mapResult);
                 }
 
@@ -69,6 +70,7 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
+                this.CacheFill(mapResult);
                 return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
 
@@ -90,6 +92,7 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
             return this.ServerError(dataResult.Message);
@@ -110,6 +113,7 @@ namespace PhotoChannelWebAPI.Controllers
 
                 if (result.IsSuccessful)
                 {
+                    this.RemoveCache();
                     return Ok(result.Message);
                 }
                 return this.ServerError(result.Message);
@@ -129,6 +133,7 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     IResult result = _photoService.Delete(deletedPhotos.Data);
                     _photoUpload.ImageDelete(deletedPhotos.Data.PublicId);
+                    this.RemoveCache();
                     return Ok(result.Message);
                 }
 

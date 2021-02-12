@@ -44,7 +44,7 @@ namespace PhotoChannelWebAPI.Controllers
         }
         [HttpGet]
         [Route("refreshtoken")]
-        public ActionResult RefreshToken([FromHeader]string refreshToken)
+        public ActionResult RefreshToken([FromHeader] string refreshToken)
         {
             var result = _authService.CreateRefreshToken(refreshToken);
             if (result.IsSuccessful) return Ok(result.Data);
@@ -59,6 +59,7 @@ namespace PhotoChannelWebAPI.Controllers
             var result = User.Claims.GetCurrentUser();
             if (result.IsSuccessful)
             {
+                this.CacheFill(result);
                 return Ok(result.Data);
             }
             return BadRequest(result.Message);
@@ -74,10 +75,11 @@ namespace PhotoChannelWebAPI.Controllers
                 var result = _authService.TokenExpiration(id.Data);
                 if (result.IsSuccessful)
                 {
+                    this.CacheClear();
                     return Ok();
                 }
             }
-           
+
             return BadRequest();
         }
         [HttpPost]
@@ -97,9 +99,10 @@ namespace PhotoChannelWebAPI.Controllers
             var result = _authService.CreateAccessToken(registerResult.Data);
             if (result.IsSuccessful)
             {
+                this.RemoveCache();
+                this.RemoveCacheByContains("users");
                 return Ok(result.Data);
             }
-
             return BadRequest(result.Message);
         }
     }

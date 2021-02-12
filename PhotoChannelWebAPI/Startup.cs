@@ -25,12 +25,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using PhotoChannelWebAPI.Cache;
+using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
 using PhotoChannelWebAPI.Helpers.Auth.Cookie;
 using PhotoChannelWebAPI.Helpers.Auth.Session;
+using PhotoChannelWebAPI.Middlewares.Exception;
+using PhotoChannelWebAPI.Middlewares.MemoryCache;
 using TokenOptions = Core.Utilities.Security.Jwt.TokenOptions;
 
 namespace PhotoChannelWebAPI
@@ -128,6 +133,8 @@ namespace PhotoChannelWebAPI
 
             services.AddAuthorization();
 
+            services.AddCustomMemoryCache();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -138,12 +145,13 @@ namespace PhotoChannelWebAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseExceptionMiddleware();
             app.UseCors("AllowOrigin");
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseCacheMiddleware();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -36,6 +36,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<SubscriberForListDto>>(dataResult.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -46,7 +47,9 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult GetIsSubs(int channelId)
         {
-            return Ok(_subscriberService.GetIsUserSubs(channelId, User.Claims.GetUserId().Data));
+            var res = _subscriberService.GetIsUserSubs(channelId, User.Claims.GetUserId().Data);
+            this.CacheFillWithUserId(res);
+            return Ok(res);
         }
         [HttpGet]
         [Route("{userId}/subscriptions")]
@@ -57,6 +60,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(dataResult.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -66,13 +70,14 @@ namespace PhotoChannelWebAPI.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Post([FromForm]int channelId)
+        public IActionResult Post([FromForm] int channelId)
         {
             //Todo: channelId var mı kontrolü 
 
             IDataResult<Subscriber> dataResult = _subscriberService.Add(new Subscriber { UserId = User.Claims.GetUserId().Data, ChannelId = channelId });
             if (dataResult.IsSuccessful)
             {
+                this.RemoveCache();
                 return Ok(dataResult.Data);
             }
 
@@ -88,6 +93,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
+                this.RemoveCacheByContains("channels/" + channelId);
                 return Ok(result.Message);
             }
 
@@ -111,6 +117,8 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     return Ok(result.Message);
                 }
+                this.RemoveCacheByContains("channels/" + channelId);
+
                 return this.ServerError(result.Message);
 
             }

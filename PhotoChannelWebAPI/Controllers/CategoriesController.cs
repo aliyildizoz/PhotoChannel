@@ -9,6 +9,8 @@ using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using PhotoChannelWebAPI.Extensions;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -31,6 +33,7 @@ namespace PhotoChannelWebAPI.Controllers
             IResult result = _categoryService.Add(category);
             if (result.IsSuccessful)
             {
+                this.RemoveCache();
                 return Ok(result.Message);
             }
 
@@ -43,11 +46,16 @@ namespace PhotoChannelWebAPI.Controllers
             IDataResult<List<Category>> result = _categoryService.GetList();
             if (result.IsSuccessful)
             {
+                this.CacheFill(result.Data, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpiration = DateTimeOffset.Now.AddHours(12),
+                    SlidingExpiration = TimeSpan.FromHours(2)
+                });
                 return Ok(result.Data);
             }
 
             return BadRequest(result.Message);
         }
-      
+
     }
 }

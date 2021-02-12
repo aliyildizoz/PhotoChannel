@@ -7,6 +7,7 @@ using Business.Abstract;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 
 namespace PhotoChannelWebAPI.Controllers
 {

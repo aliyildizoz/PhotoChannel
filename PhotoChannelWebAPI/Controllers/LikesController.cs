@@ -42,6 +42,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<LikeForUserListDto>>(dataResult.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -64,6 +65,7 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -75,8 +77,10 @@ namespace PhotoChannelWebAPI.Controllers
         public IActionResult GetIsLike(int photoId)
         {
             //Todo: photoId var mı kontrolü 
-
-            return Ok(_likeService.GetIsUserLike(photoId, User.Claims.GetUserId().Data));
+            bool result;
+            result = _likeService.GetIsUserLike(photoId, User.Claims.GetUserId().Data);
+            this.CacheFillWithUserId(result);
+            return Ok(result);
         }
         [HttpPost]
         [Authorize]
@@ -91,9 +95,10 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
+                this.RemoveCacheByContains("photos/" + photoId);
                 return Ok(dataResult.Data);
             }
-
+            
             return BadRequest(dataResult.Message);
         }
 
@@ -111,6 +116,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
+                this.RemoveCacheByContains("photos/" + photoId);
                 return Ok(result.Message);
             }
 

@@ -7,6 +7,7 @@ using Business.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 
@@ -16,14 +17,16 @@ namespace PhotoChannelWebAPI.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
+        private IMemoryCache _memoryCache;
         private IHomeService _homeService;
         private IMapper _mapper;
         private ICountService _countService;
-        public HomeController(IHomeService homeService, IMapper mapper, ICountService countService)
+        public HomeController(IHomeService homeService, IMapper mapper, ICountService countService, IMemoryCache memoryCache)
         {
             _homeService = homeService;
             _mapper = mapper;
             _countService = countService;
+            _memoryCache = memoryCache;
         }
         [HttpGet("mostchannels")]
         public IActionResult MostChannels()
@@ -32,6 +35,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(dataResult.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -49,6 +53,8 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
+
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -66,6 +72,7 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 

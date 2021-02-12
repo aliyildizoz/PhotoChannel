@@ -9,6 +9,7 @@ using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
+using PhotoChannelWebAPI.Extensions;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -33,6 +34,7 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(dataResult.Data);
+                this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
 
@@ -49,6 +51,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
+                this.CacheFill(dataResult.Data);
                 return Ok(dataResult.Data);
             }
 
@@ -65,6 +68,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
+                this.RemoveCacheByContains("api/channelcategories/" + channelCategoryDto.ChannelId);
                 return Ok(dataResult.Data);
             }
 
@@ -89,6 +93,7 @@ namespace PhotoChannelWebAPI.Controllers
 
                 if (result.IsSuccessful)
                 {
+                    this.RemoveCache();
                     return Ok(result.Message);
                 }
 
@@ -106,6 +111,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
+                this.RemoveCacheByContains("api/channelcategories/" + channelCategoryDto.ChannelId);
                 return Ok(result.Message);
             }
 
