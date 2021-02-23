@@ -36,7 +36,10 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<SubscriberForListDto>>(dataResult.Data);
-                this.CacheFill(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult);
+                }
                 return Ok(mapResult);
             }
 
@@ -60,7 +63,10 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(dataResult.Data);
-                this.CacheFill(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult);
+                }
                 return Ok(mapResult);
             }
 
@@ -93,7 +99,8 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
-                this.RemoveCacheByContains("channels/" + channelId);
+                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/subscriptions");
+                this.RemoveCacheByContains(channelId + "/subscribers");
                 return Ok(result.Message);
             }
 

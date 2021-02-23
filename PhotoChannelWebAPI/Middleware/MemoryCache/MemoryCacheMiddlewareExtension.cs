@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using PhotoChannelWebAPI.Middlewares.Exception;
 
-namespace PhotoChannelWebAPI.Middlewares.MemoryCache
+namespace PhotoChannelWebAPI.Middleware.MemoryCache
 {
     public static class MemoryCacheMiddlewareExtension
     {

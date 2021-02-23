@@ -59,7 +59,7 @@ namespace PhotoChannelWebAPI.Controllers
             var result = User.Claims.GetCurrentUser();
             if (result.IsSuccessful)
             {
-                this.CacheFill(result);
+                this.CacheFill(result.Data);
                 return Ok(result.Data);
             }
             return BadRequest(result.Message);

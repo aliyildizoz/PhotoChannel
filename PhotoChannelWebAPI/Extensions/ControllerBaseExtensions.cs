@@ -52,7 +52,7 @@ namespace PhotoChannelWebAPI.Extensions
                 throw new NoUserIdException();
             }
 
-            key = userId + key;
+            key = userId.Data + key;
             if (memoryCache.Contains(key))
             {
                 memoryCache.Remove(key);
@@ -78,10 +78,10 @@ namespace PhotoChannelWebAPI.Extensions
         public static void RemoveCache(this ControllerBase controller)
         {
             var memoryCache = controller.HttpContext.RequestServices.GetService<ICustomMemoryCache>();
-            var key = controller.Request.Path.Value.Split('/')[1];
+            var key = controller.Request.Path.Value.Split('/')[2];
             var result = controller.User.Claims.GetUserId();
 
-            memoryCache.RemoveRange(memoryCache.Keys.Where(o => o.ToString().ToLower().Contains(key.ToLower())).ToList());
+            memoryCache.RemoveRange(memoryCache.Keys.Where(o => ((string)o).ToLower().Contains(key.ToLower())).ToList());
         }
         public static void CacheClear(this ControllerBase controller)
         {
@@ -91,7 +91,7 @@ namespace PhotoChannelWebAPI.Extensions
         public static void RemoveCacheByContains(this ControllerBase controller, string key)
         {
             var memoryCache = controller.HttpContext.RequestServices.GetService<ICustomMemoryCache>();
-            var result = memoryCache.Keys.FirstOrDefault(o => o.ToString().ToLower().Contains(key.ToLower()));
+            var result = memoryCache.Keys.FirstOrDefault(o => ((string)o).ToLower().Contains(key.ToLower()));
             if (result != null)
             {
                 memoryCache.Remove(result);

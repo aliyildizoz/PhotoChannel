@@ -8,12 +8,12 @@ namespace Business.AutoMapperConfig
 {
     public class BusinessMapperCfg
     {
-        private static MapperConfiguration cfg;
+        private static MapperConfiguration _cfg;
         private static BusinessMapperCfg businessMapperCfg;
         private static object obj = new object();
-        private BusinessMapperCfg()
+        private BusinessMapperCfg(MapperConfiguration cfg)
         {
-
+            _cfg = cfg;
         }
         public static BusinessMapperCfg Instance
         {
@@ -25,8 +25,8 @@ namespace Business.AutoMapperConfig
                     {
                         if (businessMapperCfg == null)
                         {
-                            businessMapperCfg = new BusinessMapperCfg();
-                            cfg = new MapperConfiguration(expression => expression.AddProfile(new BusinessProfile()));
+                            businessMapperCfg = new BusinessMapperCfg(new MapperConfiguration(expression =>
+                                expression.AddProfile(new BusinessProfile())));
                         }
                     }
                 }
@@ -37,7 +37,7 @@ namespace Business.AutoMapperConfig
         }
         public IMapper Mapper()
         {
-            return cfg.CreateMapper();
+            return _cfg.CreateMapper();
         }
     }
 }

@@ -34,7 +34,10 @@ namespace PhotoChannelWebAPI.Controllers
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<ChannelForListDto>>(dataResult.Data);
-                this.CacheFill(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult);
+                }
                 return Ok(mapResult);
             }
 
@@ -51,7 +54,10 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
-                this.CacheFill(dataResult.Data);
+                if (dataResult.Data.Count > 0)
+                {
+                    this.CacheFill(dataResult.Data);
+                }
                 return Ok(dataResult.Data);
             }
 

@@ -16,9 +16,12 @@ namespace PhotoChannelWebAPI.Cache
         public CustomMemoryCache(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
-            Keys = new List<object>();
+            keys = new List<object>();
         }
-        public IList<object> Keys { get; private set; }
+
+        private List<object> keys;
+        public IList<object> Keys => keys.Where(o => o != null).ToList();
+
         public void Dispose()
         {
             _memoryCache.Dispose();
@@ -31,19 +34,18 @@ namespace PhotoChannelWebAPI.Cache
 
         public ICacheEntry CreateEntry(object key)
         {
-            
             return _memoryCache.CreateEntry(key);
         }
 
         public void Remove(object key)
         {
-            Keys.Remove(key);
+            keys.Remove(key);
             _memoryCache.Remove(key);
         }
 
         public void Clear()
         {
-            foreach (var key in Keys)
+            foreach (var key in keys)
             {
                 _memoryCache.Remove(key);
             }
@@ -84,37 +86,37 @@ namespace PhotoChannelWebAPI.Cache
 
         public TItem Set<TItem>(object key, TItem value)
         {
-            Keys.Add(key);
+            keys.Add(key);
             return _memoryCache.Set<TItem>(key, value);
         }
 
         public TItem Set<TItem>(object key, TItem value, DateTimeOffset absoluteExpiration)
         {
-            Keys.Add(key);
+            keys.Add(key);
             return _memoryCache.Set<TItem>(key, value, absoluteExpiration);
         }
 
         public TItem Set<TItem>(object key, TItem value, TimeSpan absoluteExpirationRelativeToNow)
         {
-            Keys.Add(key);
+            keys.Add(key);
             return _memoryCache.Set<TItem>(key, value, absoluteExpirationRelativeToNow);
         }
 
         public TItem Set<TItem>(object key, TItem value, IChangeToken expirationToken)
         {
-            Keys.Add(key);
+            keys.Add(key);
             return _memoryCache.Set<TItem>(key, value, expirationToken);
         }
 
         public TItem Set<TItem>(object key, TItem value, MemoryCacheEntryOptions options)
         {
-            Keys.Add(key);
+            keys.Add(key);
             return _memoryCache.Set<TItem>(key, value, options);
         }
 
         public bool TryGetValue<TItem>(object key, out TItem value)
         {
-            Keys.Add(key);
+            keys.Add(key);
             return _memoryCache.TryGetValue<TItem>(key, out value);
         }
 

@@ -12,7 +12,7 @@ using PhotoChannelWebAPI.CustomActionResults;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Exceptions;
 
-namespace PhotoChannelWebAPI.Middlewares.Exception
+namespace PhotoChannelWebAPI.Middleware.Exception
 {
     public class ExceptionMiddleware
     {

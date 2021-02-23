@@ -70,7 +70,10 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
-                this.CacheFill(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
+                }
                 return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
 
@@ -92,8 +95,11 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
-                this.CacheFill(mapResult);
-                return Ok(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
+                }
+                return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
             return this.ServerError(dataResult.Message);
         }

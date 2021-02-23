@@ -22,12 +22,14 @@ namespace PhotoChannelWebAPI.Controllers
     {
         private ILikeService _likeService;
         private IMapper _mapper;
+        private IPhotoService _photoService;
         private ICountService _countService;
 
-        public LikesController(ICountService countService, ILikeService likeService, IMapper mapper)
+        public LikesController(ICountService countService, ILikeService likeService, IMapper mapper, IPhotoService photoService)
         {
             _likeService = likeService;
             _mapper = mapper;
+            _photoService = photoService;
             _countService = countService;
         }
 
@@ -35,14 +37,15 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{photoId}/photo-likes")]
         public IActionResult GetPhotoLikes(int photoId)
         {
-            //Todo: photoId var mı kontrolü 
-
             IDataResult<List<User>> dataResult = _likeService.GetPhotoLikes(photoId);
 
             if (dataResult.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<LikeForUserListDto>>(dataResult.Data);
-                this.CacheFill(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult);
+                }
                 return Ok(mapResult);
             }
 
@@ -65,8 +68,11 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
-                this.CacheFill(mapResult);
-                return Ok(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
+                }
+                return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
 
             return BadRequest(dataResult.Message);
@@ -92,13 +98,19 @@ namespace PhotoChannelWebAPI.Controllers
                 return BadRequest();
             }
             IDataResult<Like> dataResult = _likeService.Add(new Like() { UserId = result.Data, PhotoId = photoId });
+            var channelId = _photoService.GetById(photoId).Data.ChannelId;
 
             if (dataResult.IsSuccessful)
             {
+                this.RemoveCacheByContains("islike/" + photoId);
                 this.RemoveCacheByContains("photos/" + photoId);
+                this.RemoveCacheByContains(channelId + "/channel-photos");
+                this.RemoveCacheByContains(result.Data + "/user-photos");
+                this.RemoveCacheByContains(result.Data + "/like-photos");
+                this.RemoveCacheByContains(result.Data + "/user-comment-photos");
                 return Ok(dataResult.Data);
             }
-            
+
             return BadRequest(dataResult.Message);
         }
 
@@ -112,11 +124,18 @@ namespace PhotoChannelWebAPI.Controllers
             {
                 return BadRequest();
             }
+
+            var channelId = _photoService.GetById(photoId).Data.ChannelId;
             var result = _likeService.Delete(new Like() { UserId = resultId.Data, PhotoId = photoId });
 
             if (result.IsSuccessful)
             {
+                this.RemoveCacheByContains("islike/" + photoId);
                 this.RemoveCacheByContains("photos/" + photoId);
+                this.RemoveCacheByContains(channelId + "/channel-photos");
+                this.RemoveCacheByContains(resultId.Data + "/user-photos");
+                this.RemoveCacheByContains(resultId.Data + "/like-photos");
+                this.RemoveCacheByContains(resultId.Data + "/user-comment-photos");
                 return Ok(result.Message);
             }
 

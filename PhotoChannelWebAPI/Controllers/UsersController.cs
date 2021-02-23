@@ -42,7 +42,10 @@ namespace PhotoChannelWebAPI.Controllers
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<UserForListDto>>(result.Data);
-                this.CacheFill(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult);
+                }
                 return Ok(mapResult);
             }
             return this.ServerError(result.Message);

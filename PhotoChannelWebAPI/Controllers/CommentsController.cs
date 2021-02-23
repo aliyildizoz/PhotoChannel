@@ -47,8 +47,11 @@ namespace PhotoChannelWebAPI.Controllers
                     dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
                     dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
                 });
-                this.CacheFill(mapResult);
-                return Ok(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
+                }
+                return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
 
             return BadRequest(dataResult.Message);
@@ -64,7 +67,10 @@ namespace PhotoChannelWebAPI.Controllers
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<UserForDetailDto>>(result.Data);
-                this.CacheFill(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult);
+                }
                 return Ok(mapResult);
             }
 
@@ -82,8 +88,11 @@ namespace PhotoChannelWebAPI.Controllers
             if (result.IsSuccessful)
             {
                 var mapResult = _mapper.Map<List<CommentForListDto>>(result.Data);
-                this.CacheFill(mapResult);
-                return Ok(mapResult);
+                if (mapResult.Count > 0)
+                {
+                    this.CacheFill(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
+                }
+                return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
 
             return BadRequest(result.Message);

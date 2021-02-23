@@ -34,8 +34,8 @@ using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
 using PhotoChannelWebAPI.Helpers.Auth.Cookie;
 using PhotoChannelWebAPI.Helpers.Auth.Session;
-using PhotoChannelWebAPI.Middlewares.Exception;
-using PhotoChannelWebAPI.Middlewares.MemoryCache;
+using PhotoChannelWebAPI.Middleware.Exception;
+using PhotoChannelWebAPI.Middleware.MemoryCache;
 using TokenOptions = Core.Utilities.Security.Jwt.TokenOptions;
 
 namespace PhotoChannelWebAPI

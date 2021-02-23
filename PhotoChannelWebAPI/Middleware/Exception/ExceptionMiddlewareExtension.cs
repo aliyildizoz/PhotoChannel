@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using PhotoChannelWebAPI.Middleware.Exception;
 
-namespace PhotoChannelWebAPI.Middlewares.Exception
+namespace PhotoChannelWebAPI.Middleware.Exception
 {
     public static class ExceptionMiddlewareExtension
     {
