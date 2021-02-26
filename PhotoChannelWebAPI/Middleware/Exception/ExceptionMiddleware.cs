@@ -3,14 +3,21 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Business.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGeneration;
 using Newtonsoft.Json;
 using PhotoChannelWebAPI.CustomActionResults;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Exceptions;
+using ILogger = NLog.ILogger;
+using LogLevel = NLog.LogLevel;
 
 namespace PhotoChannelWebAPI.Middleware.Exception
 {
@@ -33,20 +40,22 @@ namespace PhotoChannelWebAPI.Middleware.Exception
                 ValidationExceptionResponse exceptionResponse = new ValidationExceptionResponse();
                 exceptionResponse.Errors = exceptionResponse.Errors;
                 exceptionResponse.Message = exceptionResponse.Message;
-                ExceptionHandler(exception, httpContext, JsonConvert.SerializeObject(exceptionResponse), HttpStatusCode.BadRequest, "application/json");
+                ExceptionHandler(exception, httpContext, JsonConvert.SerializeObject(exceptionResponse), LogLevel.Warn,
+                    HttpStatusCode.BadRequest, "application/json");
             }
             catch (NoUserIdException exception)
             {
-                ExceptionHandler(exception, httpContext, exception.Message, HttpStatusCode.NotFound);
+                ExceptionHandler(exception, httpContext, exception.Message, LogLevel.Error, HttpStatusCode.NotFound);
             }
             catch (System.Exception exception)
             {
-                ExceptionHandler(exception, httpContext, JsonConvert.SerializeObject(exception), contentType: "application/json");
+                ExceptionHandler(exception, httpContext, StatusCodeMessages.InernalServerError, LogLevel.Fatal);
             }
         }
-        private void ExceptionHandler(System.Exception exception, HttpContext httpContext, string content, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, string contentType = "text/plain")
+        private void ExceptionHandler(System.Exception exception, HttpContext httpContext, string content, LogLevel level, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, string contentType = "text/plain")
         {
-            //todo: log
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            logger.Log(level, exception, exception.Message);
             httpContext.Response.StatusCode = (int)statusCode;
             httpContext.Response.ContentType = contentType;
             httpContext.Response.WriteAsync(content);

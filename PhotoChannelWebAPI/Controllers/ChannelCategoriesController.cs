@@ -10,11 +10,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/channelcategories")]
     [ApiController]
+    [LogFilter]
     public class ChannelCategoriesController : ControllerBase
     {
         private IChannelCategoryService _channelCategoryService;
@@ -29,6 +31,7 @@ namespace PhotoChannelWebAPI.Controllers
         [Route("{categoryId}/category-channels")]
         public IActionResult GetCategoryChannels(int categoryId)
         {
+            //todo: Before and after loging
             IDataResult<List<Channel>> dataResult = _channelCategoryService.GetCategoryChannels(categoryId);
 
             if (dataResult.IsSuccessful)

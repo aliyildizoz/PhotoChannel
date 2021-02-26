@@ -12,12 +12,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/comments")]
     [ApiController]
+    [LogFilter]
     public class CommentsController : ControllerBase
     {
         private ICommentService _commentService;

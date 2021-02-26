@@ -15,12 +15,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/users")]
     [ApiController]
+    [LogFilter]
     public class UsersController : ControllerBase
     {
         private IUserService _userService;

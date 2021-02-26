@@ -19,26 +19,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/channels")]
     [ApiController]
+    [LogFilter]
     public class ChannelsController : ControllerBase
     {
         private IChannelService _channelService;
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
         private ICountService _countService;
-        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, ICountService countService)
+        private ILogger<ChannelsController> _logger;
+        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, ICountService countService, ILogger<ChannelsController> logger)
         {
             _channelService = channelService;
             _mapper = mapper;
             _photoUpload = photoUpload;
             _countService = countService;
+            _logger = logger;
         }
 
         [HttpPost]

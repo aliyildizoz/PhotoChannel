@@ -10,23 +10,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/home")]
     [ApiController]
+    [LogFilter]
     public class HomeController : ControllerBase
     {
-        private IMemoryCache _memoryCache;
         private IHomeService _homeService;
         private IMapper _mapper;
         private ICountService _countService;
-        public HomeController(IHomeService homeService, IMapper mapper, ICountService countService, IMemoryCache memoryCache)
+        public HomeController(IHomeService homeService, IMapper mapper, ICountService countService)
         {
             _homeService = homeService;
             _mapper = mapper;
             _countService = countService;
-            _memoryCache = memoryCache;
         }
         [HttpGet("mostchannels")]
         public IActionResult MostChannels()

@@ -11,11 +11,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/categories")]
     [ApiController]
+    [LogFilter]
     public class CategoriesController : ControllerBase
     {
         private ICategoryService _categoryService;

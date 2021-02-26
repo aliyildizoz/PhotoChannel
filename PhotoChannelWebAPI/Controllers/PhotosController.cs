@@ -15,12 +15,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/photos")]
     [ApiController]
+    [LogFilter]
     public class PhotosController : ControllerBase
     {
         private IPhotoService _photoService;

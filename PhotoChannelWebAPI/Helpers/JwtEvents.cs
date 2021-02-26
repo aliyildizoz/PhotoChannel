@@ -10,6 +10,7 @@ using Core.Utilities.Results;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller;
+using NLog;
 
 namespace PhotoChannelWebAPI.Helpers
 {
@@ -27,12 +28,12 @@ namespace PhotoChannelWebAPI.Helpers
                 var result = authService.RefreshTokenValidate(refreshToken);
                 if (result.IsSuccessful)
                 {
-                    
                     return Task.CompletedTask;
                 }
             }
             context.Fail("RefreshToken is not required.");
-
+            var logger = context.HttpContext.RequestServices.GetService<NLog.ILogger>();
+            logger.Warn(context.Result.Failure,"RefreshToken is not required.");
             return Task.CompletedTask;
         }
         private bool IsPathIgnore(string path)

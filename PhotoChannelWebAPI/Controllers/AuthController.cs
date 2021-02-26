@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Newtonsoft.Json;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
 using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
@@ -15,6 +16,7 @@ namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/auth")]
     [ApiController]
+    [LogFilter]
     public class AuthController : ControllerBase
     {
         private IAuthService _authService;

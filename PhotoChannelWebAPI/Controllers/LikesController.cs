@@ -13,11 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/likes")]
     [ApiController]
+    [LogFilter]
     public class LikesController : ControllerBase
     {
         private ILikeService _likeService;
@@ -102,7 +104,8 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
-                this.RemoveCacheByContains("islike/" + photoId);
+
+                this.RemoveCacheByContains(result.Data + "/api/likes/islike/" + photoId);
                 this.RemoveCacheByContains("photos/" + photoId);
                 this.RemoveCacheByContains(channelId + "/channel-photos");
                 this.RemoveCacheByContains(result.Data + "/user-photos");
@@ -130,7 +133,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
-                this.RemoveCacheByContains("islike/" + photoId);
+                this.RemoveCacheByContains(resultId.Data + "/api/likes/islike/" + photoId);
                 this.RemoveCacheByContains("photos/" + photoId);
                 this.RemoveCacheByContains(channelId + "/channel-photos");
                 this.RemoveCacheByContains(resultId.Data + "/user-photos");

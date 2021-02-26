@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/search")]
     [ApiController]
+    [LogFilter]
     public class SearchController : ControllerBase
     {
         private IMapper _mapper;

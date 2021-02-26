@@ -11,11 +11,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
+using PhotoChannelWebAPI.Filters;
 
 namespace PhotoChannelWebAPI.Controllers
 {
     [Route("api/subs")]
     [ApiController]
+    [LogFilter]
     public class SubsController : ControllerBase
     {
         private ISubscriberService _subscriberService;
@@ -83,7 +85,9 @@ namespace PhotoChannelWebAPI.Controllers
             IDataResult<Subscriber> dataResult = _subscriberService.Add(new Subscriber { UserId = User.Claims.GetUserId().Data, ChannelId = channelId });
             if (dataResult.IsSuccessful)
             {
-                this.RemoveCache();
+                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/subscriptions");
+                this.RemoveCacheByContains(channelId + "/subscribers");
+                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/api/subs/issub/" + channelId);
                 return Ok(dataResult.Data);
             }
 
@@ -101,6 +105,8 @@ namespace PhotoChannelWebAPI.Controllers
             {
                 this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/subscriptions");
                 this.RemoveCacheByContains(channelId + "/subscribers");
+                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/api/subs/issub/" + channelId);
+
                 return Ok(result.Message);
             }
 
@@ -124,7 +130,9 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     return Ok(result.Message);
                 }
-                this.RemoveCacheByContains("channels/" + channelId);
+                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/subscriptions");
+                this.RemoveCacheByContains(channelId + "/subscribers");
+                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/api/subs/issub/" + channelId);
 
                 return this.ServerError(result.Message);
 

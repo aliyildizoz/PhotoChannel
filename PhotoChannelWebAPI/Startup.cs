@@ -29,6 +29,7 @@ using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using NLog.Extensions.Logging;
 using PhotoChannelWebAPI.Cache;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Helpers;
@@ -79,9 +80,6 @@ namespace PhotoChannelWebAPI
                 };
                 options.Events = new JwtEvents();
             });
-
-            services.AddDistributedMemoryCache();
-
             services.AddHttpContextAccessor();
             services.AddScoped<IAuthHelper, AuthSessionHelper>();
 
@@ -144,7 +142,6 @@ namespace PhotoChannelWebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseExceptionMiddleware();
             app.UseCors("AllowOrigin");
             app.UseHttpsRedirection();
@@ -152,6 +149,7 @@ namespace PhotoChannelWebAPI
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCacheMiddleware();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
