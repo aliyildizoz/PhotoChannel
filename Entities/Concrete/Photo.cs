@@ -7,6 +7,10 @@ namespace Entities.Concrete
 {
     public class Photo : IEntity
     {
+        public Photo()
+        {
+            ShareDate = DateTime.Now;
+        }
         public int Id { get; set; }
         public int UserId { get; set; }
         public int ChannelId { get; set; }

@@ -7,6 +7,10 @@ namespace Entities.Concrete
 {
     public class Channel : IEntity
     {
+        public Channel()
+        {
+            CreatedDate = DateTime.Now;
+        }
         public int Id { get; set; }
         public string Name { get; set; }
         public int UserId { get; set; }

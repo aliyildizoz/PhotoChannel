@@ -36,20 +36,19 @@ namespace PhotoChannelWebAPI.Controllers
         private IMapper _mapper;
         private IPhotoUpload _photoUpload;
         private ICountService _countService;
-        private ILogger<ChannelsController> _logger;
-        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, ICountService countService, ILogger<ChannelsController> logger)
+        public ChannelsController(IChannelService channelService, IMapper mapper, IPhotoUpload photoUpload, ICountService countService)
         {
             _channelService = channelService;
             _mapper = mapper;
             _photoUpload = photoUpload;
             _countService = countService;
-            _logger = logger;
         }
 
         [HttpPost]
         [Authorize]
         public IActionResult Post([FromForm] ChannelForAddDto channelForAddDto)
         {
+            
             var resultId = User.Claims.GetUserId();
             if (resultId.IsSuccessful)
             {
@@ -153,6 +152,7 @@ namespace PhotoChannelWebAPI.Controllers
 
 
         [HttpGet]
+        [Route("")]
         public IActionResult Get()
         {
             IDataResult<List<Channel>> result = _channelService.GetList();
@@ -169,6 +169,7 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest(result.Message);
         }
         [HttpGet]
+        [Route("{channelName}")]
         public IActionResult GetChannelByName(string channelName)
         {
             if (string.IsNullOrEmpty(channelName))
@@ -189,7 +190,7 @@ namespace PhotoChannelWebAPI.Controllers
         }
         [HttpGet]
         [Route("{channelId}")]
-        public IActionResult GetId(int channelId)
+        public IActionResult GetById(int channelId)
         {
             IDataResult<Channel> result = _channelService.GetById(channelId);
             if (result.IsSuccessful)

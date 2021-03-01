@@ -39,6 +39,8 @@ namespace PhotoChannelWebAPI.Middleware.MemoryCache
 
                 if (memoryCache.TryGetValue(key, out var value))
                 {
+                    var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+                    logger.Info("From Cache");
                     ResponseHandler(httpContext, value);
                 }
                 else
