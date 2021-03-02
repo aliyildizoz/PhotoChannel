@@ -6,10 +6,9 @@ using Entities.Concrete;
 
 namespace Business.Abstract
 {
-    public interface ICategoryService
+    public interface ICategoryService: ICommonService
     {
         IDataResult<List<Category>> GetList();
         IResult Add(Category category);
-        IResult Exists(int id);
     }
 }

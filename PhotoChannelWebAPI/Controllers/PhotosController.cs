@@ -36,6 +36,7 @@ namespace PhotoChannelWebAPI.Controllers
             _photoUpload = photoUpload;
             _countService = countService;
         }
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet("{photoId}")]
         public IActionResult Get(int photoId)
         {
@@ -57,11 +58,11 @@ namespace PhotoChannelWebAPI.Controllers
 
             return NotFound();
         }
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("{channelId}/channel-photos")]
         public IActionResult GetChannelPhotos(int channelId)
         {
-            //Todo: channelId var mı kontrolü 
             IDataResult<List<Photo>> dataResult = _photoService.GetChannelPhotos(channelId);
 
             if (dataResult.IsSuccessful)
@@ -81,12 +82,11 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(dataResult.Message);
         }
+        [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/user-photos")]
         public IActionResult GetUserPhotos(int userId)
         {
-            //Todo: userId var mı kontrolü 
-
             IDataResult<List<Photo>> dataResult = _photoService.GetUserPhotos(userId);
 
             if (dataResult.IsSuccessful)
@@ -128,27 +128,22 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest();
         }
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpDelete]
         [Route("{photoId}")]
         [Authorize]
         public IActionResult Delete(int photoId)
         {
-            var contains = _photoService.Contains(new Photo { Id = photoId });
-            if (contains)
+            var deletedPhotos = _photoService.GetById(photoId);
+            if (deletedPhotos.IsSuccessful)
             {
-                var deletedPhotos = _photoService.GetById(photoId);
-                if (deletedPhotos.IsSuccessful)
-                {
-                    IResult result = _photoService.Delete(deletedPhotos.Data);
-                    _photoUpload.ImageDelete(deletedPhotos.Data.PublicId);
-                    this.RemoveCache();
-                    return Ok(result.Message);
-                }
-
-                return BadRequest(deletedPhotos.Message);
+                IResult result = _photoService.Delete(deletedPhotos.Data);
+                _photoUpload.ImageDelete(deletedPhotos.Data.PublicId);
+                this.RemoveCache();
+                return Ok(result.Message);
             }
 
-            return NotFound();
+            return BadRequest(deletedPhotos.Message);
         }
 
     }

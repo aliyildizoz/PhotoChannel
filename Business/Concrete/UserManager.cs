@@ -10,6 +10,7 @@ using Core.Entities.Concrete;
 using Core.Utilities.Hashing;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using Entities.Abstract;
 using Entities.Concrete;
 using Entities.Dtos;
 
@@ -27,9 +28,9 @@ namespace Business.Concrete
 
         public IDataResult<User> GetById(int id)
         {
-            
+
             var user = _userDal.Get(u => u.Id == id);
-          
+
             if (user != null)
             {
                 return new SuccessDataResult<User>(user);
@@ -59,11 +60,6 @@ namespace Business.Concrete
                 return new SuccessDataResult<User>(user);
             }
             return new ErrorDataResult<User>(Messages.UserNotFound);
-        }
-
-        public bool Contains(User user)
-        {
-            return _userDal.Contains(user);
         }
 
         public IDataResult<List<OperationClaim>> GetClaims(int id)
@@ -146,12 +142,17 @@ namespace Business.Concrete
 
         public IResult UserExistsWithUpdate(string email, int userId)
         {
-            var user = _userDal.Get(u=> u.Id != userId && u.Email == email);
+            var user = _userDal.Get(u => u.Id != userId && u.Email == email);
             if (user != null)
             {
                 return new SuccessResult(Messages.UserAlreadyExists);
             }
             return new ErrorResult();
+        }
+
+        public bool Contains(IEntity entity)
+        {
+            return _userDal.Contains(new User { Id = entity.Id });
         }
     }
 }

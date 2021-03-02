@@ -8,13 +8,12 @@ using Entities.Dtos;
 
 namespace Business.Abstract
 {
-    public interface IChannelService
+    public interface IChannelService: ICommonService
     {
         IDataResult<List<Channel>> GetList();
         IDataResult<Channel> GetById(int id);
         IDataResult<List<Channel>> GetByName(string name);
         IDataResult<User> GetOwner(int id);
-        bool Contains(Channel channel);
         IResult Delete(int id);
         IDataResult<Channel> Add(Channel channel);
         IDataResult<Channel> Update(Channel channel);

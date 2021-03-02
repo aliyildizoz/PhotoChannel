@@ -34,7 +34,7 @@ namespace PhotoChannelWebAPI.Controllers
             _photoService = photoService;
             _countService = countService;
         }
-
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("{photoId}/photo-likes")]
         public IActionResult GetPhotoLikes(int photoId)
@@ -53,13 +53,11 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
-
+        [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/like-photos")]
         public IActionResult GetLikePhotos(int userId)
         {
-            //Todo: userId var mı kontrolü 
-
             IDataResult<List<Photo>> dataResult = _likeService.GetLikePhotos(userId);
 
             if (dataResult.IsSuccessful)
@@ -79,17 +77,17 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("islike/{photoId}")]
         [Authorize]
         public IActionResult GetIsLike(int photoId)
         {
-            //Todo: photoId var mı kontrolü 
-            bool result;
-            result = _likeService.GetIsUserLike(photoId, User.Claims.GetUserId().Data);
+            var result = _likeService.GetIsUserLike(photoId, User.Claims.GetUserId().Data);
             this.CacheFillWithUserId(result);
             return Ok(result);
         }
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpPost]
         [Authorize]
         public IActionResult Post([FromForm] int photoId)
@@ -116,7 +114,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
-
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpDelete]
         [Route("{photoId}")]
         [Authorize]

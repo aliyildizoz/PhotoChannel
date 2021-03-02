@@ -27,9 +27,11 @@ namespace PhotoChannelWebAPI.Controllers
             _categoryService = categoryService;
         }
 
+        [ContainsFilter(typeof(ICategoryService), typeof(Category),nameof(Category.Id))]
         [HttpPost]
         [Route("add")]
         [Authorize(Roles = "Admin")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Add(Category category)
         {
             IResult result = _categoryService.Add(category);
@@ -41,7 +43,12 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.IsSuccessful);
         }
-
+        /// <summary>
+        /// Gets list of categories.
+        /// </summary>
+        /// <returns>List of categories.</returns>
+        /// <response code="200">Returns list of categories.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetAll()
         {

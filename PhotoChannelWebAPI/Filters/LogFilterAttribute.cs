@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PhotoChannelWebAPI.Extensions;
 
 namespace PhotoChannelWebAPI.Filters
 {
@@ -13,7 +14,11 @@ namespace PhotoChannelWebAPI.Filters
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-            logger.Info("Request");
+            if (context.HttpContext.User.Identity.IsAuthenticated)
+            {
+                logger.Info("Request by user id:{0}", context.HttpContext.User.Claims.GetUserId().Data);
+            }
+            logger.Info("General request");
         }
 
         public override void OnResultExecuted(ResultExecutedContext context)

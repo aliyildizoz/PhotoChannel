@@ -32,7 +32,7 @@ namespace PhotoChannelWebAPI.Controllers
             _mapper = mapper;
             _countService = countService;
         }
-
+        [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/user-comment-photos")]
         public IActionResult GetPhotosByUserComment(int userId)
@@ -58,6 +58,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("{photoId}/photo-comment-users")]
         public IActionResult GetUsersByPhotoComment(int photoId)
@@ -78,7 +79,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
-
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("{photoId}/photo-comments")]
         public IActionResult GetPhotoComments(int photoId)
@@ -126,6 +127,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+        [ContainsFilter(typeof(ICommentService), typeof(Comment))]
         [HttpPut]
         [Authorize]
         [Route("{commentId}")]
@@ -151,7 +153,7 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest();
         }
-
+        [ContainsFilter(typeof(ICommentService), typeof(Comment))]
         [HttpDelete]
         [Authorize]
         [Route("{commentId}")]

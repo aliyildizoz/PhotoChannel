@@ -29,6 +29,7 @@ namespace PhotoChannelWebAPI.Controllers
             _mapper = mapper;
             _channelService = channelService;
         }
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("{channelId}/subscribers")]
         public IActionResult GetSubscribers(int channelId)
@@ -47,6 +48,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(dataResult.Message);
         }
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("issub/{channelId}")]
         [Authorize]
@@ -56,6 +58,7 @@ namespace PhotoChannelWebAPI.Controllers
             this.CacheFillWithUserId(res);
             return Ok(res);
         }
+        [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/subscriptions")]
         public IActionResult GetSubscriptions(int userId)
@@ -93,7 +96,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(dataResult.Message);
         }
-
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}")]
         [Authorize]
@@ -112,7 +115,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(result.Message);
         }
-
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}/byowner/{userId}")]
         [Authorize]

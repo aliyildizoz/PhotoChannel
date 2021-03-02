@@ -8,6 +8,7 @@ using Business.ValidationRules.FluentValidation;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using Entities.Abstract;
 using Entities.Concrete;
 
 namespace Business.Concrete
@@ -47,17 +48,18 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-        public bool Contains(Photo photo)
-        {
-            return _photoDal.Contains(photo);
-        }
-
+        
         public IDataResult<Photo> Add(Photo photo)
         {
             Validation<PhotoValidator> validation = new Validation<PhotoValidator>();
             validation.Validate(photo);
             _photoDal.Add(photo);
             return new SuccessDataResult<Photo>(photo);
+        }
+
+        public bool Contains(IEntity entity)
+        {
+            return _photoDal.Contains(new Photo{Id = entity.Id});
         }
     }
 }

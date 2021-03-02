@@ -6,7 +6,7 @@ using Entities.Concrete;
 
 namespace Business.Abstract
 {
-    public interface ICommentService
+    public interface ICommentService: ICommonService
     {
         IDataResult<List<Photo>> GetPhotosByUserComment(int userId);
         IDataResult<List<User>> GetUsersByPhotoComment(int photoId);
@@ -15,6 +15,5 @@ namespace Business.Abstract
         IResult Delete(Comment comment);
         IResult Add(Comment comment);
         IResult Update(Comment comment);
-        bool Contains(Comment comment);
     }
 }

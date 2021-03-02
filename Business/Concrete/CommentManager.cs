@@ -6,6 +6,7 @@ using Business.Abstract;
 using Business.ValidationRules.FluentValidation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using Entities.Abstract;
 using Entities.Concrete;
 
 namespace Business.Concrete
@@ -37,7 +38,7 @@ namespace Business.Concrete
 
         public IDataResult<Comment> GetById(int commentId)
         {
-            return new SuccessDataResult<Comment>(_commentDal.Get(c=>c.Id==commentId));
+            return new SuccessDataResult<Comment>(_commentDal.Get(c => c.Id == commentId));
         }
 
         public IResult Delete(Comment comment)
@@ -62,9 +63,9 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
-        public bool Contains(Comment comment)
+        public bool Contains(IEntity entity)
         {
-            return _commentDal.Contains(comment);
+            return _commentDal.Contains(new Comment { Id = entity.Id });
         }
     }
 }

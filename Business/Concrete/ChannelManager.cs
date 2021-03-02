@@ -9,6 +9,7 @@ using Core.Entities.Concrete;
 using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using Entities.Abstract;
 using Entities.Concrete;
 using Entities.Dtos;
 
@@ -48,12 +49,7 @@ namespace Business.Concrete
             }
             return new SuccessDataResult<User>(_channelDal.GetOwner(new Channel { Id = id }));
         }
-
-        public bool Contains(Channel channel)
-        {
-            return _channelDal.Contains(channel);
-        }
-
+        
         public IDataResult<List<Channel>> GetByName(string name)
         {
             return new SuccessDataResult<List<Channel>>(_channelDal.GetList(channel => channel.Name.ToLower().Contains(name.ToLower())).ToList());
@@ -116,6 +112,11 @@ namespace Business.Concrete
                 return result.Id == channelId ? (IResult)new ErrorResult() : new SuccessResult(Messages.ChannelNameAlreadyExists);
             }
             return new ErrorResult();
+        }
+
+        public bool Contains(IEntity entity)
+        {
+            return _channelDal.Contains(new Channel{ Id = entity.Id });
         }
     }
 }

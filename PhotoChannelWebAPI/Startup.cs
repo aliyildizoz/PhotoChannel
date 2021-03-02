@@ -105,15 +105,21 @@ namespace PhotoChannelWebAPI
                 });
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+                    Description = @"JWT Authorization header using the Bearer scheme.
                       Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                      Example: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
                 });
-
+                options.AddSecurityDefinition("RefreshToken", new OpenApiSecurityScheme
+                {
+                    Description = @"Refresh token is required for request a new access token when jwt expired.",
+                    Name = "refreshToken",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                     {
@@ -128,6 +134,20 @@ namespace PhotoChannelWebAPI
                             Name = "Bearer",
                             In = ParameterLocation.Header,
 
+                        },
+                        new List<string>()
+                    },
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "RefreshToken"
+                            },
+                            Scheme = "oauth2",
+                            Name = "refreshToken",
+                            In = ParameterLocation.Header
                         },
                         new List<string>()
                     }

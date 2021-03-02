@@ -7,7 +7,7 @@ using Entities.Concrete;
 
 namespace Business.Abstract
 {
-    public interface IPhotoService
+    public interface IPhotoService: ICommonService
     {
         IDataResult<List<Photo>> GetChannelPhotos(int channelId);
         IDataResult<List<Photo>> GetUserPhotos(int userId);
@@ -15,6 +15,5 @@ namespace Business.Abstract
         IDataResult<Photo> GetById(int id);
         IDataResult<Photo> Add(Photo photo);
         IResult Delete(Photo photo);
-        bool Contains(Photo photo);
     }
 }

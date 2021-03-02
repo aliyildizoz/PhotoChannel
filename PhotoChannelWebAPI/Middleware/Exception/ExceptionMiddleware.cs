@@ -43,6 +43,10 @@ namespace PhotoChannelWebAPI.Middleware.Exception
                 ExceptionHandler(exception, httpContext, JsonConvert.SerializeObject(exceptionResponse), LogLevel.Warn,
                     HttpStatusCode.BadRequest, "application/json");
             }
+            catch (EntityNotFoundException exception)
+            {
+                ExceptionHandler(exception, httpContext, exception.Message, LogLevel.Warn, HttpStatusCode.NotFound);
+            }
             catch (NoUserIdException exception)
             {
                 ExceptionHandler(exception, httpContext, exception.Message, LogLevel.Error, HttpStatusCode.NotFound);

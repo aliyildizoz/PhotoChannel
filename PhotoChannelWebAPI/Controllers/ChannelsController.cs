@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Abstract;
+using Business.Concrete;
 using CloudinaryDotNet.Actions;
 using Core.Entities.Concrete;
 using Core.Utilities.Business;
@@ -48,7 +49,7 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult Post([FromForm] ChannelForAddDto channelForAddDto)
         {
-            
+
             var resultId = User.Claims.GetUserId();
             if (resultId.IsSuccessful)
             {
@@ -79,36 +80,30 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest();
         }
 
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}")]
         [Authorize]
         public IActionResult Delete(int channelId)
         {
-            var contains = _channelService.Contains(new Channel { Id = channelId });
-            if (contains)
+            IResult isOwner = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
+            if (isOwner.IsSuccessful)
             {
-                IResult isOwner = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
-                if (isOwner.IsSuccessful)
+
+                IDataResult<Channel> dataResult = _channelService.GetById(channelId);
+                IResult result = _channelService.Delete(channelId);
+                if (result.IsSuccessful)
                 {
-
-                    IDataResult<Channel> dataResult = _channelService.GetById(channelId);
-                    IResult result = _channelService.Delete(channelId);
-                    if (result.IsSuccessful)
-                    {
-                        _photoUpload.ImageDelete(dataResult.Data.PublicId);
-                        this.RemoveCache();
-                        return Ok(result.Message);
-                    }
-                    return this.ServerError(result.Message);
+                    _photoUpload.ImageDelete(dataResult.Data.PublicId);
+                    this.RemoveCache();
+                    return Ok(result.Message);
                 }
+                return this.ServerError(result.Message);
 
-                return Forbid();
             }
 
-
-            return NotFound();
+            return BadRequest(isOwner.Message);
         }
-
 
         [HttpPut]
         [Route("{channelId}")]
@@ -168,6 +163,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+
         [HttpGet]
         [Route("{channelName}")]
         public IActionResult GetChannelByName(string channelName)
@@ -203,11 +199,11 @@ namespace PhotoChannelWebAPI.Controllers
 
             return NotFound(result.Message);
         }
+        [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/user-channels")]
         public IActionResult GetUserChannels(int userId)
         {
-            //Todo: userId var mı kontrolü
             var result = _channelService.GetUserChannels(userId);
             if (result.IsSuccessful)
             {
@@ -220,39 +216,29 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return this.ServerError(result.Message);
         }
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("{channelId}/owner")]
         public IActionResult GetOwner(int channelId)
         {
-            var contains = _channelService.Contains(new Channel { Id = channelId });
-            if (contains)
+            IDataResult<User> result = _channelService.GetOwner(channelId);
+            if (result.IsSuccessful)
             {
-                IDataResult<User> result = _channelService.GetOwner(channelId);
-                if (result.IsSuccessful)
-                {
-                    var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
-                    this.CacheFill(mapResult);
-                    return Ok(mapResult);
-                }
-                return NotFound(result.Message);
+                var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
+                this.CacheFill(mapResult);
+                return Ok(mapResult);
             }
-            return NotFound();
+            return BadRequest(result.Message);
         }
-
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Authorize]
         [Route("{channelId}/isowner")]
         public IActionResult GetChannelIsOwner(int channelId)
         {
-            var contains = _channelService.Contains(new Channel { Id = channelId });
-            if (contains)
-            {
-                IResult result = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
-                this.CacheFill(result.IsSuccessful);
-                return Ok(result.IsSuccessful);
-            }
-
-            return NotFound();
+            IResult result = _channelService.GetIsOwner(channelId, User.Claims.GetUserId().Data);
+            this.CacheFill(result.IsSuccessful);
+            return Ok(result.IsSuccessful);
         }
     }
 }

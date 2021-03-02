@@ -52,29 +52,23 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return this.ServerError(result.Message);
         }
+        [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}")]
         public IActionResult Get(int userId)
         {
-            var contains = _userService.Contains(new User { Id = userId });
-            if (contains)
+            IDataResult<User> result = _userService.GetById(userId);
+
+            if (result.IsSuccessful)
             {
-                IDataResult<User> result = _userService.GetById(userId);
-
-                if (result.IsSuccessful)
-                {
-                    var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
-                    mapResult.SubscriptionCount = _countService.GetSubscriptionsCount(userId).Data;
-                    this.CacheFill(mapResult);
-                    return Ok(mapResult);
-                }
-                return this.ServerError(result.Message);
-
+                var mapResult = _mapper.Map<UserForDetailDto>(result.Data);
+                mapResult.SubscriptionCount = _countService.GetSubscriptionsCount(userId).Data;
+                this.CacheFill(mapResult);
+                return Ok(mapResult);
             }
-
-            return NotFound();
+            return this.ServerError(result.Message);
         }
-
+        [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpPut]
         [Route("{userId}")]
         [Authorize]
@@ -109,7 +103,10 @@ namespace PhotoChannelWebAPI.Controllers
         [Authorize]
         public IActionResult UpdatePassword(int userId, PasswordUpdateDto passwordUpdateDto)
         {
-            //todo: gelen idnin mevcut kullnaıcı olup olmadığının kontrolü
+            if (userId != User.Claims.GetUserId().Data)
+            {
+                return BadRequest();
+            }
             var oldUserResult = _userService.GetById(userId);
             if (oldUserResult.IsSuccessful)
             {
@@ -134,11 +131,16 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return NotFound(oldUserResult.Message);
         }
+
         [HttpDelete]
         [Route("{userId}")]
         [Authorize]
         public IActionResult Delete(int userId)
         {
+            if (userId != User.Claims.GetUserId().Data)
+            {
+                return BadRequest();
+            }
             IResult result = _userService.Delete(userId);
             if (result.IsSuccessful)
             {

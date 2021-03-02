@@ -8,13 +8,12 @@ using Entities.Dtos;
 
 namespace Business.Abstract
 {
-    public interface IUserService
+    public interface IUserService:ICommonService
     {
         IDataResult<List<User>> GetList();
         IDataResult<User> GetById(int id);
         IDataResult<User> GetByEmail(string email);
         IDataResult<User> GetByRefreshToken(string refreshToken);
-        bool Contains(User user);
 
         IDataResult<List<OperationClaim>> GetClaims(int id);
 
