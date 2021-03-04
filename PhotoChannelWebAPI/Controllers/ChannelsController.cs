@@ -44,24 +44,43 @@ namespace PhotoChannelWebAPI.Controllers
             _photoUpload = photoUpload;
             _countService = countService;
         }
-
+        /// <summary>
+        /// Creates a channel
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    POST /Channel
+        ///    {
+        ///       "name": 1,
+        ///       "file": []
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="channelForAddDto"></param>
+        /// <response code="200">A newly created channel.</response>
+        /// <response code="400">If the channel name already exists.</response>
+        /// <response code="400">If there is no channel photo.</response>
+        /// <response code="400">If the channel couldn't be added</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [Authorize]
         public IActionResult Post([FromForm] ChannelForAddDto channelForAddDto)
         {
-
             var resultId = User.Claims.GetUserId();
-            if (resultId.IsSuccessful)
+            IResult checkResult = _channelService.CheckIfChannelNameExists(channelForAddDto.Name);
+            if (!checkResult.IsSuccessful)
             {
-                IResult checkResult = _channelService.CheckIfChannelNameExists(channelForAddDto.Name);
-                if (!checkResult.IsSuccessful)
-                {
-                    return BadRequest(checkResult.Message);
-                }
+                return BadRequest(checkResult.Message);
+            }
 
-                if (channelForAddDto.File.Length > 0)
+            if (channelForAddDto.File.Length > 0)
+            {
+                ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForAddDto.File);
+                if ((int)imageUploadResult.StatusCode < 300)
                 {
-                    ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForAddDto.File);
                     var channel = _mapper.Map<Channel>(channelForAddDto);
                     channel.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
                     channel.PublicId = imageUploadResult.PublicId;
@@ -73,13 +92,33 @@ namespace PhotoChannelWebAPI.Controllers
                         this.RemoveCacheByContains(resultId.Data + "/user-channels");
                         return Ok(mapResult);
                     }
-
                     return BadRequest(result.Message);
                 }
+                return BadRequest(imageUploadResult.Error.Message);
             }
             return BadRequest();
         }
-
+        /// <summary>
+        /// Creates a channel
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    POST /Channel
+        ///    {
+        ///       "name": 1,
+        ///       "file": []
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="channelForAddDto"></param>
+        /// <response code="200">A newly created channel.</response>
+        /// <response code="400">If the channel name already exists.</response>
+        /// <response code="400">If there is no channel photo.</response>
+        /// <response code="400">If the channel couldn't be added</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}")]

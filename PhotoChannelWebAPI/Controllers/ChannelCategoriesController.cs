@@ -97,8 +97,8 @@ namespace PhotoChannelWebAPI.Controllers
         /// <param name="channelId"></param>
         /// <response code="200">A newly ChannelCategory.</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ContainsFilter(typeof(ICategoryService), typeof(Category),nameof(ChannelCategoryForAddDto.CategoryId))]
-        [ContainsFilter(typeof(IChannelService), typeof(Channel),nameof(ChannelCategoryForAddDto.ChannelId))]
+        [ContainsFilter(typeof(ICategoryService), typeof(Category), nameof(ChannelCategoryForAddDto.CategoryId))]
+        [ContainsFilter(typeof(IChannelService), typeof(Channel), nameof(ChannelCategoryForAddDto.ChannelId))]
         [Authorize]
         [HttpPost]
         public IActionResult Post(ChannelCategoryForAddDto channelCategoryDto)
@@ -116,35 +116,72 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+        /// <summary>
+        /// Adds multiple categories to the channel
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    PUT /ChannelCategories
+        ///    {
+        ///       "categoryIds": [1,2,3...]
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="channelId"></param>
+        /// <param name="channelCategoriesDto"></param>
+        /// <response code="200">If the adds is successful</response>
+        /// <response code="400">If the categories not added</response>
+        /// <response code="404">If the channel not found</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpPut]
         [Route("{channelId}")]
         [Authorize]
         public IActionResult Put(int channelId, ChannelCategoryForAddRangeDto channelCategoriesDto)
         {
-            //Todo: channelId var mı kontrolü 
+            ChannelCategory[] channelCategories = new ChannelCategory[channelCategoriesDto.CategoryIds.Length];
 
-            if (channelId > 0)
+            for (int i = 0; i < channelCategoriesDto.CategoryIds.Length; i++)
             {
-                ChannelCategory[] channelCategories = new ChannelCategory[channelCategoriesDto.CategoryIds.Length];
-
-                for (int i = 0; i < channelCategoriesDto.CategoryIds.Length; i++)
-                {
-                    channelCategories[i] = new ChannelCategory { ChannelId = channelId, CategoryId = channelCategoriesDto.CategoryIds[i] };
-                }
-
-                IResult result = _channelCategoryService.AddRange(channelCategories);
-
-                if (result.IsSuccessful)
-                {
-                    this.RemoveCache();
-                    return Ok(result.Message);
-                }
-
-                return BadRequest(result.Message);
+                channelCategories[i] = new ChannelCategory { ChannelId = channelId, CategoryId = channelCategoriesDto.CategoryIds[i] };
             }
-            return BadRequest();
+
+            IResult result = _channelCategoryService.AddRange(channelCategories);
+
+            if (result.IsSuccessful)
+            {
+                this.RemoveCache();
+                return Ok(result.Message);
+            }
+
+            return BadRequest(result.Message);
         }
+        /// <summary>
+        /// Delete a category from the channel
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    DELETE /ChannelCategories
+        ///    {
+        ///       "channelId": 1,
+        ///       "categoryId": 1
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="channelId"></param>
+        /// <param name="channelCategoriesDto"></param>
+        /// <response code="200">If the delete is successful</response>
+        /// <response code="400">If the channel or the category not added</response>
+        /// <response code="404">If the channel or the category not found</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel), nameof(ChannelCategoryForDeleteDto.ChannelId))]
         [ContainsFilter(typeof(ICategoryService), typeof(Category), nameof(ChannelCategoryForDeleteDto.CategoryId))]
         [HttpDelete]
