@@ -99,26 +99,16 @@ namespace PhotoChannelWebAPI.Controllers
             return BadRequest();
         }
         /// <summary>
-        /// Creates a channel
+        /// Deletes a channel
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///    POST /Channel
-        ///    {
-        ///       "name": 1,
-        ///       "file": []
-        ///    }
-        /// 
-        /// </remarks>
         /// <returns></returns>
-        /// <param name="channelForAddDto"></param>
-        /// <response code="200">A newly created channel.</response>
-        /// <response code="400">If the channel name already exists.</response>
-        /// <response code="400">If there is no channel photo.</response>
-        /// <response code="400">If the channel couldn't be added</response>
+        /// <param name="channelId"></param>
+        /// <response code="200">If the channel is deleted.</response>
+        /// <response code="400">If current user not owner of the channel.</response>
+        /// <response code="404">If the channel not found.</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}")]
@@ -143,7 +133,29 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(isOwner.Message);
         }
-
+        /// <summary>
+        /// Updates a channel
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    PUT /Channel
+        ///    {
+        ///       "name": 1,
+        ///       "file": []
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="channelForUpdate"></param>
+        /// <param name="channelId"></param>
+        /// <response code="200">UThe updated version of the channel.</response>
+        /// <response code="400">If there is no channel photo.</response>
+        /// <response code="400">If the channel couldn't be updated.</response>
+        /// <response code="404">If the channel not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPut]
         [Route("{channelId}")]
         [Authorize]
@@ -184,28 +196,33 @@ namespace PhotoChannelWebAPI.Controllers
             return NotFound(dataResult.Message);
         }
 
-
+        /// <summary>
+        /// Gets all channel
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200"></response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         [Route("")]
         public IActionResult Get()
         {
             IDataResult<List<Channel>> result = _channelService.GetList();
-            if (result.IsSuccessful)
+            var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
+            if (mapResult.Count > 0)
             {
-                var mapResult = _mapper.Map<List<ChannelForListDto>>(result.Data);
-                if (mapResult.Count > 0)
-                {
-                    this.CacheFill(mapResult);
-                }
-                return Ok(mapResult);
+                this.CacheFill(mapResult);
             }
-
-            return BadRequest(result.Message);
+            return Ok(mapResult);
         }
-
+        /// <summary>
+        /// Gets channel by name
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelName"></param>
+        /// <response code="200"></response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("{channelName}")]
-        public IActionResult GetChannelByName(string channelName)
+        public IActionResult GetChannelByName([FromBody] string channelName)
         {
             if (string.IsNullOrEmpty(channelName))
             {
@@ -223,6 +240,15 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest();
         }
+        /// <summary>
+        /// Gets channel by id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId">The channel id</param>
+        /// <response code="200"></response>
+        /// <response code="404">If the channel is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("{channelId}")]
         public IActionResult GetById(int channelId)
@@ -235,9 +261,18 @@ namespace PhotoChannelWebAPI.Controllers
                 this.CacheFill(mapResult);
                 return Ok(mapResult);
             }
-
             return NotFound(result.Message);
         }
+
+        /// <summary>
+        /// Gets channels of the user by Id of the user
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="userId">Id of the user</param>
+        /// <response code="200"></response>
+        /// <response code="404">If the user is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/user-channels")]
@@ -255,6 +290,15 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return this.ServerError(result.Message);
         }
+        /// <summary>
+        /// Gets owner of the channel by Id of the channel
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId">Id of the user</param>
+        /// <response code="200"></response>
+        /// <response code="404">If the channel is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("{channelId}/owner")]
@@ -269,6 +313,16 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+        /// <summary>
+        /// "Does the current user own the channel?" gets response by the channel's identity
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId">Id of the user</param>
+        /// <response code="200"></response>
+        /// <response code="401">If the user is unauthorize.</response>
+        /// <response code="404">If the channel is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Authorize]

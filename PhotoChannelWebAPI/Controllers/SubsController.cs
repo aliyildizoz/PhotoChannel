@@ -29,6 +29,15 @@ namespace PhotoChannelWebAPI.Controllers
             _mapper = mapper;
             _channelService = channelService;
         }
+        /// <summary>
+        /// Gets subscribers of the channel by channel id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId"></param>
+        /// <response code="200"></response>
+        /// <response code="404">If the channel not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("{channelId}/subscribers")]
@@ -48,6 +57,18 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(dataResult.Message);
         }
+
+        /// <summary>
+        /// "Does the current user subscribe to this channel?" gets response by the channel's identity
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId"></param>
+        /// <response code="200"></response>
+        /// <response code="400">If current user not owner of the channel.</response>
+        /// <response code="404">If the channel not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("issub/{channelId}")]
@@ -58,6 +79,15 @@ namespace PhotoChannelWebAPI.Controllers
             this.CacheFillWithUserId(res);
             return Ok(res);
         }
+        /// <summary>
+        /// Gets subscriptions of the user by user id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="userId"></param>
+        /// <response code="200"></response>
+        /// <response code="404">If the user not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/subscriptions")]
@@ -77,14 +107,31 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(dataResult.Message);
         }
-
-
+        /// <summary>
+        /// Subscribes current user by channel id
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    POST /Subscribe
+        ///    {
+        ///       "channelId": 1
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="channelId"></param>
+        /// <response code="200"></response>
+        /// <response code="401">If the current user unauthorize.</response>
+        /// <response code="404">If the channel not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpPost]
         [Authorize]
         public IActionResult Post([FromForm] int channelId)
         {
-            //Todo: channelId var mı kontrolü 
-
             IDataResult<Subscriber> dataResult = _subscriberService.Add(new Subscriber { UserId = User.Claims.GetUserId().Data, ChannelId = channelId });
             if (dataResult.IsSuccessful)
             {
@@ -96,6 +143,19 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(dataResult.Message);
         }
+
+
+        /// <summary>
+        /// Unsubscribes current user by channel id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId"></param>
+        /// <response code="200"></response>
+        /// <response code="401">If the current user unauthorize.</response>
+        /// <response code="404">If the channel not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}")]
@@ -115,6 +175,19 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(result.Message);
         }
+
+        /// <summary>
+        /// Channel owner unsubscribes by to user id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId"></param>
+        /// <param name="userId"></param>
+        /// <response code="200"></response>
+        /// <response code="401">If the current user unauthorize.</response>
+        /// <response code="404">If the channel not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}/byowner/{userId}")]

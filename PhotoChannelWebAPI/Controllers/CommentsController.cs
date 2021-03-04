@@ -32,60 +32,71 @@ namespace PhotoChannelWebAPI.Controllers
             _mapper = mapper;
             _countService = countService;
         }
+
+        /// <summary>
+        /// Gets photos of user did comment by user id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="userId"></param>
+        /// <response code="200">Commented photos</response>
+        /// <response code="404">If the user is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/user-comment-photos")]
         public IActionResult GetPhotosByUserComment(int userId)
         {
-            //Todo: userId var mı kontrolü 
-
             IDataResult<List<Photo>> dataResult = _commentService.GetPhotosByUserComment(userId);
 
-            if (dataResult.IsSuccessful)
+            var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
+            mapResult.ForEach(dto =>
             {
-                var mapResult = _mapper.Map<List<PhotoCardDto>>(dataResult.Data);
-                mapResult.ForEach(dto =>
-                {
-                    dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
-                    dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
-                });
-                if (mapResult.Count > 0)
-                {
-                    this.CacheFill(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
-                }
-                return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
+                dto.LikeCount = _countService.GetPhotoLikeCount(dto.PhotoId).Data;
+                dto.CommentCount = _countService.GetPhotoCommentCount(dto.PhotoId).Data;
+            });
+            if (mapResult.Count > 0)
+            {
+                this.CacheFill(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
             }
-
-            return BadRequest(dataResult.Message);
+            return Ok(mapResult.OrderByDescending(dto => dto.ShareDate).ToList());
         }
+        /// <summary>
+        /// Gets users who commented on the photo by photo id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="photoId"></param>
+        /// <response code="200">Users who commented on the photo</response>
+        /// <response code="404">If the photo is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("{photoId}/photo-comment-users")]
         public IActionResult GetUsersByPhotoComment(int photoId)
         {
-            //Todo: photoId var mı kontrolü 
-
             IDataResult<List<User>> result = _commentService.GetUsersByPhotoComment(photoId);
-
-            if (result.IsSuccessful)
+            var mapResult = _mapper.Map<List<UserForDetailDto>>(result.Data);
+            if (mapResult.Count > 0)
             {
-                var mapResult = _mapper.Map<List<UserForDetailDto>>(result.Data);
-                if (mapResult.Count > 0)
-                {
-                    this.CacheFill(mapResult);
-                }
-                return Ok(mapResult);
+                this.CacheFill(mapResult);
             }
-
-            return BadRequest(result.Message);
+            return Ok(mapResult);
         }
+        /// <summary>
+        /// Gets photo comments by photo id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="photoId"></param>
+        /// <response code="200">Photo comments</response>
+        /// <response code="404">If the photo is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("{photoId}/photo-comments")]
         public IActionResult GetPhotoComments(int photoId)
         {
-            //Todo: photoId var mı kontrolü 
-
             IDataResult<List<Comment>> result = _commentService.GetPhotoComments(photoId);
 
             if (result.IsSuccessful)
@@ -100,12 +111,32 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+        /// <summary>
+        /// Creates a comment 
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    POST /CommentForAddDto
+        ///    {
+        ///        "photoId":1
+        ///        "description" : "This photo is great."
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="commentForAddDto"></param>
+        /// <response code="200">A newly comment</response>
+        /// <response code="401">If the user is unauthorize.</response>
+        /// <response code="404">If the photo is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ContainsFilter(typeof(IPhotoService), typeof(Photo), nameof(CommentForAddDto.PhotoId))]
         [HttpPost]
         [Authorize]
         public IActionResult Post(CommentForAddDto commentForAddDto)
         {
-            //Todo: photoId var mı kontrolü 
-
             var currentUser = User.Claims.GetCurrentUser().Data;
             var mapResult = _mapper.Map<Comment>(commentForAddDto);
             mapResult.UserId = currentUser.Id;
@@ -127,6 +158,27 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+        /// <summary>
+        /// Updates a comment 
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///    PUT /CommentForUpdateDto
+        ///    {
+        ///        "description" : "This photo is great."
+        ///    }
+        /// 
+        /// </remarks>
+        /// <returns></returns>
+        /// <param name="commentForUpdateDto"></param>
+        /// <param name="commentId"></param>
+        /// <response code="200">The updated version of the comment.</response>
+        /// <response code="401">If the user is unauthorize.</response>
+        /// <response code="404">If the photo is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ContainsFilter(typeof(ICommentService), typeof(Comment))]
         [HttpPut]
         [Authorize]
@@ -153,32 +205,32 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest();
         }
+
+        /// <summary>
+        /// Deletes a comment
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="commentId"></param>
+        /// <response code="200">If the comment is deleted.</response>
+        /// <response code="401">If the user is unauthorize.</response>
+        /// <response code="404">If the comment not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(ICommentService), typeof(Comment))]
         [HttpDelete]
         [Authorize]
         [Route("{commentId}")]
         public IActionResult Delete(int commentId)
         {
-            if (commentId > 0)
+            IResult result = _commentService.Delete(new Comment { Id = commentId });
+            if (result.IsSuccessful)
             {
-                var contains = _commentService.Contains(new Comment {Id = commentId});
-                if (contains)
-                {
-                    IResult result = _commentService.Delete(new Comment { Id = commentId });
-
-                    if (result.IsSuccessful)
-                    {
-                        this.RemoveCache();
-                        return Ok(result.Message);
-                    }
-
-                    return this.ServerError(result.Message);
-                }
-
-                return NotFound();
-
+                this.RemoveCache();
+                return Ok(result.Message);
             }
-            return BadRequest();
+
+            return this.ServerError(result.Message);
         }
     }
 }

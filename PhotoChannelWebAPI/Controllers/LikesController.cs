@@ -34,6 +34,7 @@ namespace PhotoChannelWebAPI.Controllers
             _photoService = photoService;
             _countService = countService;
         }
+
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("{photoId}/photo-likes")]
