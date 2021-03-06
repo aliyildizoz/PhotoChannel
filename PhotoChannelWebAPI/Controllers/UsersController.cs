@@ -36,6 +36,11 @@ namespace PhotoChannelWebAPI.Controllers
             _countService = countService;
             _authService = authService;
         }
+
+        /// <summary>
+        /// Gets all user
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult Get()
         {
@@ -52,6 +57,14 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return this.ServerError(result.Message);
         }
+
+        /// <summary>
+        /// Gets user by id
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <response code="404">If the user is not found</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}")]
@@ -68,6 +81,19 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return this.ServerError(result.Message);
         }
+
+        /// <summary>
+        /// Updates a user
+        /// </summary>
+        /// <param name="userForUpdateDto"></param>
+        /// <param name="userId">User's id</param>
+        /// <response code="200">A newly created access token.</response>
+        /// <response code="400">If the username already exists.</response>
+        /// <response code="400">If the channel couldn't be updated.</response>
+        /// <response code="404">If the user not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpPut]
         [Route("{userId}")]
@@ -98,6 +124,19 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(oldUserResult.Message);
         }
+
+        /// <summary>
+        /// Resets password
+        /// </summary>
+        /// <param name="passwordUpdateDto"></param>
+        /// <param name="userId">User's id</param>
+        /// <response code="400">If the user id and current user id are not equal</response>
+        /// <response code="401">If the user is unauthorized</response>
+        /// <response code="404">If the user is not found</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPut]
         [Route("{userId}/password")]
         [Authorize]
@@ -132,6 +171,14 @@ namespace PhotoChannelWebAPI.Controllers
             return NotFound(oldUserResult.Message);
         }
 
+        /// <summary>
+        /// Deletes a user
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <response code="400">If the user id and current user id are not equal</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete]
         [Route("{userId}")]
         [Authorize]

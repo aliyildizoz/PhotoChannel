@@ -36,6 +36,14 @@ namespace PhotoChannelWebAPI.Controllers
             _photoUpload = photoUpload;
             _countService = countService;
         }
+     
+        /// <summary>
+        /// Gets photo by id
+        /// </summary>
+        /// <param name="photoId">Photo's id</param>
+        /// <response code="404">If the photo is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet("{photoId}")]
         public IActionResult Get(int photoId)
@@ -58,6 +66,15 @@ namespace PhotoChannelWebAPI.Controllers
 
             return NotFound();
         }
+
+        /// <summary>
+        /// Gets channel photos by channel id
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="channelId">Channel id</param>
+        /// <response code="404">If the channel is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("{channelId}/channel-photos")]
@@ -82,6 +99,14 @@ namespace PhotoChannelWebAPI.Controllers
 
             return this.ServerError(dataResult.Message);
         }
+  
+        /// <summary>
+        /// Gets user photos by user id
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <response code="404">If the user is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/user-photos")]
@@ -106,6 +131,16 @@ namespace PhotoChannelWebAPI.Controllers
             return this.ServerError(dataResult.Message);
         }
 
+        /// <summary>
+        /// Creates a photo
+        /// </summary>
+        /// <param name="photoForAddDto"></param>
+        /// <response code="400">If the file length is less than zero.</response>
+        /// <response code="404">If the channel is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ContainsFilter(typeof(IChannelService),typeof(Channel),nameof(PhotoForAddDto.ChannelId))]
         [HttpPost]
         [Authorize]
         public IActionResult Post([FromForm] PhotoForAddDto photoForAddDto)
@@ -128,6 +163,14 @@ namespace PhotoChannelWebAPI.Controllers
             }
             return BadRequest();
         }
+        /// <summary>
+        /// Deletes a photo
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="photoId">Photo's id</param>
+        /// <response code="404">If the photo is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpDelete]
         [Route("{photoId}")]

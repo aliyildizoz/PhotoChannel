@@ -27,13 +27,14 @@ namespace PhotoChannelWebAPI.Controllers
             _channelCategoryService = channelCategoryService;
             _mapper = mapper;
         }
+
         /// <summary>
         /// Returns channel list by the category id
         /// </summary>
-        /// <returns>List of channel.</returns>
         /// <param name="categoryId"></param>
-        /// <response code="200">Returns list of channel.</response>
+        /// <response code="404">If the category is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(ICategoryService), typeof(Category))]
         [HttpGet]
         [Route("{categoryId}/category-channels")]
@@ -56,10 +57,10 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Returns category list by the channel id
         /// </summary>
-        /// <returns>List of category.</returns>
-        /// <param name="channelId"></param>
-        /// <response code="200">Returns list of category.</response>
+        /// <param name="channelId">Channel id</param>
+        /// <response code="404">If the channel is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpGet]
         [Route("{channelId}/channel-categories")]
@@ -81,20 +82,11 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Adds a category to the channel
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///    POST /ChannelCategory
-        ///    {
-        ///       "channelId": 1,
-        ///       "categoryId": 1
-        ///    }
-        /// 
-        /// </remarks>
-        /// <returns>A newly ChannelCategory (with its id).</returns>
-        /// <param name="channelId"></param>
-        /// <response code="200">A newly ChannelCategory.</response>
+        /// <response code="401">If the user is unauthorize</response>
+        /// <response code="404">If the channel or the category is not found</response> 
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(ICategoryService), typeof(Category), nameof(ChannelCategoryForAddDto.CategoryId))]
         [ContainsFilter(typeof(IChannelService), typeof(Channel), nameof(ChannelCategoryForAddDto.ChannelId))]
         [Authorize]
@@ -115,24 +107,15 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Adds multiple categories to the channel
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///    PUT /ChannelCategories
-        ///    {
-        ///       "categoryIds": [1,2,3...]
-        ///    }
-        /// 
-        /// </remarks>
-        /// <returns></returns>
-        /// <param name="channelId"></param>
+        /// <param name="channelId">Channel id</param>
         /// <param name="channelCategoriesDto"></param>
-        /// <response code="200">If the adds is successful</response>
         /// <response code="400">If the categories not added</response>
+        /// <response code="401">If the user is unauthorize</response>
         /// <response code="404">If the channel not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpPut]
         [Route("{channelId}")]
@@ -156,28 +139,18 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
+
         /// <summary>
         /// Delete a category from the channel
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///    DELETE /ChannelCategories
-        ///    {
-        ///       "channelId": 1,
-        ///       "categoryId": 1
-        ///    }
-        /// 
-        /// </remarks>
-        /// <returns></returns>
-        /// <param name="channelId"></param>
-        /// <param name="channelCategoriesDto"></param>
-        /// <response code="200">If the delete is successful</response>
+        /// <param name="channelCategoryDto"></param>
         /// <response code="400">If the channel or the category not added</response>
+        /// <response code="401">If the user is unauthorize</response>
         /// <response code="404">If the channel or the category not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel), nameof(ChannelCategoryForDeleteDto.ChannelId))]
         [ContainsFilter(typeof(ICategoryService), typeof(Category), nameof(ChannelCategoryForDeleteDto.CategoryId))]
         [HttpDelete]

@@ -46,8 +46,6 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets list of categories.
         /// </summary>
-        /// <returns>List of categories.</returns>
-        /// <response code="200">Returns list of categories.</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetAll()

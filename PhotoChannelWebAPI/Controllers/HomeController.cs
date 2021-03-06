@@ -31,7 +31,6 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets the best channels
         /// </summary>
-        /// <returns></returns>
         /// <response code="200">The best channels</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("mostchannels")]
@@ -53,8 +52,6 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets the best comments
         /// </summary>
-        /// <returns></returns>
-        /// <response code="200">The best comments</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("mostcomment")]
         public IActionResult MostComment()
@@ -81,8 +78,6 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets the best photos
         /// </summary>
-        /// <returns></returns>
-        /// <response code="200">The best photos</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("mostphotos")]
         public IActionResult MostPhotos()
@@ -109,9 +104,9 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets feed of the current user
         /// </summary>
-        /// <returns></returns>
-        /// <response code="200">Feed of the current user</response>
+        /// <response code="401">If the user is unauthorize</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("feed")]
         [Authorize]
         public IActionResult Feed()

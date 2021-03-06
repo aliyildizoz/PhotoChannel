@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Abstract;
+using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
@@ -28,6 +29,13 @@ namespace PhotoChannelWebAPI.Controllers
             _countService = countService;
         }
 
+        /// <summary>
+        /// Gets search results by the text
+        /// </summary>
+        /// <param name="text">Query</param>
+        /// <response code="404">If nothing can be found by the text.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("searchbytext/{text}")]
         public IActionResult SearchByText(string text)
         {
@@ -50,23 +58,39 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest();
         }
+
+        /// <summary>
+        /// Gets search results by the category id
+        /// </summary>
+        /// <param name="categoryId">Query</param>
+        /// <response code="404">If nothing can be found by the category.</response>
+        /// <response code="404">If the category is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ContainsFilter(typeof(ICategoryService), typeof(Category))]
         [HttpGet("searchbycategory/{categoryId}")]
         public IActionResult SearchByCategory(int categoryId)
         {
-            if (categoryId > 0)
+            var dataResult = _searchService.SearchByCategory(categoryId);
+            if (dataResult.IsSuccessful)
             {
-                var dataResult = _searchService.SearchByCategory(categoryId);
-                if (dataResult.IsSuccessful)
-                {
-                    var channelDto = _mapper.Map<List<SearchByCategoryDto>>(dataResult.Data);
-                    return Ok(channelDto);
-                }
-
-                return NotFound();
+                var channelDto = _mapper.Map<List<SearchByCategoryDto>>(dataResult.Data);
+                return Ok(channelDto);
             }
-            return BadRequest();
+
+            return NotFound();
         }
 
+        /// <summary>
+        /// Gets search results by the category ids
+        /// </summary>
+        /// <param name="categoryIds">Category Ids</param>
+        /// <response code="400">If the category length is less than zero.</response>
+        /// <response code="404">If nothing can be found by the category.</response>
+        /// <response code="404">If the category is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("searchbymulticategory")]
         public IActionResult SearchByMultiCategory([FromQuery(Name = "categoryIds[]")] int[] categoryIds)
         {

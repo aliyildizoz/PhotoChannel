@@ -34,7 +34,13 @@ namespace PhotoChannelWebAPI.Controllers
             _photoService = photoService;
             _countService = countService;
         }
-
+        /// <summary>
+        /// Gets photo likes
+        /// </summary>
+        /// <param name="photoId">Photo's id</param>
+        /// <response code="404">If the photo is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("{photoId}/photo-likes")]
@@ -54,6 +60,13 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+        /// <summary>
+        /// Gets liked photos of the user
+        /// </summary>
+        /// <param name="userId">User's id</param>
+        /// <response code="404">If the user is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
         [HttpGet]
         [Route("{userId}/like-photos")]
@@ -78,6 +91,17 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+
+        /// <summary>
+        /// Gets the photo is like or not
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="photoId">Photo's id</param>
+        /// <response code="401">If the user is unauthorize</response>
+        /// <response code="404">If the photos is not found.</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpGet]
         [Route("islike/{photoId}")]
@@ -88,6 +112,16 @@ namespace PhotoChannelWebAPI.Controllers
             this.CacheFillWithUserId(result);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Likes a the photo by photo id
+        /// </summary>
+        /// <param name="photoId">Id of the photo</param>
+        /// <response code="401">If the user is unauthorize</response>
+        /// <response code="404">If the photos is not found</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpPost]
         [Authorize]
@@ -115,6 +149,16 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(dataResult.Message);
         }
+
+        /// <summary>
+        /// Removes photo's like by photo id
+        /// </summary>
+        /// <param name="photoId">Id of the photo</param>
+        /// <response code="401">If the user is unauthorize</response>
+        /// <response code="404">If the photos is not found</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
         [HttpDelete]
         [Route("{photoId}")]

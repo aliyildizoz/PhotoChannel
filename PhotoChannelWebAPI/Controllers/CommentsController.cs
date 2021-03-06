@@ -36,10 +36,8 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets photos of user did comment by user id
         /// </summary>
-        /// <returns></returns>
         /// <param name="userId"></param>
-        /// <response code="200">Commented photos</response>
-        /// <response code="404">If the user is not found.</response>
+        /// <response code="404">If the user is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IUserService), typeof(User))]
@@ -64,10 +62,8 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets users who commented on the photo by photo id
         /// </summary>
-        /// <returns></returns>
         /// <param name="photoId"></param>
-        /// <response code="200">Users who commented on the photo</response>
-        /// <response code="404">If the photo is not found.</response>
+        /// <response code="404">If the photo is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
@@ -86,10 +82,8 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Gets photo comments by photo id
         /// </summary>
-        /// <returns></returns>
         /// <param name="photoId"></param>
-        /// <response code="200">Photo comments</response>
-        /// <response code="404">If the photo is not found.</response>
+        /// <response code="404">If the photo is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ContainsFilter(typeof(IPhotoService), typeof(Photo))]
@@ -114,21 +108,9 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Creates a comment 
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///    POST /CommentForAddDto
-        ///    {
-        ///        "photoId":1
-        ///        "description" : "This photo is great."
-        ///    }
-        /// 
-        /// </remarks>
-        /// <returns></returns>
         /// <param name="commentForAddDto"></param>
-        /// <response code="200">A newly comment</response>
-        /// <response code="401">If the user is unauthorize.</response>
-        /// <response code="404">If the photo is not found.</response>
+        /// <response code="401">If the user is unauthorize</response>
+        /// <response code="404">If the photo is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -161,59 +143,40 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Updates a comment 
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///    PUT /CommentForUpdateDto
-        ///    {
-        ///        "description" : "This photo is great."
-        ///    }
-        /// 
-        /// </remarks>
-        /// <returns></returns>
         /// <param name="commentForUpdateDto"></param>
-        /// <param name="commentId"></param>
-        /// <response code="200">The updated version of the comment.</response>
-        /// <response code="401">If the user is unauthorize.</response>
-        /// <response code="404">If the photo is not found.</response>
+        /// <param name="commentId">Comment's id</param>
+        /// <response code="401">If the user is unauthorize</response>
+        /// <response code="404">If the photo is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ContainsFilter(typeof(ICommentService), typeof(Comment))]
         [HttpPut]
         [Authorize]
         [Route("{commentId}")]
         public IActionResult Put(int commentId, CommentForUpdateDto commentForUpdateDto)
         {
-            if (commentId > 0)
+            var comment = _commentService.GetById(commentId);
+            if (comment.IsSuccessful)
             {
-                var comment = _commentService.GetById(commentId);
-                if (comment.IsSuccessful)
+                comment.Data.Description = commentForUpdateDto.Description;
+                IResult result = _commentService.Update(comment.Data);
+                if (result.IsSuccessful)
                 {
-                    comment.Data.Description = commentForUpdateDto.Description;
-                    IResult result = _commentService.Update(comment.Data);
-                    if (result.IsSuccessful)
-                    {
-                        this.RemoveCache();
-                        return Ok(result.Message);
-                    }
-                    return this.ServerError(result.Message);
+                    this.RemoveCache();
+                    return Ok(result.Message);
                 }
-
-                return NotFound();
-
+                return this.ServerError(result.Message);
             }
-            return BadRequest();
+
+            return NotFound();
         }
 
         /// <summary>
         /// Deletes a comment
         /// </summary>
-        /// <returns></returns>
-        /// <param name="commentId"></param>
-        /// <response code="200">If the comment is deleted.</response>
-        /// <response code="401">If the user is unauthorize.</response>
-        /// <response code="404">If the comment not found.</response>
+        /// <param name="commentId">Comment's id</param>
+        /// <response code="401">If the user is unauthorize</response>
+        /// <response code="404">If the comment not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

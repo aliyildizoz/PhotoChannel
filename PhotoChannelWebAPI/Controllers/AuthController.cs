@@ -21,28 +21,15 @@ namespace PhotoChannelWebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private IAuthService _authService;
-        private IMapper _mapper;
-        public AuthController(IAuthService authService, IMapper mapper)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _mapper = mapper;
         }
 
         /// <summary>
         /// Logins a user
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /User
-        ///     {
-        ///        "email":"aliyildizoz909@gmail.com",
-        ///        "password": "12345"
-        ///     }
-        ///
-        /// </remarks>
         /// <param name="userForLoginDto"></param>
-        /// <returns>A newly access token.</returns>
         /// <response code="200">Returns the newly created access token.</response>
         /// <response code="400">If the user is null or the user is not found.</response>    
         [HttpPost]
@@ -68,27 +55,13 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Creates a new access token
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     GET /Header
-        ///     {
-        ///        ...
-        ///        "refreshToken": "...",
-        ///        ...
-        ///     }
-        ///
-        /// </remarks>
         /// <param name="refreshToken"></param>
-        /// <returns>A newly access token.</returns>
-        /// <response code="200">Returns the newly created jwt token.</response>
-        /// <response code="400">If the refreshToken is null.</response>    
-        /// <response code="401">If the refreshToken is not true.</response>    
+        /// <response code="200">Returns the newly created access token</response>  
+        /// <response code="400">If the refreshToken is not valid</response>    
         [HttpGet]
         [Route("refreshtoken")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult RefreshToken([FromHeader] string refreshToken)
         {
             var result = _authService.CreateRefreshToken(refreshToken);
@@ -96,14 +69,12 @@ namespace PhotoChannelWebAPI.Controllers
 
             return BadRequest(result.Message);
         }
-       
+
         /// <summary>
-        /// Returns logged current user
+        /// Gets logged current user
         /// </summary>
-        /// <returns>Current user.</returns>
-        /// <response code="200">Returns logged the current user.</response>
-        /// <response code="400">If the current user is null.</response>    
-        /// <response code="401">If the current user is not authorized.</response>    
+        /// <response code="400">If the current user is null</response>    
+        /// <response code="401">If the user is unauthorize</response>     
         [HttpGet]
         [Route("currentuser")]
         [Authorize]
@@ -124,9 +95,9 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Logouts current user
         /// </summary>
-        /// <response code="200">If the current user is logout.</response>
-        /// <response code="400">If the current user is null.</response>    
-        /// <response code="401">If the user is not authorized.</response>  
+        /// <response code="200">If the current user is logout</response>
+        /// <response code="400">If the current user is null</response>    
+        /// <response code="401">If the user is unauthorize</response>  
         [HttpGet]
         [Route("logout")]
         [Authorize]
@@ -152,21 +123,9 @@ namespace PhotoChannelWebAPI.Controllers
         /// <summary>
         /// Creates a user
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /User
-        ///     {
-        ///        "firstNam":"Ali"
-        ///        "lastName":"Yıldızöz"
-        ///        "email"   :"aliyildizoz909@gmail.com",
-        ///        "userName":"ali123",
-        ///        "password":"123456"
-        ///     }
-        /// </remarks>
         /// <param name="userForRegisterDto"></param>
-        /// <returns>A newly created access token.</returns>
-        /// <response code="200">Returns the newly created access token.</response>
+        /// <returns>Returns a newly created access token</returns>
+        /// <response code="200">Returns the newly created access token</response>
         /// <response code="400">If the user is null</response>    
         [HttpPost]
         [Route("register")]
