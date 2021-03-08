@@ -37,8 +37,8 @@ namespace Business.Concrete
 
         public IDataResult<Like> Add(Like like)
         {
-            var like2 = _likeDal.Get(like1 => like1.UserId == id.UserId && like1.PhotoId == id.PhotoId)
-            if (like2 == null)
+            var like2 = _likeDal.Get(like1 => like1.UserId == like.UserId && like1.PhotoId == like.PhotoId);
+            if(like2 == null)
             {
                 _likeDal.Add(like);
                 like2 = like;
@@ -48,7 +48,7 @@ namespace Business.Concrete
         }
         public IResult Delete(Like id)
         {
-            var like = _likeDal.Get(like1 => like1.UserId == id.UserId && like1.PhotoId == id.PhotoId)
+            var like = _likeDal.Get(like1 => like1.UserId == id.UserId && like1.PhotoId == id.PhotoId);
             if(like != null)
             {
                 _likeDal.Delete(like);
