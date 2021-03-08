@@ -117,7 +117,9 @@ namespace PhotoChannelWebAPI.Controllers
                 if (result.IsSuccessful)
                 {
                     var accessToken = _authService.CreateAccessToken(oldUserResult.Data);
-                    this.RemoveCacheByContains("users/" + userId);
+                    this.RemoveCacheByContains("api/users/" + userId);
+                    this.RemoveCacheByContains("api/channel");
+                    this.RemoveCacheByContains("api/photos");
                     return Ok(accessToken.Data);
                 }
             }
@@ -163,7 +165,6 @@ namespace PhotoChannelWebAPI.Controllers
                 IResult result = _userService.UpdatePassword(oldUserResult.Data, passwordUpdateDto.NewPassword);
                 if (result.IsSuccessful)
                 {
-                    this.RemoveCacheByContains("users/" + userId);
                     return Ok(result.Message);
                 }
                 return this.ServerError(result.Message);

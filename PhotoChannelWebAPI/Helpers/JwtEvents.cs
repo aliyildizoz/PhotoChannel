@@ -32,7 +32,7 @@ namespace PhotoChannelWebAPI.Helpers
                 }
             }
             context.Fail("RefreshToken is not required.");
-            var logger = context.HttpContext.RequestServices.GetService<NLog.ILogger>();
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             logger.Warn(context.Result.Failure,"RefreshToken is not required.");
             return Task.CompletedTask;
         }
