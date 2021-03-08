@@ -30,19 +30,32 @@ namespace Business.Concrete
 
         public bool GetIsUserSubs(int channelId, int userId)
         {
-            var result = _subscriberDal.Get(subs=> subs.UserId == userId && subs.ChannelId== channelId);
+            var result = _subscriberDal.Get(subs => subs.UserId == userId && subs.ChannelId == channelId);
             return result != null;
         }
 
         public IDataResult<Subscriber> Add(Subscriber subscriber)
         {
-            _subscriberDal.Add(subscriber);
-            return new SuccessDataResult<Subscriber>(subscriber);
+            var subs = _subscriberDal.Get(subscriber1 =>
+                subscriber1.UserId == subscriber.UserId && subscriber1.ChannelId == subscriber.ChannelId);
+            if (subs == null)
+            {
+                _subscriberDal.Add(subscriber);
+                subs = subscriber;
+            }
+
+            return new SuccessDataResult<Subscriber>(subs);
         }
 
         public IResult Delete(Subscriber subscriber)
         {
-            _subscriberDal.Delete(_subscriberDal.Get(subscriber1 => subscriber1.UserId == subscriber.UserId && subscriber1.ChannelId == subscriber.ChannelId));
+            var subs = _subscriberDal.Get(subscriber1 =>
+                subscriber1.UserId == subscriber.UserId && subscriber1.ChannelId == subscriber.ChannelId);
+            if (subs != null)
+            {
+                _subscriberDal.Delete(subs);
+            }
+
             return new SuccessResult();
         }
     }

@@ -37,12 +37,22 @@ namespace Business.Concrete
 
         public IDataResult<Like> Add(Like like)
         {
-            _likeDal.Add(like);
-            return new SuccessDataResult<Like>(like);
+            var like2 = _likeDal.Get(like1 => like1.UserId == id.UserId && like1.PhotoId == id.PhotoId)
+            if (like2 == null)
+            {
+                _likeDal.Add(like);
+                like2 = like;
+
+            }
+            return new SuccessDataResult<Like>(like2);
         }
         public IResult Delete(Like id)
         {
-            _likeDal.Delete(_likeDal.Get(like1 => like1.UserId == id.UserId && like1.PhotoId == id.PhotoId));
+            var like = _likeDal.Get(like1 => like1.UserId == id.UserId && like1.PhotoId == id.PhotoId)
+            if(like != null)
+            {
+                _likeDal.Delete(like);
+            }
             return new SuccessResult();
         }
     }

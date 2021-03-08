@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "mssql1": {
+      "type": "mssql.local",
+      "connectionId": "Server=(localdb)\\MSSQLLocalDB;Database=PhotoChannel;Trusted_Connection=true",
+      "secretStore": "LocalSecretsFile"
+    }
+  }
+}
