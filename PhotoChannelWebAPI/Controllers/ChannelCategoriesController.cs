@@ -98,7 +98,8 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (dataResult.IsSuccessful)
             {
-                this.RemoveCacheByContains("api/channelcategories/" + channelCategoryDto.ChannelId);
+                this.RemoveCacheByContains( channelCategoryDto.ChannelId+ "/channel-categories");
+                this.RemoveCacheByContains( channelCategoryDto.CategoryId+ "/category-channels");
                 return Ok(dataResult.Data);
             }
 
@@ -126,6 +127,7 @@ namespace PhotoChannelWebAPI.Controllers
 
             for (int i = 0; i < channelCategoriesDto.CategoryIds.Length; i++)
             {
+                this.RemoveCacheByContains(channelCategories[i] + "/category-channels");
                 channelCategories[i] = new ChannelCategory { ChannelId = channelId, CategoryId = channelCategoriesDto.CategoryIds[i] };
             }
 
@@ -133,7 +135,8 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
-                this.RemoveCache();
+
+                this.RemoveCacheByContains(channelId + "/channel-categories");
                 return Ok(result.Message);
             }
 
@@ -162,7 +165,8 @@ namespace PhotoChannelWebAPI.Controllers
 
             if (result.IsSuccessful)
             {
-                this.RemoveCacheByContains("api/channelcategories/" + channelCategoryDto.ChannelId);
+                this.RemoveCacheByContains(channelCategoryDto.ChannelId + "/channel-categories");
+                this.RemoveCacheByContains(channelCategoryDto.CategoryId + "/category-channels");
                 return Ok(result.Message);
             }
 

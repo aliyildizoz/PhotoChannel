@@ -10,6 +10,7 @@ using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Filters;
@@ -123,8 +124,10 @@ namespace PhotoChannelWebAPI.Controllers
             var mapResult = _mapper.Map<Comment>(commentForAddDto);
             mapResult.UserId = currentUser.Id;
             IResult result = _commentService.Add(mapResult);
+
             if (result.IsSuccessful)
             {
+
                 CommentForListDto dto = new CommentForListDto
                 {
                     CommentId = mapResult.Id,
@@ -134,6 +137,11 @@ namespace PhotoChannelWebAPI.Controllers
                     LastName = currentUser.LastName,
                     FirstName = currentUser.FirstName
                 };
+                var channelId = HttpContext.RequestServices.GetService<IPhotoService>().GetById(commentForAddDto.PhotoId).Data.ChannelId;
+                this.RemoveCacheByContains(currentUser.Id + "/user-photos");
+                this.RemoveCacheByContains(currentUser.Id + "/user-comment-photos");
+                this.RemoveCacheByContains(currentUser.Id + "/like-photos");
+                this.RemoveCacheByContains(channelId + "/channel-photos");
                 this.RemoveCache();
                 return Ok(dto);
             }
@@ -162,6 +170,11 @@ namespace PhotoChannelWebAPI.Controllers
                 IResult result = _commentService.Update(comment.Data);
                 if (result.IsSuccessful)
                 {
+                    var channelId = HttpContext.RequestServices.GetService<IPhotoService>().GetById(comment.Data.PhotoId).Data.ChannelId;
+                    this.RemoveCacheByContains(comment.Data.UserId + "/user-photos");
+                    this.RemoveCacheByContains(comment.Data.UserId + "/user-comment-photos");
+                    this.RemoveCacheByContains(comment.Data.UserId + "/like-photos");
+                    this.RemoveCacheByContains(channelId + "/channel-photos");
                     this.RemoveCache();
                     return Ok(result.Message);
                 }
@@ -176,24 +189,34 @@ namespace PhotoChannelWebAPI.Controllers
         /// </summary>
         /// <param name="commentId">Comment's id</param>
         /// <response code="401">If the user is unauthorize</response>
-        /// <response code="404">If the comment not found</response>
+        /// <response code="404">If the comment is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ContainsFilter(typeof(ICommentService), typeof(Comment))]
         [HttpDelete]
         [Authorize]
         [Route("{commentId}")]
         public IActionResult Delete(int commentId)
         {
-            IResult result = _commentService.Delete(new Comment { Id = commentId });
-            if (result.IsSuccessful)
+            var comment = _commentService.GetById(commentId);
+            if (comment.IsSuccessful)
             {
-                this.RemoveCache();
-                return Ok(result.Message);
+                IResult result = _commentService.Delete(comment.Data);
+                if (result.IsSuccessful)
+                {
+                    var channelId = HttpContext.RequestServices.GetService<IPhotoService>()
+                        .GetById(comment.Data.PhotoId).Data.ChannelId;
+                    this.RemoveCacheByContains(comment.Data.UserId + "/user-photos");
+                    this.RemoveCacheByContains(comment.Data.UserId + "/user-comment-photos");
+                    this.RemoveCacheByContains(comment.Data.UserId + "/like-photos");
+                    this.RemoveCacheByContains(channelId + "/channel-photos");
+                    this.RemoveCache();
+                    return Ok(result.Message);
+                }
+                return this.ServerError(result.Message);
             }
 
-            return this.ServerError(result.Message);
+            return NotFound(comment.Message);
         }
     }
 }

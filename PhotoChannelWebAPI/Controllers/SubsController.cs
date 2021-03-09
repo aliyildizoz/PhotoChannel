@@ -80,7 +80,6 @@ namespace PhotoChannelWebAPI.Controllers
         /// Gets subscriptions of the user by user id
         /// </summary>
         /// <param name="userId">User's id</param>
-        /// <response code="200"></response>
         /// <response code="404">If the user not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -108,7 +107,7 @@ namespace PhotoChannelWebAPI.Controllers
         /// </summary>
         /// <param name="channelId">Channel id</param>
         /// <response code="401">If the user is unauthorize</response>
-        /// <response code="404">If the channel not found</response>
+        /// <response code="404">If the channel is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -135,7 +134,7 @@ namespace PhotoChannelWebAPI.Controllers
         /// </summary>
         /// <param name="channelId">Channel id</param>
         /// <response code="401">If the user is unauthorize</response>
-        /// <response code="404">If the channel not found</response>
+        /// <response code="404">If the channel is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -164,18 +163,20 @@ namespace PhotoChannelWebAPI.Controllers
         /// </summary>
         /// <param name="channelId">Channel id</param>
         /// <param name="userId">User's id</param>
-        /// <response code="401">If the current user unauthorize.</response>
-        /// <response code="404">If the channel not found.</response>
+        /// <response code="401">If the current user is unauthorize</response>
+        /// <response code="403">If the current user isn't owner of the channel</response>
+        /// <response code="404">If the channel is not found</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ContainsFilter(typeof(IChannelService), typeof(Channel))]
         [HttpDelete]
         [Route("{channelId}/byowner/{userId}")]
         [Authorize]
         public IActionResult Delete(int channelId, int userId)
         {
-            if (userId > 0 && channelId > 0)
+            if (userId < 0)
             {
                 return BadRequest();
             }
@@ -185,11 +186,11 @@ namespace PhotoChannelWebAPI.Controllers
                 var result = _subscriberService.Delete(new Subscriber { ChannelId = channelId, UserId = userId });
                 if (result.IsSuccessful)
                 {
+                    this.RemoveCacheByContains(userId + "/subscriptions");
+                    this.RemoveCacheByContains(channelId + "/subscribers");
+                    this.RemoveCacheByContains(userId + "/api/subs/issub/" + channelId);
                     return Ok(result.Message);
                 }
-                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/subscriptions");
-                this.RemoveCacheByContains(channelId + "/subscribers");
-                this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/api/subs/issub/" + channelId);
 
                 return this.ServerError(result.Message);
 

@@ -38,6 +38,7 @@ namespace PhotoChannelWebAPI.Filters
             _entity = entity;
             _propertyName = propertyName;
         }
+      
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var service = (ICommonService)context.HttpContext.RequestServices.GetService(_service);

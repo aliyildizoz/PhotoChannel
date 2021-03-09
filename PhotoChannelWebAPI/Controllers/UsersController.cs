@@ -192,7 +192,7 @@ namespace PhotoChannelWebAPI.Controllers
             IResult result = _userService.Delete(userId);
             if (result.IsSuccessful)
             {
-                this.RemoveCacheByContains("users/" + userId);
+                this.CacheClear();
                 return Ok(result.Message);
             }
             return this.ServerError(result.Message);
