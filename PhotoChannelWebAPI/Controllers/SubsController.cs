@@ -122,6 +122,7 @@ namespace PhotoChannelWebAPI.Controllers
                 this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/subscriptions");
                 this.RemoveCacheByContains(channelId + "/subscribers");
                 this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/api/subs/issub/" + channelId);
+                this.RemoveCacheByContains("/api/channels/" + channelId);
                 return Ok(dataResult.Data);
             }
 
@@ -151,7 +152,7 @@ namespace PhotoChannelWebAPI.Controllers
                 this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/subscriptions");
                 this.RemoveCacheByContains(channelId + "/subscribers");
                 this.RemoveCacheByContains(User.Claims.GetUserId().Data + "/api/subs/issub/" + channelId);
-
+                this.RemoveCacheByContains("/api/channels/" + channelId);
                 return Ok(result.Message);
             }
 
