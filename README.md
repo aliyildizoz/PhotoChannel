@@ -89,7 +89,7 @@ The application tried to combine some features of youtube and instagram. It is i
 	- bootstrap
 	- filepond
 	- redux
-	- redux-thunk###
+	- redux-thunk
 	- cloudinary-react
 	- react-router-dom
 	- connected-react-router
