@@ -80,6 +80,7 @@ The application tried to combine some features of youtube and instagram. It is i
 	 - Fluent Validation
 	 - Cloudinary
 	 - InMemory Cache
+	 - NLog
 	 - Filtering
 	 - SwaggerUI
 	 - N katmanlı mimari - N-Tier Architecture
