@@ -31,6 +31,20 @@ namespace DataAccess.Dal.EntityFramework.Contexts
             modelBuilder.Entity<Comment>().HasOne<User>(c => c.User).WithMany(u => u.Comments).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Like>().HasOne<User>(l => l.User).WithMany(u => u.Likes).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Like>().HasOne<Photo>(l => l.Photo).WithMany(u => u.Likes).OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Category>().HasData(new List<Category>
+            {
+                new Category {Name = "Kitap"},
+                new Category {Name = "Sinema"},
+                new Category {Name = "Bilim"},
+                new Category {Name = "Kültür"},
+                new Category {Name = "Edebiyat"}
+            });
+            modelBuilder.Entity<OperationClaim>().HasData(new List<OperationClaim>
+            {
+                new OperationClaim {ClaimName = "Admin"},
+                new OperationClaim {ClaimName = "Users"}
+            });
         }
 
         public DbSet<User> Users { get; set; }
