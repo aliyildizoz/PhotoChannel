@@ -1,13 +1,17 @@
+
 # PhotoChannel
  - [Türkçe](#türkçe) 
 	 - [Uygulamanın amacı](#uygulamanın-amacı)
 	 - [Özellikler](#özellikler)
 	 - [Kullanılan Teknolojiler](#kullanılan-teknolojiler---used-technologies)
+	 - [Kurulum](#kurulum)
  - [English](#english)
 	 - [Purpose of the application](#purpose-of-the-application)
 	 - [Features](#features)
-	 - [Used technologies](#kullanılan-teknolojiler---used-technologies)
+	 - [Used technologies](#kullanılan-teknolojiler---used-technologies) 
+	 - 	[Setup](#setup)
  - [Gifs](#gifs)
+ - [Database Diagram](#database-diagram)
 
 ## Türkçe
 ### Uygulamanın amacı
@@ -38,6 +42,14 @@ Uygulama, youtube ve instagramın bazı özelliklerini birleştirmeye çalışm�
 	- En çok abonesi olan kanalları görüntüleme
 	- [Kategoriye göre kanal filtreleme](#searching-channel-filter)
 
+### Kurulum 
+#### Veri tabanı için
+- **Veri tabanını migration yaparak oluşturmak için oluşturmak için;**
+PhotoChannelWebApi klasörünün içinde terminali açarak aşağıdaki komutları çalıştırınız.
+	1. `dotnet ef migrations add InitialCreate`
+	2. `dotnet ef database update`
+- **Veri tabanını sql scripti ile oluşturmak için oluşturmak için;**
+	- [CreateDatabase.sql](https://github.com/AliYildizoz909/PhotoChannel/blob/master/CreateDatabase.sql) dosyasını ms sql veritabanında çalıştırınız.
 > Projenin frontend tarafı reactjs ile yazılmıştır. [Buradan](https://github.com/AliYildizoz909/photo-channel-spa) ulaşabilirsiniz.
 
 ## English
@@ -69,6 +81,14 @@ The application tried to combine some features of youtube and instagram. It is i
 	- Viewing channels with the most subscribers
 	- [Filtering channels by category](#searching-channel-filter)
 
+### Setup
+- **To create the database by migrating;**
+Open the terminal in the PhotoChannelWebApi folder and run the commands below.
+	1. `dotnet ef migrations add InitialCreate`
+	2. `dotnet ef database update`
+- **To create database with sql script;**
+	- Run the [CreateDatabase.sql](https://github.com/AliYildizoz909/PhotoChannel/blob/master/CreateDatabase.sql) file in ms sql database.
+
 > The front of the project was written in react js. You can look from  [here](https://github.com/AliYildizoz909/photo-channel-spa).
 
 ## Kullanılan teknolojiler - Used technologies
@@ -97,13 +117,16 @@ The application tried to combine some features of youtube and instagram. It is i
 	- simple-react-validator
 	- react-photo-gallery
 	- font-awesome
+## Database Diagram
+![Database Diagram](https://raw.githubusercontent.com/AliYildizoz909/PhotoChannel/master/Gifs/DatabaseDiagram.png)
+
+> **D**
+
 ## Gifs
-#### Register![enter image description here](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/Register%281%29.gif?raw=true) 
-#### Update Account![enter image description here](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/UpdateAccount%282%29.gif?raw=true)  
-#### Channel![enter image description here](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/Channel%283%29.gif?raw=true)  
-#### Photo![enter image description here](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/PhotoCommentAndLike%284%29.gif?raw=true) 
-#### Comment![enter image description here](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/EditDeleteCommentAndUnlike%285%29.gif?raw=true) 
-#### Searching, channel filter![enter image description here](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/SearchAndChannelFilter%286%29.gif?raw=true) 
-####  Home page![enter image description here](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/HomePage%287%29.gif?raw=true) 
-
-
+#### Register![Register](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/Register%281%29.gif?raw=true) 
+#### Update Account![Update Account](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/UpdateAccount%282%29.gif?raw=true)  
+#### Channel![Channel](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/Channel%283%29.gif?raw=true)  
+#### Photo![Photo](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/PhotoCommentAndLike%284%29.gif?raw=true) 
+#### Comment![Comment](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/EditDeleteCommentAndUnlike%285%29.gif?raw=true) 
+#### Searching, channel filter![Searching, channel filter](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/SearchAndChannelFilter%286%29.gif?raw=true) 
+####  Home page![Home page](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/HomePage%287%29.gif?raw=true) 
