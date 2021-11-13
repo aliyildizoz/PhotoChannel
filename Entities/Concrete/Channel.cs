@@ -20,5 +20,6 @@ namespace Entities.Concrete
 
 
         public virtual User User { get; set; }
+        public IEnumerable<Subscriber> Subscribers { get; set; }
     }
 }

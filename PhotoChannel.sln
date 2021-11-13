@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Busine
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Common\Core.csproj", "{6582718C-E415-4B66-8380-57287CBB5330}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoChannelWebAPI", "PhotoChannelWebAPI\PhotoChannelWebAPI.csproj", "{5F139A59-F4C9-43F0-AAC9-CB881930AC8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoChannelWebAPI", "PhotoChannelWebAPI\PhotoChannelWebAPI.csproj", "{27538DB7-32C8-4397-80C9-DB3C12398587}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{6582718C-E415-4B66-8380-57287CBB5330}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6582718C-E415-4B66-8380-57287CBB5330}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6582718C-E415-4B66-8380-57287CBB5330}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F139A59-F4C9-43F0-AAC9-CB881930AC8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F139A59-F4C9-43F0-AAC9-CB881930AC8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F139A59-F4C9-43F0-AAC9-CB881930AC8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F139A59-F4C9-43F0-AAC9-CB881930AC8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27538DB7-32C8-4397-80C9-DB3C12398587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27538DB7-32C8-4397-80C9-DB3C12398587}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27538DB7-32C8-4397-80C9-DB3C12398587}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27538DB7-32C8-4397-80C9-DB3C12398587}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,5 +15,9 @@ namespace Entities.Concrete
         public bool IsActive { get; set; }
 
         public string RefreshToken { get; set; }
+        public IEnumerable<Photo> Photos { get; set; }
+        public IEnumerable<Subscriber> Subscribers { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
+        public IEnumerable<Like> Likes { get; set; }
     }
 }
