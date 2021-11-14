@@ -10,8 +10,9 @@
 	 - [Features](#features)
 	 - [Used technologies](#kullanılan-teknolojiler---used-technologies) 
 	 - 	[Setup](#setup)
- - **[Gifs](#gifs)**
  - **[Database Diagram](#database-diagram)**
+ - **[Swagger](#swagger)**
+ - **[Gifs](#gifs)**
 
 ## Türkçe
 ### Uygulamanın amacı
@@ -43,7 +44,6 @@ Uygulama, youtube ve instagramın bazı özelliklerini birleştirmeye çalışm�
 	- [Kategoriye göre kanal filtreleme](#searching-channel-filter)
 
 ### Kurulum 
-#### Veri tabanı için
 - **Veri tabanını migration yaparak oluşturmak için oluşturmak için;**
 PhotoChannelWebApi klasörünün içinde terminali açarak aşağıdaki komutları çalıştırınız.
 	1. `dotnet ef migrations add InitialCreate`
@@ -120,7 +120,8 @@ Open the terminal in the PhotoChannelWebApi folder and run the commands below.
 ## Database Diagram
 ![Database Diagram](https://raw.githubusercontent.com/AliYildizoz909/PhotoChannel/master/Gifs/DatabaseDiagram.png)
 
-> **D**
+## Swagger
+![Swagger](https://raw.githubusercontent.com/AliYildizoz909/PhotoChannel/master/Gifs/Swagger.jpeg)
 
 ## Gifs
 #### Register![Register](https://github.com/AliYildizoz909/PhotoChannel/blob/master/Gifs/Register%281%29.gif?raw=true) 
