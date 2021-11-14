@@ -1,17 +1,17 @@
 
 # PhotoChannel
- - [Türkçe](#türkçe) 
+ - **[Türkçe](#türkçe)**
 	 - [Uygulamanın amacı](#uygulamanın-amacı)
 	 - [Özellikler](#özellikler)
 	 - [Kullanılan Teknolojiler](#kullanılan-teknolojiler---used-technologies)
 	 - [Kurulum](#kurulum)
- - [English](#english)
+ - **[English](#english)**
 	 - [Purpose of the application](#purpose-of-the-application)
 	 - [Features](#features)
 	 - [Used technologies](#kullanılan-teknolojiler---used-technologies) 
 	 - 	[Setup](#setup)
- - [Gifs](#gifs)
- - [Database Diagram](#database-diagram)
+ - **[Gifs](#gifs)**
+ - **[Database Diagram](#database-diagram)**
 
 ## Türkçe
 ### Uygulamanın amacı
