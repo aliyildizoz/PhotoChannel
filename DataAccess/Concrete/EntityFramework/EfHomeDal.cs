@@ -11,59 +11,52 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfHomeDal : IHomeDal
     {
+        public PhotoChannelContext Context { get; private set; }
+        public EfHomeDal(PhotoChannelContext context)
+        {
+            Context = context;
+        }
         public List<Channel> GetMostChannels()
         {
-            using (var context = new PhotoChannelContext())
+            Dictionary<Channel, int> dictionary = new Dictionary<Channel, int>();
+            Context.Channels.ToList().ForEach(channel =>
             {
-                Dictionary<Channel, int> dictionary = new Dictionary<Channel, int>();
-                context.Channels.ToList().ForEach(channel =>
-                {
-                    dictionary.Add(channel,
-                        context.Subscribers.Count(subscriber => subscriber.ChannelId == channel.Id));
-                });
-                return dictionary.OrderByDescending(pair => pair.Value).Take(5).Select(pair => pair.Key).ToList();
-            }
+                dictionary.Add(channel,
+                    Context.Subscribers.Count(subscriber => subscriber.ChannelId == channel.Id));
+            });
+            return dictionary.OrderByDescending(pair => pair.Value).Take(5).Select(pair => pair.Key).ToList();
         }
 
         public List<Photo> GetMostComment()
         {
-            using (var context = new PhotoChannelContext())
+            Dictionary<Photo, int> dictionary = new Dictionary<Photo, int>();
+            Context.Photos.Include(photo => photo.Channel).Include(photo => photo.User).ToList().ForEach(photo =>
             {
-                Dictionary<Photo, int> dictionary = new Dictionary<Photo, int>();
-                context.Photos.Include(photo => photo.Channel).Include(photo => photo.User).ToList().ForEach(photo =>
-                {
-                    dictionary.Add(photo,
-                        context.Comments.Count(comment => comment.PhotoId== photo.Id));
-                });
-                return dictionary.OrderByDescending(pair => pair.Value).Take(10).Select(pair => pair.Key).ToList();
-            }
+                dictionary.Add(photo,
+                    Context.Comments.Count(comment => comment.PhotoId == photo.Id));
+            });
+            return dictionary.OrderByDescending(pair => pair.Value).Take(10).Select(pair => pair.Key).ToList();
         }
 
         public List<Photo> GetMostPhotos()
         {
-            using (var context = new PhotoChannelContext())
+            Dictionary<Photo, int> dictionary = new Dictionary<Photo, int>();
+            Context.Photos.Include(photo => photo.Channel).Include(photo => photo.User).ToList().ForEach(photo =>
             {
-                Dictionary<Photo, int> dictionary = new Dictionary<Photo, int>();
-                context.Photos.Include(photo => photo.Channel).Include(photo => photo.User).ToList().ForEach(photo =>
-                {
-                    dictionary.Add(photo,
-                        context.Likes.Count(like => like.PhotoId == photo.Id));
-                });
-                return dictionary.OrderByDescending(pair => pair.Value).Take(10).Select(pair => pair.Key).ToList();
-            }
+                dictionary.Add(photo,
+                    Context.Likes.Count(like => like.PhotoId == photo.Id));
+            });
+            return dictionary.OrderByDescending(pair => pair.Value).Take(10).Select(pair => pair.Key).ToList();
         }
 
         public List<Photo> GetFeed(int userId)
         {
-            using (var context = new PhotoChannelContext())
+            List<Photo> photos = new List<Photo>();
+            Context.Subscribers.Where(subscriber => subscriber.UserId == userId).ToList().ForEach(subscriber =>
             {
-                List<Photo> photos = new List<Photo>();
-                context.Subscribers.Where(subscriber => subscriber.UserId==userId).ToList().ForEach(subscriber =>
-                {
-                    photos.AddRange(context.Photos.Include(photo => photo.Channel).Include(photo => photo.User).Where(photo => photo.ChannelId== subscriber.ChannelId).ToList());
-                });
-                return photos.OrderByDescending(photo => photo.ShareDate).ToList();
-            }
+                photos.AddRange(Context.Photos.Include(photo => photo.Channel).Include(photo => photo.User).Where(photo => photo.ChannelId == subscriber.ChannelId).ToList());
+            });
+            return photos.OrderByDescending(photo => photo.ShareDate).ToList();
         }
     }
 }

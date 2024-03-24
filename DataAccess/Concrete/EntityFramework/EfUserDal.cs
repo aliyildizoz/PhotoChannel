@@ -14,29 +14,28 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfUserDal : EfEntityRepositoryBase<User, PhotoChannelContext>, IUserDal
     {
+        public PhotoChannelContext Context { get; private set; }
+        public EfUserDal(PhotoChannelContext context) : base(context)
+        {
+            Context = context;
+        }
         public List<OperationClaim> GetClaims(User user)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var result = context.UserOperationClaims
-                    .Where(userOperationClaim => userOperationClaim.UserId == user.Id).Join(context.OperationClaims,
-                        userOperationClaim => userOperationClaim.OperationClaimId,
-                        operationClaimId => operationClaimId.Id,
-                        (userOperationClaim, operationClaim) => operationClaim);
-                return result.ToList();
-            }
+            var result = Context.UserOperationClaims
+                .Where(userOperationClaim => userOperationClaim.UserId == user.Id).Join(Context.OperationClaims,
+                    userOperationClaim => userOperationClaim.OperationClaimId,
+                    operationClaimId => operationClaimId.Id,
+                    (userOperationClaim, operationClaim) => operationClaim);
+            return result.ToList();
         }
         public void AddOperationClaim(User user)
         {
-            using (var context = new PhotoChannelContext())
+            Context.UserOperationClaims.Add(new UserOperationClaim
             {
-                context.UserOperationClaims.Add(new UserOperationClaim
-                {
-                    UserId = user.Id,
-                    OperationClaimId = 2
-                });
-                context.SaveChanges();
-            }
+                UserId = user.Id,
+                OperationClaimId = 2
+            });
+            Context.SaveChanges();
         }
     }
 }

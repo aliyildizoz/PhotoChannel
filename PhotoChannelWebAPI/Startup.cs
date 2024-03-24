@@ -15,6 +15,7 @@ using Core.Utilities.Security.Encyption;
 using Core.Utilities.Security.Jwt;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
+using DataAccess.Dal.EntityFramework.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -156,6 +157,9 @@ namespace PhotoChannelWebAPI
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
             });
+
+            services.AddDbContext<PhotoChannelContext>(
+                        options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             #region ServicesDP
 

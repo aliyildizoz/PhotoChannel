@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,24 +14,23 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfPhotoDal : EfEntityRepositoryBase<Photo, PhotoChannelContext>, IPhotoDal
     {
+        public PhotoChannelContext Context { get; private set; }
+        public EfPhotoDal(PhotoChannelContext context) : base(context)
+        {
+            Context = context;
+        }
         public List<Photo> GetUserPhotos(User user)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var photos = context.Photos.Include(photo => photo.User).Include(photo => photo.Channel)
-                     .Where(photo => photo.UserId == user.Id);
-                return photos.ToList();
-            }
+            var photos = Context.Photos.Include(photo => photo.User).Include(photo => photo.Channel)
+                 .Where(photo => photo.UserId == user.Id);
+            return photos.ToList();
         }
 
         public List<Photo> GetChannelPhotos(Channel channel)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var photos = context.Photos.Include(photo => photo.User).Include(photo => photo.Channel)
-                    .Where(photo => photo.ChannelId == channel.Id);
-                return photos.ToList();
-            }
+            var photos = Context.Photos.Include(photo => photo.User).Include(photo => photo.Channel)
+                .Where(photo => photo.ChannelId == channel.Id);
+            return photos.ToList();
         }
     }
 }

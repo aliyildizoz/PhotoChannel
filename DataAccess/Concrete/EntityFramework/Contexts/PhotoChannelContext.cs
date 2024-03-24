@@ -17,10 +17,6 @@ namespace DataAccess.Dal.EntityFramework.Contexts
         {
 
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Data Source =.; Initial Catalog = PhotoChannel;");
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("PhotoChannel");
@@ -34,16 +30,16 @@ namespace DataAccess.Dal.EntityFramework.Contexts
 
             modelBuilder.Entity<Category>().HasData(new List<Category>
             {
-                new Category {Name = "Kitap"},
-                new Category {Name = "Sinema"},
-                new Category {Name = "Bilim"},
-                new Category {Name = "Kültür"},
-                new Category {Name = "Edebiyat"}
+                new Category {Id=1,Name = "Kitap"   },
+                new Category {Id=2,Name = "Sinema"  },
+                new Category {Id=3,Name = "Bilim"   },
+                new Category {Id=4,Name = "Kültür"  },
+                new Category {Id=5,Name = "Edebiyat"}
             });
             modelBuilder.Entity<OperationClaim>().HasData(new List<OperationClaim>
             {
-                new OperationClaim {ClaimName = "Admin"},
-                new OperationClaim {ClaimName = "Users"}
+                new OperationClaim {Id=1, ClaimName = "Admin"},
+                new OperationClaim {Id=2, ClaimName = "Users"}
             });
         }
 
