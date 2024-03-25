@@ -44,6 +44,8 @@ Uygulama, youtube ve instagramın bazı özelliklerini birleştirmeye çalışm�
 	- [Kategoriye göre kanal filtreleme](#searching-channel-filter)
 
 ### Kurulum 
+- **Docker ile kurulum;**
+  Bilgisayarınızda docker kurulu ise `docker-compose.yml` dosyasının bulunduğu konumda terminali açarak `docker compose up` komutunu çalıştırınız. 
 - **Veri tabanını migration yaparak oluşturmak için oluşturmak için;**
 PhotoChannelWebApi klasörünün içinde terminali açarak aşağıdaki komutları çalıştırınız.
 	1. `dotnet ef migrations add InitialCreate`
@@ -82,6 +84,8 @@ The application tried to combine some features of youtube and instagram. It is i
 	- [Filtering channels by category](#searching-channel-filter)
 
 ### Setup
+- **Install with Docker;**
+   If docker is installed on your computer, open the terminal in the location where the `docker-compose.yml` file is located and run the `docker compose up` command.
 - **To create the database by migrating;**
 Open the terminal in the PhotoChannelWebApi folder and run the commands below.
 	1. `dotnet ef migrations add InitialCreate`
