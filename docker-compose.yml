@@ -26,7 +26,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=Password1*
     ports:
-      - "1432:1433"
+      - "1433:1433"
     volumes:
       - photo-channel-volume:/var/opt/mssql
     networks:
