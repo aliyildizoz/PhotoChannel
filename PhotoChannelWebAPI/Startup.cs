@@ -158,8 +158,20 @@ namespace PhotoChannelWebAPI
                 options.IncludeXmlComments(xmlPath);
             });
 
+            services.AddHealthChecks();
+
             services.AddDbContext<PhotoChannelContext>(
-                        options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                        options =>
+                        {
+                            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+                            bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+                            if (!isDevelopment)
+                            {
+                                var password = Environment.GetEnvironmentVariable("MSSQL_SA_PASSWORD");
+                                connectionString = string.Format(connectionString, password);
+                            }
+                            options.UseSqlServer(connectionString);
+                        });
 
             #region ServicesDP
 
@@ -232,6 +244,7 @@ namespace PhotoChannelWebAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
 
         }

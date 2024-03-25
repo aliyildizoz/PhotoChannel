@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  photo-channel-web-api:
+    container_name: photo-channel-web-api-v1-container
+    image: aliyildizoz909/photo-channel-web-api:v1
+    build:
+      context: .
+      dockerfile: PhotoChannelWebAPI/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MSSQL_SA_PASSWORD=Password1*
+    ports:
+      - "5000:80"
+    networks:
+      - photo-channel-network
+    depends_on:
+      - photo-channel-sqlserver    
+  photo-channel-sqlserver:
+    container_name: photo-channel-sqlserver-v1-container
+    image: aliyildizoz909/photo-channel-sqlserver:v1
+    build:
+      context: .
+      dockerfile: Sql/Dockerfile
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password1*
+    ports:
+      - "1432:1433"
+    volumes:
+      - photo-channel-volume:/var/opt/mssql
+    networks:
+      - photo-channel-network
+volumes:
+  photo-channel-volume:
+networks:
+  photo-channel-network:
