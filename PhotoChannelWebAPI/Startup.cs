@@ -63,7 +63,7 @@ namespace PhotoChannelWebAPI
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowOrigin",
-                    builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                    builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3001","http://photo-channel-spa:3000")
                         .AllowAnyMethod()
                         .AllowAnyHeader().AllowCredentials()
                 );
@@ -99,7 +99,7 @@ namespace PhotoChannelWebAPI
                     Description = "Users can create channels or subscribe to an existing channel, is a simple web api project where you can share photos on these channels as well as like or comment on photos.",
                     Contact = new OpenApiContact
                     {
-                        Name = "Ali Yýldýzöz",
+                        Name = "Ali Yï¿½ldï¿½zï¿½z",
                         Email = "aliyildizoz909@gmail.com",
                         Url = new Uri("http://localhost:3000")
                     }
