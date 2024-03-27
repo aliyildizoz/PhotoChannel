@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller;
 using NLog;
+using NLog.Web;
 
 namespace PhotoChannelWebAPI.Helpers
 {
@@ -32,7 +33,7 @@ namespace PhotoChannelWebAPI.Helpers
                 }
             }
             context.Fail("RefreshToken is not required.");
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = LogManager.Setup().LoadConfigurationFromAppSettings().LoadConfigurationFromFile("nlog.config").GetCurrentClassLogger();
             logger.Warn(context.Result.Failure,"RefreshToken is not required.");
             return Task.CompletedTask;
         }

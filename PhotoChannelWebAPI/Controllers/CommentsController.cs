@@ -15,6 +15,7 @@ using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
+using IResult = Core.Utilities.Results.IResult;
 
 namespace PhotoChannelWebAPI.Controllers
 {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Web;
 
 namespace PhotoChannelWebAPI
@@ -14,7 +15,7 @@ namespace PhotoChannelWebAPI
     {
         public static void Main(string[] args)
         {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = LogManager.Setup().LoadConfigurationFromAppSettings().LoadConfigurationFromFile("nlog.config").GetCurrentClassLogger();
             try
             {
                 logger.Debug("init main");

@@ -16,7 +16,8 @@ namespace Business.ValidationRules.FluentValidation
         {
             ValidatorFactory factory = new ValidatorFactory();
             IValidator validator = factory.CreateInstance(typeof(TValidator));
-            var validateResult = validator.Validate(entity);
+            var context = new ValidationContext<object>(entity);
+            var validateResult = validator.Validate(context);
             if (!validateResult.IsValid)
             {
                 throw new ValidationException(validateResult.Errors);

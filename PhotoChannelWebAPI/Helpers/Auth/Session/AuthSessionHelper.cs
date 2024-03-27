@@ -38,7 +38,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Session
 
         public void Login(User user)
         {
-            HttpContext context = _accessor.HttpContext;
+            HttpContext? context = _accessor.HttpContext;
             if (context != null)
             {
                 _session.Set(currentUserKey, user);
@@ -48,7 +48,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Session
 
         public void Logout()
         {
-            HttpContext context = _accessor.HttpContext;
+            HttpContext? context = _accessor.HttpContext;
             if (context != null)
             {
                 _session.Remove(currentUserKey);
@@ -67,7 +67,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Session
         }
         public string GetCurrentUserId()
         {
-            HttpContext context = _accessor.HttpContext;
+            HttpContext? context = _accessor.HttpContext;
             if (context != null)
             {
                 var value = _session.GetInt32(userIdkey);

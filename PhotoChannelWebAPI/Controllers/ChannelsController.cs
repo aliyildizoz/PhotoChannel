@@ -25,6 +25,7 @@ using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
+using IResult = Core.Utilities.Results.IResult;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -73,7 +74,7 @@ namespace PhotoChannelWebAPI.Controllers
                 if ((int)imageUploadResult.StatusCode < 300)
                 {
                     var channel = _mapper.Map<Channel>(channelForAddDto);
-                    channel.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
+                    channel.ChannelPhotoUrl = imageUploadResult.Url.ToString();
                     channel.PublicId = imageUploadResult.PublicId;
                     channel.UserId = resultId.Data;
                     IResult result = _channelService.Add(channel);
@@ -153,7 +154,7 @@ namespace PhotoChannelWebAPI.Controllers
                 {
                     DeletionResult deletionResult = _photoUpload.ImageDelete(dataResult.Data.PublicId);
                     ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(channelForUpdate.File);
-                    dataResult.Data.ChannelPhotoUrl = imageUploadResult.Uri.ToString();
+                    dataResult.Data.ChannelPhotoUrl = imageUploadResult.Url.ToString();
                     dataResult.Data.PublicId = imageUploadResult.PublicId;
                 }
                 IResult result = _channelService.CheckIfChannelNameExistsWithUpdate(channelForUpdate.Name, channelId);

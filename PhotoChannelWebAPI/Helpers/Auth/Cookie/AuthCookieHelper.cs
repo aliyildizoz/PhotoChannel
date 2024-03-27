@@ -32,7 +32,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Cookie
 
         public void Login(User user)
         {
-            HttpContext context = _accessor.HttpContext;
+            HttpContext? context = _accessor.HttpContext;
             if (context != null)
             {
                 var dataResult = _userService.GetClaims(user.Id);
@@ -59,7 +59,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Cookie
        
         public void Logout()
         {
-            HttpContext context = _accessor.HttpContext;
+            HttpContext? context = _accessor.HttpContext;
             if (context != null)
             {
                 context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -68,7 +68,7 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Cookie
 
         public User GetCurrentUser()
         {
-            HttpContext context = _accessor.HttpContext;
+            HttpContext? context = _accessor.HttpContext;
             if (context != null)
             {
                 int userId = Convert.ToInt32(context.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -85,10 +85,10 @@ namespace PhotoChannelWebAPI.Helpers.Auth.Cookie
             return null;
         }
 
-        public string GetCurrentUserId()
+        public string? GetCurrentUserId()
         {
-            string id = "";
-            HttpContext context = _accessor.HttpContext;
+            string? id = "";
+            HttpContext? context = _accessor.HttpContext;
             if (context != null)
             {
                 id = context.User.FindFirstValue(ClaimTypes.NameIdentifier);

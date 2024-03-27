@@ -38,21 +38,21 @@ namespace PhotoChannelWebAPI.Filters
             _entity = entity;
             _propertyName = propertyName;
         }
-      
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var service = (ICommonService)context.HttpContext.RequestServices.GetService(_service);
-            var entity = (IEntity)Activator.CreateInstance(_entity);
+            var service = (ICommonService?)context.HttpContext.RequestServices.GetService(_service);
+            var entity = (IEntity?)Activator.CreateInstance(_entity);
 
+            if (entity == null || service == null) return;
             if (_propertyName == null)
             {
-                entity.Id = (int)context.ActionArguments.FirstOrDefault(pair => pair.Key.ToUpper().Contains("ID"))
-                    .Value;
+                entity.Id = (int?)context.ActionArguments.FirstOrDefault(pair => pair.Key.ToUpper().Contains("ID")).Value ?? 0;
             }
             else
             {
                 var value = context.ActionArguments.FirstOrDefault(pair => pair.Value.GetType().IsClass).Value;
-                entity.Id = Convert.ToInt16(value.GetType().GetProperties().First(info => info.Name == _propertyName)
+                entity.Id = value == null ? 0 : Convert.ToInt16(value.GetType().GetProperties().First(info => info.Name == _propertyName)
                     .GetValue(obj: value));
             }
 

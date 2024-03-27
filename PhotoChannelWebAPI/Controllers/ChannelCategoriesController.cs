@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Filters;
+using IResult = Core.Utilities.Results.IResult;
 
 namespace PhotoChannelWebAPI.Controllers
 {
