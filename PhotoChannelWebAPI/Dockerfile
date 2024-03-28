@@ -1,12 +1,15 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:3.1 AS restore
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS restore
+ENV PATH="${PATH}:/root/.dotnet/tools"
 WORKDIR /src
+RUN dotnet tool install --global dotnet-ef && dotnet tool update --global dotnet-ef && dotnet ef
 COPY ./PhotoChannelWebAPI/*.csproj PhotoChannelWebAPI/
 COPY ./Business/*.csproj Business/
 COPY ./DataAccess/*.csproj DataAccess/
@@ -16,10 +19,15 @@ COPY *.sln .
 RUN dotnet restore
 COPY . .
 
-FROM restore AS build
+FROM restore AS migration
+WORKDIR /src/PhotoChannelWebAPI
+RUN dotnet ef migrations add InitialCreate
+WORKDIR /src
+
+FROM migration AS build
 RUN dotnet build -c Release -o /app/build /p:UseAppHost=false
 
-FROM build AS publish
+FROM migration AS publish
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
