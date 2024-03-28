@@ -51,8 +51,8 @@ Open the terminal in the PhotoChannelWebApi folder and run the commands below.
 ## Used technologies
 
  - **Backend**
-	 - Asp.Net Core Web API 3.1
-	 - .Net standart 2.0
+	 - Asp.Net Core Web Api
+	 - .Net 8
 	 - Entity Framework Core
 	 - Fluent Validation
 	 - Cloudinary
