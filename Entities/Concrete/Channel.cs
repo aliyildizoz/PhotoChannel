@@ -5,7 +5,7 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-    public class Channel : IEntity
+    public class Channel : BaseEntity,IEntity
     {
         public Channel()
         {

@@ -5,7 +5,7 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-    public class ChannelCategory : IEntity
+    public class ChannelCategory : BaseEntity,IEntity
     {
         public int Id { get; set; }
         public int ChannelId { get; set; }

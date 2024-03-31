@@ -6,7 +6,7 @@ using Entities.Concrete;
 
 namespace Core.Entities.Concrete
 {
-    public class UserOperationClaim : IEntity
+    public class UserOperationClaim : BaseEntity,IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }

@@ -5,7 +5,7 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-    public class Subscriber : IEntity
+    public class Subscriber : BaseEntity,IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }

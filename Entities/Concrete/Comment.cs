@@ -5,7 +5,7 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-    public class Comment : IEntity
+    public class Comment : BaseEntity,IEntity
     {
         public Comment()
         {

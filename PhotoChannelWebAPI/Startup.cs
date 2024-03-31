@@ -170,7 +170,7 @@ namespace PhotoChannelWebAPI
                                 var password = Environment.GetEnvironmentVariable("MSSQL_SA_PASSWORD");
                                 connectionString = string.Format(connectionString, password);
                             }
-                            options.UseSqlServer(connectionString,x=>x.MigrationsAssembly("PhotoChannelWebAPI"));
+                            options.UseSqlServer(connectionString,x=>x.MigrationsAssembly("DataAccess"));
                             
                         });
 

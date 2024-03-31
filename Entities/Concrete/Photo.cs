@@ -5,7 +5,7 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-    public class Photo : IEntity
+    public class Photo : BaseEntity,IEntity
     {
         public Photo()
         {

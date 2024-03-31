@@ -5,7 +5,7 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-   public class Like : IEntity
+   public class Like : BaseEntity,IEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }

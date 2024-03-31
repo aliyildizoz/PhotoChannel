@@ -3,7 +3,7 @@ version: '3.8'
 services:
   photo-channel-web-api:
     container_name: photo-channel-web-api-v2-container
-    image: aliyildizoz909/photo-channel-web-api:v2
+    image: aliyildizoz909/photo-channel-web-api:latest
     build:
       context: .
       dockerfile: PhotoChannelWebAPI/Dockerfile

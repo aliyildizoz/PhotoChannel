@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Core.Entities.Concrete;
 using Entities.Concrete;
+using DataAccess.Dal.EntityFramework.EntityConfigurations;
 
 namespace DataAccess.Dal.EntityFramework.Contexts
 {
@@ -19,14 +20,16 @@ namespace DataAccess.Dal.EntityFramework.Contexts
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("PhotoChannel");
-            modelBuilder.Entity<Photo>().HasOne<User>(photo => photo.User).WithMany(user => user.Photos).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Subscriber>().HasOne<User>(s => s.User).WithMany(u => u.Subscribers).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Subscriber>().HasOne<Channel>(s => s.Channel).WithMany(u => u.Subscribers).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Comment>().HasOne<Photo>(c => c.Photo).WithMany(p => p.Comments).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Comment>().HasOne<User>(c => c.User).WithMany(u => u.Comments).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Like>().HasOne<User>(l => l.User).WithMany(u => u.Likes).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Like>().HasOne<Photo>(l => l.Photo).WithMany(u => u.Likes).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ChannelEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ChannelCategoryEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CommentEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new LikeEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new OperationClaimEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserOperationClaimEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new PhotoEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new SubscriberEntityTypeConfiguration());
 
             modelBuilder.Entity<Category>().HasData(new List<Category>
             {
@@ -41,8 +44,10 @@ namespace DataAccess.Dal.EntityFramework.Contexts
                 new OperationClaim {Id=1, ClaimName = "Admin"},
                 new OperationClaim {Id=2, ClaimName = "Users"}
             });
-        }
 
+            base.OnModelCreating(modelBuilder);
+        }
+        
         public DbSet<User> Users { get; set; }
         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
@@ -53,9 +58,5 @@ namespace DataAccess.Dal.EntityFramework.Contexts
         public DbSet<Like> Likes { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<ChannelCategory> ChannelCategories { get; set; }
-
-
-
-
     }
 }
