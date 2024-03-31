@@ -20,8 +20,8 @@ RUN dotnet restore
 COPY . .
 
 FROM restore AS migration
-WORKDIR /src/PhotoChannelWebAPI
-RUN dotnet ef migrations add InitialCreate
+WORKDIR /src/DataAccess
+RUN dotnet ef --startup-project ../PhotoChannelWebAPI/ migrations add InitialCreate
 WORKDIR /src
 
 FROM migration AS build

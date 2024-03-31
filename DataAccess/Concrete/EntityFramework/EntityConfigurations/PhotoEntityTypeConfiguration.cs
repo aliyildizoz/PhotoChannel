@@ -13,6 +13,10 @@ namespace DataAccess.Dal.EntityFramework.EntityConfigurations
             builder.HasOne<User>(photo => photo.User)
                     .WithMany(user => user.Photos)
                     .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne<Channel>(photo => photo.Channel)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

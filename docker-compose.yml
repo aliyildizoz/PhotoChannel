@@ -29,18 +29,18 @@ services:
       - photo-channel-volume:/var/opt/mssql
     networks:
       - photo-channel-network 
-  photo-channel-spa:
-    container_name: photo-channel-spa-v1-container
-    image: aliyildizoz909/photo-channel-spa:v1
-    environment:
-      - REACT_APP_MAIN_URL=localhost:5000
-      - NODE_ENV=production
-    ports:
-      - "3000:3000"
-    networks:
-      - photo-channel-network
-    depends_on:
-      - photo-channel-web-api  
+  # photo-channel-spa:
+  #   container_name: photo-channel-spa-v1-container
+  #   image: aliyildizoz909/photo-channel-spa:v1
+  #   environment:
+  #     - REACT_APP_MAIN_URL=localhost:5000
+  #     - NODE_ENV=production
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - photo-channel-network
+  #   depends_on:
+  #     - photo-channel-web-api  
 volumes:
   photo-channel-volume:
 networks:

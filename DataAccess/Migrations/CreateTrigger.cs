@@ -9,7 +9,7 @@ namespace DataAccess.Migrations
     /// <inheritdoc />
     [DbContext(typeof(PhotoChannelContext))]
     [Migration("999999999999999999_CreateTrigger")]
-    public partial class ItialDatabase : Migration
+    public partial class CreateTrigger : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
