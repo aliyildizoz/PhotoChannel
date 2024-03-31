@@ -9,7 +9,9 @@ namespace DataAccess.Dal.EntityFramework.EntityConfigurations
         {
                 public override void Configure(EntityTypeBuilder<Comment> builder)
                 {
+
                         base.Configure(builder);
+
 
                         builder.HasOne<Photo>(c => c.Photo)
                                 .WithMany(p => p.Comments)

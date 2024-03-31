@@ -18,6 +18,8 @@ namespace DataAccess.Dal.EntityFramework.EntityConfigurations
                 new Category {Id=4,Name = "Kültür"  },
                 new Category {Id=5,Name = "Edebiyat"}
             });
+            builder.ToTable("Categories", t => t.HasTrigger("CategoriesDeleteTrigger"));
+
         }
     }
 }

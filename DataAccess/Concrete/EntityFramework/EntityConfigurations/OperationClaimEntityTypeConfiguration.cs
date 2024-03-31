@@ -11,6 +11,7 @@ namespace DataAccess.Dal.EntityFramework.EntityConfigurations
         public override void Configure(EntityTypeBuilder<OperationClaim> builder)
         {
             base.Configure(builder);
+            builder.ToTable("OperationClaims", t => t.HasTrigger("OperationClaimsDeleteTrigger"));
             builder.HasData(new List<OperationClaim>
             {
                 new OperationClaim {Id=1, ClaimName = "Admin"},
