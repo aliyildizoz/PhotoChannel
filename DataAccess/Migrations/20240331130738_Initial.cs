@@ -13,8 +13,12 @@ namespace DataAccess.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "PhotoChannel");
+
             migrationBuilder.CreateTable(
                 name: "Categories",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -28,11 +32,12 @@ namespace DataAccess.Migrations
 
             migrationBuilder.CreateTable(
                 name: "OperationClaims",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ClaimName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ClaimName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,6 +46,7 @@ namespace DataAccess.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Users",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -61,12 +67,13 @@ namespace DataAccess.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Channels",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ChannelPhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PublicId = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -77,19 +84,20 @@ namespace DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_Channels_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserOperationClaims",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    OperationClaimId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    OperationClaimId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -97,25 +105,26 @@ namespace DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_UserOperationClaims_OperationClaims_OperationClaimId",
                         column: x => x.OperationClaimId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "OperationClaims",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserOperationClaims_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "ChannelCategories",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ChannelId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    ChannelId = table.Column<int>(type: "int", nullable: true),
+                    CategoryId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -123,25 +132,26 @@ namespace DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_ChannelCategories_Categories_CategoryId",
                         column: x => x.CategoryId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ChannelCategories_Channels_ChannelId",
                         column: x => x.ChannelId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Channels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Photos",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ChannelId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    ChannelId = table.Column<int>(type: "int", nullable: true),
                     ShareDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PublicId = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -152,24 +162,26 @@ namespace DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_Photos_Channels_ChannelId",
                         column: x => x.ChannelId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Channels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Photos_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Subscribers",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ChannelId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    ChannelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -177,23 +189,26 @@ namespace DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_Subscribers_Channels_ChannelId",
                         column: x => x.ChannelId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Channels",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Subscribers_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Comments",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    PhotoId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    PhotoId = table.Column<int>(type: "int", nullable: true),
                     ShareDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -203,23 +218,26 @@ namespace DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_Comments_Photos_PhotoId",
                         column: x => x.PhotoId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Photos",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comments_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Likes",
+                schema: "PhotoChannel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    PhotoId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    PhotoId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -227,16 +245,19 @@ namespace DataAccess.Migrations
                     table.ForeignKey(
                         name: "FK_Likes_Photos_PhotoId",
                         column: x => x.PhotoId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Photos",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Likes_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "PhotoChannel",
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
+                schema: "PhotoChannel",
                 table: "Categories",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
@@ -249,6 +270,7 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
+                schema: "PhotoChannel",
                 table: "OperationClaims",
                 columns: new[] { "Id", "ClaimName" },
                 values: new object[,]
@@ -259,66 +281,79 @@ namespace DataAccess.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChannelCategories_CategoryId",
+                schema: "PhotoChannel",
                 table: "ChannelCategories",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChannelCategories_ChannelId",
+                schema: "PhotoChannel",
                 table: "ChannelCategories",
                 column: "ChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Channels_UserId",
+                schema: "PhotoChannel",
                 table: "Channels",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_PhotoId",
+                schema: "PhotoChannel",
                 table: "Comments",
                 column: "PhotoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_UserId",
+                schema: "PhotoChannel",
                 table: "Comments",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Likes_PhotoId",
+                schema: "PhotoChannel",
                 table: "Likes",
                 column: "PhotoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Likes_UserId",
+                schema: "PhotoChannel",
                 table: "Likes",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_ChannelId",
+                schema: "PhotoChannel",
                 table: "Photos",
                 column: "ChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_UserId",
+                schema: "PhotoChannel",
                 table: "Photos",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscribers_ChannelId",
+                schema: "PhotoChannel",
                 table: "Subscribers",
                 column: "ChannelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscribers_UserId",
+                schema: "PhotoChannel",
                 table: "Subscribers",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserOperationClaims_OperationClaimId",
+                schema: "PhotoChannel",
                 table: "UserOperationClaims",
                 column: "OperationClaimId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserOperationClaims_UserId",
+                schema: "PhotoChannel",
                 table: "UserOperationClaims",
                 column: "UserId");
         }
@@ -327,34 +362,44 @@ namespace DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ChannelCategories");
+                name: "ChannelCategories",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "Comments");
+                name: "Comments",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "Likes");
+                name: "Likes",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "Subscribers");
+                name: "Subscribers",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "UserOperationClaims");
+                name: "UserOperationClaims",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Categories",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "Photos");
+                name: "Photos",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "OperationClaims");
+                name: "OperationClaims",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "Channels");
+                name: "Channels",
+                schema: "PhotoChannel");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Users",
+                schema: "PhotoChannel");
         }
     }
 }

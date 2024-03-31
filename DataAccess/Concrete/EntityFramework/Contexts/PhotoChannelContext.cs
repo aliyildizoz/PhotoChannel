@@ -20,6 +20,7 @@ namespace DataAccess.Dal.EntityFramework.Contexts
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("PhotoChannel");
             modelBuilder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ChannelEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ChannelCategoryEntityTypeConfiguration());
@@ -30,20 +31,6 @@ namespace DataAccess.Dal.EntityFramework.Contexts
             modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PhotoEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriberEntityTypeConfiguration());
-
-            modelBuilder.Entity<Category>().HasData(new List<Category>
-            {
-                new Category {Id=1,Name = "Kitap"   },
-                new Category {Id=2,Name = "Sinema"  },
-                new Category {Id=3,Name = "Bilim"   },
-                new Category {Id=4,Name = "Kültür"  },
-                new Category {Id=5,Name = "Edebiyat"}
-            });
-            modelBuilder.Entity<OperationClaim>().HasData(new List<OperationClaim>
-            {
-                new OperationClaim {Id=1, ClaimName = "Admin"},
-                new OperationClaim {Id=2, ClaimName = "Users"}
-            });
 
             base.OnModelCreating(modelBuilder);
         }

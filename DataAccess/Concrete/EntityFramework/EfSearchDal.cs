@@ -34,7 +34,7 @@ namespace DataAccess.Concrete.EntityFramework
 
         public List<Channel> SearchByMultiCategory(int[] categoryIds)
         {
-            var result = Context.ChannelCategories.Include(c => c.Channel).Include(category => category.Channel.User).Where(c => categoryIds.Contains(c.CategoryId)).Select(c => c.Channel).Distinct();
+            var result = Context.ChannelCategories.Include(c => c.Channel).Include(category => category.Channel.User).Where(c => categoryIds.Contains(c.CategoryId.GetValueOrDefault())).Select(c => c.Channel).Distinct();
 
             return result.ToList();
         }

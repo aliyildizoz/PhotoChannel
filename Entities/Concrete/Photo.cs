@@ -11,9 +11,8 @@ namespace Entities.Concrete
         {
             ShareDate = DateTime.Now;
         }
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public int ChannelId { get; set; }
+        public int? UserId { get; set; }
+        public int? ChannelId { get; set; }
         public DateTime ShareDate { get; set; }
         public string? PhotoUrl { get; set; }
         public string? PublicId { get; set; }

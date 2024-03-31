@@ -11,9 +11,8 @@ namespace Entities.Concrete
         {
             CreatedDate = DateTime.Now;
         }
-        public int Id { get; set; }
         public string? Name { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public string? ChannelPhotoUrl { get; set; }
         public string? PublicId { get; set; }
