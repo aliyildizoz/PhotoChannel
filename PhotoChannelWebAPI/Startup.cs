@@ -15,6 +15,7 @@ using Core.Utilities.Security.Encyption;
 using Core.Utilities.Security.Jwt;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
+using DataAccess.Dal.EntityFramework.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -62,12 +63,12 @@ namespace PhotoChannelWebAPI
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowOrigin",
-                    builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                    builder => builder.WithOrigins("http://localhost:3000", "http://localhost:3001","http://photo-channel-spa:3000")
                         .AllowAnyMethod()
                         .AllowAnyHeader().AllowCredentials()
                 );
             });
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -98,7 +99,7 @@ namespace PhotoChannelWebAPI
                     Description = "Users can create channels or subscribe to an existing channel, is a simple web api project where you can share photos on these channels as well as like or comment on photos.",
                     Contact = new OpenApiContact
                     {
-                        Name = "Ali Yýldýzöz",
+                        Name = "Ali Yï¿½ldï¿½zï¿½z",
                         Email = "aliyildizoz909@gmail.com",
                         Url = new Uri("http://localhost:3000")
                     }
@@ -156,6 +157,22 @@ namespace PhotoChannelWebAPI
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
             });
+
+            services.AddHealthChecks();
+
+            services.AddDbContext<PhotoChannelContext>(
+                        options =>
+                        {
+                            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+                            bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+                            if (!isDevelopment)
+                            {
+                                var password = Environment.GetEnvironmentVariable("MSSQL_SA_PASSWORD");
+                                connectionString = string.Format(connectionString, password);
+                            }
+                            options.UseSqlServer(connectionString,x=>x.MigrationsAssembly("DataAccess"));
+                            
+                        });
 
             #region ServicesDP
 
@@ -228,6 +245,7 @@ namespace PhotoChannelWebAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
 
         }

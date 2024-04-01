@@ -20,11 +20,11 @@
     "PhotoChannelWebAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:44367",
+      "launchUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44367"
+      "applicationUrl": "http://localhost:5000"
     },
     "Docker": {
       "commandName": "Docker",

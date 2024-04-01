@@ -12,44 +12,35 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfLikeDal : EfEntityRepositoryBase<Like, PhotoChannelContext>, ILikeDal
     {
-
+        public PhotoChannelContext Context { get; private set; }
+        public EfLikeDal(PhotoChannelContext context) : base(context)
+        {
+            Context = context;
+        }
         public List<Photo> GetLikePhotos(User user)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var photos = context.Likes.Include(like => like.Photo).Include(like => like.Photo.User).Include(like => like.Photo.Channel).Where(like => like.UserId == user.Id)
-                    .Select(like => like.Photo);
-                return photos.ToList();
-            }
+            var photos = Context.Likes.Include(like => like.Photo).Include(like => like.Photo.User).Include(like => like.Photo.Channel).Where(like => like.UserId == user.Id)
+                .Select(like => like.Photo);
+            return photos.ToList();
         }
 
         public List<User> GetPhotoLikes(Photo photo)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var users = context.Likes.Include(like => like.User).Where(like => like.PhotoId == photo.Id)
-                    .Select(like => like.User);
-                return users.ToList();
-            }
+            var users = Context.Likes.Include(like => like.User).Where(like => like.PhotoId == photo.Id)
+                .Select(like => like.User);
+            return users.ToList();
         }
 
         public override void Delete(Like entity)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var contains = context.Likes.Contains(entity);
-                if (contains) base.Delete(entity);
-            }
+            var contains = Context.Likes.Contains(entity);
+            if (contains) base.Delete(entity);
         }
 
         public override void Add(Like entity)
         {
-
-            using (var context = new PhotoChannelContext())
-            {
-                var contains = context.Likes.Contains(entity);
-                if (!contains) base.Add(entity);
-            }
+            var contains = Context.Likes.Contains(entity);
+            if (!contains) base.Add(entity);
         }
     }
 }

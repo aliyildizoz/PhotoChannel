@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Web.CodeGeneration;
 using Newtonsoft.Json;
+using NLog;
+using NLog.Web;
 using PhotoChannelWebAPI.CustomActionResults;
 using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Exceptions;
@@ -58,7 +60,7 @@ namespace PhotoChannelWebAPI.Middleware.Exception
         }
         private void ExceptionHandler(System.Exception exception, HttpContext httpContext, string content, LogLevel level, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, string contentType = "text/plain")
         {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = LogManager.Setup().LoadConfigurationFromAppSettings().LoadConfigurationFromFile("nlog.config").GetCurrentClassLogger();
             logger.Log(level, exception, exception.Message);
             httpContext.Response.StatusCode = (int)statusCode;
             httpContext.Response.ContentType = contentType;

@@ -17,6 +17,7 @@ using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
+using IResult = Core.Utilities.Results.IResult;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -149,7 +150,7 @@ namespace PhotoChannelWebAPI.Controllers
             {
                 ImageUploadResult imageUploadResult = _photoUpload.ImageUpload(photoForAddDto.File);
                 var mapResult = _mapper.Map<Photo>(photoForAddDto);
-                mapResult.PhotoUrl = imageUploadResult.Uri.ToString();
+                mapResult.PhotoUrl = imageUploadResult.Url.ToString();
                 mapResult.PublicId = imageUploadResult.PublicId;
                 mapResult.UserId = User.Claims.GetUserId().Data;
                 IResult result = _photoService.Add(mapResult);

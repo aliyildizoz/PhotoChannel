@@ -15,6 +15,7 @@ using PhotoChannelWebAPI.Dtos;
 using PhotoChannelWebAPI.Extensions;
 using PhotoChannelWebAPI.Filters;
 using PhotoChannelWebAPI.Helpers;
+using IResult = Core.Utilities.Results.IResult;
 
 namespace PhotoChannelWebAPI.Controllers
 {
@@ -133,7 +134,7 @@ namespace PhotoChannelWebAPI.Controllers
                     CommentId = mapResult.Id,
                     Description = mapResult.Description,
                     ShareDate = mapResult.ShareDate,
-                    UserId = mapResult.UserId,
+                    UserId = mapResult.UserId.GetValueOrDefault(),
                     LastName = currentUser.LastName,
                     FirstName = currentUser.FirstName
                 };
@@ -170,7 +171,7 @@ namespace PhotoChannelWebAPI.Controllers
                 IResult result = _commentService.Update(comment.Data);
                 if (result.IsSuccessful)
                 {
-                    var channelId = HttpContext.RequestServices.GetService<IPhotoService>().GetById(comment.Data.PhotoId).Data.ChannelId;
+                    var channelId = HttpContext.RequestServices.GetService<IPhotoService>().GetById(comment.Data.PhotoId.GetValueOrDefault()).Data.ChannelId;
                     this.RemoveCacheByContains(comment.Data.UserId + "/user-photos");
                     this.RemoveCacheByContains(comment.Data.UserId + "/user-comment-photos");
                     this.RemoveCacheByContains(comment.Data.UserId + "/like-photos");
@@ -205,7 +206,7 @@ namespace PhotoChannelWebAPI.Controllers
                 if (result.IsSuccessful)
                 {
                     var channelId = HttpContext.RequestServices.GetService<IPhotoService>()
-                        .GetById(comment.Data.PhotoId).Data.ChannelId;
+                        .GetById(comment.Data.PhotoId.GetValueOrDefault()).Data.ChannelId;
                     this.RemoveCacheByContains(comment.Data.UserId + "/user-photos");
                     this.RemoveCacheByContains(comment.Data.UserId + "/user-comment-photos");
                     this.RemoveCacheByContains(comment.Data.UserId + "/like-photos");

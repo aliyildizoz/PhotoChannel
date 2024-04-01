@@ -5,9 +5,8 @@ using Entities.Abstract;
 
 namespace Core.Entities.Concrete
 {
-    public class OperationClaim : IEntity
+    public class OperationClaim : BaseEntity,IEntity
     {
-        public int Id { get; set; }
-        public string ClaimName { get; set; }
+        public string? ClaimName { get; set; }
     }
 }

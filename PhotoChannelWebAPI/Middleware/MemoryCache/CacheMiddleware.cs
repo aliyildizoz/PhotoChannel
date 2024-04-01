@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NLog;
+using NLog.Web;
 using PhotoChannelWebAPI.Cache;
 using PhotoChannelWebAPI.Extensions;
 
@@ -39,7 +41,7 @@ namespace PhotoChannelWebAPI.Middleware.MemoryCache
 
                 if (memoryCache.TryGetValue(key, out var value))
                 {
-                    var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+                    var logger = LogManager.Setup().LoadConfigurationFromAppSettings().LoadConfigurationFromFile("nlog.config").GetCurrentClassLogger();
                     logger.Info("From Cache");
                     ResponseHandler(httpContext, value);
                 }

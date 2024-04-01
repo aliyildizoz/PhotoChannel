@@ -5,17 +5,16 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-    public class Comment : IEntity
+    public class Comment : BaseEntity,IEntity
     {
         public Comment()
         {
             ShareDate = DateTime.Now;
         }
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public int PhotoId { get; set; }
+        public int? UserId { get; set; }
+        public int? PhotoId { get; set; }
         public DateTime ShareDate { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
 
         public virtual User User { get; set; }

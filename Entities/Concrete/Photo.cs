@@ -5,18 +5,17 @@ using Entities.Abstract;
 
 namespace Entities.Concrete
 {
-    public class Photo : IEntity
+    public class Photo : BaseEntity,IEntity
     {
         public Photo()
         {
             ShareDate = DateTime.Now;
         }
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public int ChannelId { get; set; }
+        public int? UserId { get; set; }
+        public int? ChannelId { get; set; }
         public DateTime ShareDate { get; set; }
-        public string PhotoUrl { get; set; }
-        public string PublicId { get; set; }
+        public string? PhotoUrl { get; set; }
+        public string? PublicId { get; set; }
 
         public virtual User User { get; set; }
         public virtual Channel Channel { get; set; }

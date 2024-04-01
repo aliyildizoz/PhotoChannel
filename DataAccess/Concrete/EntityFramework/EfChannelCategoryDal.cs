@@ -12,36 +12,33 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfChannelCategoryDal : EfEntityRepositoryBase<ChannelCategory, PhotoChannelContext>, IChannelCategoryDal
     {
+        public PhotoChannelContext Context { get; private set; }
+        public EfChannelCategoryDal(PhotoChannelContext context) : base(context)
+        {
+            Context = context;
+        }
+
         public List<Category> GetChannelCategories(Channel channel)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var categories = context.ChannelCategories.Include(category => category.Category)
-                    .Where(category => category.ChannelId == channel.Id).Select(category => category.Category);
-                return categories.ToList();
-            }
+            var categories = Context.ChannelCategories.Include(category => category.Category)
+                .Where(category => category.ChannelId == channel.Id).Select(category => category.Category);
+            return categories.ToList();
         }
 
         public List<Channel> GetCategoryChannels(Category category)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var channels = context.ChannelCategories.Include(c => c.Channel)
-                    .Where(c => c.CategoryId == category.Id).Select(c => c.Channel);
+            var channels = Context.ChannelCategories.Include(c => c.Channel)
+                .Where(c => c.CategoryId == category.Id).Select(c => c.Channel);
 
-                return channels.ToList();
-            }
+            return channels.ToList();
         }
 
         public void AddRange(ChannelCategory[] channelCategories)
         {
-            using (var context = new PhotoChannelContext())
-            {
-                var result = context.ChannelCategories.Where(category => category.ChannelId == channelCategories[0].ChannelId).ToList();
-                context.ChannelCategories.RemoveRange(result);
-                context.ChannelCategories.AddRange(channelCategories);
-                context.SaveChanges();
-            }
+            var result = Context.ChannelCategories.Where(category => category.ChannelId == channelCategories[0].ChannelId).ToList();
+            Context.ChannelCategories.RemoveRange(result);
+            Context.ChannelCategories.AddRange(channelCategories);
+            Context.SaveChanges();
         }
     }
 }
